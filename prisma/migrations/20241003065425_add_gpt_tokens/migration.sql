@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `users` ADD COLUMN `gpt_token` INTEGER NOT NULL DEFAULT 1000;
