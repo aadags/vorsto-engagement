@@ -20,6 +20,12 @@ export async function POST(req) {
       httpOnly: true, // Make the cookie inaccessible to JavaScript
     });
 
+    response.cookies.set('organizationId', user.organization_id, {
+      maxAge: 365 * 24 * 60 * 60, // 1 day
+      path: '/',
+      httpOnly: true, // Make the cookie inaccessible to JavaScript
+    });
+
     return response;
 
   } catch (error) {

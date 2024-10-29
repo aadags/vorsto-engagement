@@ -13,21 +13,21 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
     
         },
         {
-            title: "Leads",
+            title: "Tickets",
             pathname: "/leads",
             img: "/svg/bookmark.svg"
     
         },
         {
-            title: "Ongoing",
+            title: "AI Conversations",
             pathname: "/bot/ongoing",
             img: "/svg/chat.svg"
     
         },
         {
-            title: "Archived",
-            pathname: "/bot/archived",
-            img: "/svg/envelope.svg"
+            title: "Start Conversation",
+            pathname: "/bot/ongoing",
+            img: "/svg/new.svg"
     
         }
     
@@ -68,7 +68,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                     {/* #1 navigation group */}
                     <div className="nav_group">
                         <ul className="group__list">
-                            {data.slice(0, 2).map((item, i) => (
+                            {data.slice(0, 3).map((item, i) => (
                                 <li key={i}>
                                     <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
                                         <span className="icon">
@@ -85,27 +85,20 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                     <div className="nav_group">
                         <h2 className="group__title">MY CONVERSATIONS</h2>
                         <ul className="group__list">
-                            
-                        </ul>
-                    </div>
-                    {/* !#3 navigation group */}
-                    {/* #4 navigation group */}
-                    <div className="nav_group">
-                        <h2 className="group__title">AI CONVERSATIONS</h2>
-                        <ul className="group__list">
-                            {data.slice(2, 4).map((item, i) => (
+                            {data.slice(3, 4).map((item, i) => (
                                 <li key={i}>
                                     <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
                                         <span className="icon">
                                             <img src={item.img} alt="" className="fn__svg" />
                                         </span>
-                                        <span className="text">{item.title}</span>
+                                        <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
                                     </Link>
                                 </li>
                             ))}
                         </ul>
                     </div>
-                    {/* !#4 navigation group */}
+                    {/* !#3 navigation group */}
+                    
         
                 </div>
                 {/* !content (left panel) */}

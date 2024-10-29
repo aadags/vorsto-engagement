@@ -1,145 +1,104 @@
-import React, { useState } from 'react';
-import DataTable from 'react-data-table-component';
+import React, { useState, useEffect } from 'react';
+import DataTable, { createTheme } from 'react-data-table-component';
+import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faComment } from '@fortawesome/free-solid-svg-icons'
 
 export default function Lead() {
+  const [data, setData] = useState([]);
+	const [loading, setLoading] = useState(false);
+	const [totalRows, setTotalRows] = useState(0);
+	const [perPage, setPerPage] = useState(10);
 
   const columns = [
     {
-      name: 'Title',
-      selector: row => row.title,
+      name: 'Name',
+      selector: row => row.name,
       sortable: true,
     },
     {
-      name: 'Year',
-      selector: row => row.year,
-      sortable: true,
-    },
-  ];
-  
-  const data = [
-    {
-      id: 1,
-      title: 'Beetlejuice',
-      year: '1988',
-    },
-    {
-      id: 2,
-      title: 'Ghostbusters',
-      year: '1984',
-    },
-  ];
-
-  const customStyles = {
-    rows: {
-      style: {
-        backgroundColor: 'transparent',
-        color: 'white',
-        borderBottom: '1px solid white',
-      },
-    },
-    headCells: {
-      style: {
-        color: 'white',
-        borderBottom: '1px solid white',
-      },
-    },
-    cells: {
-      style: {
-        color: 'white',
-      },
-    },
-  };
-
-  import React, { useState } from 'react';
-import DataTable from 'react-data-table-component';
-
-export default function Lead() {
-
-  const columns = [
-    {
-      name: 'Title',
-      selector: row => row.title,
+      name: 'Channel',
+      selector: row => row.channel,
       sortable: true,
     },
     {
-      name: 'Year',
-      selector: row => row.year,
+      name: 'Contact',
+      selector: row => row.email? row.email : row.phone,
       sortable: true,
     },
-  ];
-  
-  const data = [
     {
-      id: 1,
-      title: 'Beetlejuice',
-      year: '1988',
+      name: 'Chat Started',
+      selector: row => new Date(row.created_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }),
+      sortable: true,
     },
     {
-      id: 2,
-      title: 'Ghostbusters',
-      year: '1984',
-    },
-  ];
-
-  const customStyles = {
-    rows: {
-      style: {
-        backgroundColor: 'transparent',
-        color: 'white',
-        borderBottom: '1px solid white',
-      },
-    },
-    headCells: {
-      style: {
-        color: 'white',
-        borderBottom: '1px solid white',
-      },
-    },
-    cells: {
-      style: {
-        color: 'white',
-      },
-    },
-  };
-
-  return (
-    <div className="techwave_fn_user_profile_page">
-      <div className="container">
-        <div className="techwave_fn_user_profile">
-          <div className="user__profile">
-            <div className="user_details">
-              <div style={{ width: '100%', margin: '0 auto' }}>
-                <DataTable
-                  columns={columns}
-                  data={data}
-                  customStyles={customStyles}
-                  theme="dark"
-                />
-              </div>
-            </div>
+      name: 'Actions',
+      cell: row => (
+          <div>
+              <a href={``}><FontAwesomeIcon icon={faComment} /> Open</a><br/>
           </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+      ),
+      ignoreRowClick: true,
+      allowOverflow: true,
+      button: true,
+  },
+  ];
 
+  createTheme('dark', {
+    background: {
+      default: 'transparent',
+      color: '#FFFFFF',
+    },
+  });
+
+	const fetchUsers = async page => {
+		setLoading(true);
+
+		const response = await axios.get(`/api/get-convos?page=${page}&per_page=${perPage}`);
+
+		setData(response.data.data);
+		setTotalRows(response.data.total);
+		setLoading(false);
+	};
+
+	const handlePageChange = page => {
+		fetchUsers(page);
+	};
+
+	const handlePerRowsChange = async (newPerPage, page) => {
+		setLoading(true);
+
+		const response = await axios.get(`/api/get-convos?page=${page}&per_page=${perPage}`);
+
+		setData(response.data.data);
+		setPerPage(newPerPage);
+		setLoading(false);
+	};
+
+	useEffect(() => {
+		fetchUsers(1); // fetch page 1 of users
+		
+	}, []);
 
   return (
     <div className="techwave_fn_user_profile_page">
       <div className="container">
         <div className="techwave_fn_user_profile">
           <div className="user__profile">
-            <div className="user_details">
               <div style={{ width: '100%', margin: '0 auto' }}>
                 <DataTable
+                  title="Tickets"
                   columns={columns}
                   data={data}
-                  customStyles={customStyles}
+                  progressPending={loading}
+                  pagination
+                  paginationServer
+                  paginationTotalRows={totalRows}
+                  onChangeRowsPerPage={handlePerRowsChange}
+                  onChangePage={handlePageChange}
                   theme="dark"
                 />
               </div>
-            </div>
           </div>
         </div>
       </div>
