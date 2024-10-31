@@ -10,52 +10,13 @@ import Header from './header'
 import Left from './left'
 import { auth } from "@/firebaseConfig/FirebaseClient";
 import { useRouter } from 'next/navigation';
-import { socket } from '@/app/socket'
 
 
 export default function Layout({ children, leftMenu }) {
 
     const router = useRouter();
     const [user, setUser] = useState();
-
-    const [isConnected, setIsConnected] = useState(false);
-    const [transport, setTransport] = useState("N/A");
-
-  useEffect(() => {
-    if (socket.connected) {
-      onConnect();
-    }
-
-    function onConnect() {
-      setIsConnected(true);
-      socket.emit('user-join', { name: "egbeda" });
-      setTransport(socket.io.engine.transport.name);
-
-      socket.io.engine.on("upgrade", (transport) => {
-        setTransport(transport.name);
-      });
-    }
-
-    function onDisconnect() {
-      setIsConnected(false);
-      setTransport("N/A");
-    }
-
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
-
-    return () => {
-      socket.off("connect", onConnect);
-      socket.off("disconnect", onDisconnect);
-    };
-  }, []);
-
-  useEffect(() => {
-    console.log({isConnected})
     
-}, [isConnected])
-    
-
     useEffect(() => {
 
         setTimeout(() => {

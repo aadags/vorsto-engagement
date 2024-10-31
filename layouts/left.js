@@ -1,9 +1,42 @@
 "use client"
 import Link from 'next/link';
 import { usePathname } from "next/navigation";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { socket } from '@/app/socket'
 
 export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
+
+    const [newLead, setNewLead] = useState(false);
+
+    useEffect(() => {
+
+        setNewLead(localStorage.getItem('newL') || newLead)
+
+        if (socket.connected) {
+            onConnect();
+        }
+
+        socket.on('notifyLead', (data) => {
+            if (typeof Audio !== "undefined") { 
+                const notificationSound = new Audio('/note.mp3');
+                notificationSound.play();
+                newLead(true);
+                localStorage.setItem("newL", true);
+            }
+        });
+
+
+        function onConnect() {
+          socket.emit('user-join', user);
+        }
+
+        socket.on("connect", onConnect);
+        
+        return () => {
+          socket.off("connect");
+          socket.off("notifyLead");
+        };
+      }, []);
 
     const data = [
         {
@@ -15,8 +48,8 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
         {
             title: "Tickets",
             pathname: "/leads",
-            img: "/svg/bookmark.svg"
-    
+            img: "/svg/bookmark.svg",
+            counter: newLead
         },
         {
             title: "AI Conversations",
@@ -28,6 +61,12 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
             title: "Start Conversation",
             pathname: "/bot/ongoing",
             img: "/svg/new.svg"
+    
+        },
+        {
+            title: "AI Agent",
+            pathname: "/agent",
+            img: "/svg/setting.svg"
     
         }
     
@@ -74,7 +113,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                                         <span className="icon">
                                             <img src={item.img} alt="" className="fn__svg" />
                                         </span>
-                                        <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
+                                        <span className="text">{item.title}{newLead && item.counter && <span className="count">new</span>}</span>
                                     </Link>
                                 </li>
                             ))}
@@ -86,6 +125,23 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                         <h2 className="group__title">MY CONVERSATIONS</h2>
                         <ul className="group__list">
                             {data.slice(3, 4).map((item, i) => (
+                                <li key={i}>
+                                    <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
+                                        <span className="icon">
+                                            <img src={item.img} alt="" className="fn__svg" />
+                                        </span>
+                                        <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                    {/* !#3 navigation group */}
+                    {/* #3 navigation group */}
+                    <div className="nav_group">
+                        <h2 className="group__title">SETTINGS</h2>
+                        <ul className="group__list">
+                            {data.slice(4, 5).map((item, i) => (
                                 <li key={i}>
                                     <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
                                         <span className="icon">

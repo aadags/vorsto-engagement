@@ -5,14 +5,25 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export async function GET(request) {
-  const { searchParams } = new URL(request.url);
-  const botId = searchParams.get('botId');
-  const userId = Number(request.cookies.get('userId').value) ?? 0;
+  const orgId = Number(request.cookies.get('organizationId').value) ?? 0;
 
   try {
-    const bot = await prisma.bot.findFirstOrThrow({
-      where: { id: botId, user_id: userId },
+    let bot = await prisma.bot.findFirst({
+      where: { organization_id: orgId },
     });
+
+    if(!bot)
+    {
+      bot = await prisma.bot.create({
+        data: {
+          name: "Customer Engagement Bot",
+          system_bio: "",
+          model: "vorsto-xa-2",
+          organization_id: orgId,
+        },
+      });
+    }
+
     return NextResponse.json(bot);
   } catch (error) {
     console.error(error);

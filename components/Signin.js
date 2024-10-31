@@ -55,11 +55,7 @@ export default function Signin() {
             signInSuccessUrl: 'https://engagement.vorsto.io/login',
             signInOptions: [
               googleProvider.providerId,
-              githubProvider.providerId,
-              {
-                provider: emailProvider.providerId,
-                requireDisplayName: false  
-              }
+              githubProvider.providerId
             ],
             tosUrl: 'https://vorsto.io/terms-policy',
             privacyPolicyUrl: 'https://vorsto.io/privacy-policy'

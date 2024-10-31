@@ -18,6 +18,7 @@ model Organization {
   name         String?
   users          User[]
   conversations  Conversation[]
+  bot  Bot?
 
   @@map("organizations")
 }
@@ -35,7 +36,7 @@ model User {
 }
 
 model Conversation {
-  id           Int         @id @default(autoincrement())
+  id          String   @id @default(cuid())
   name         String?
   email         String?
   phone         String?
@@ -52,3 +53,33 @@ model Conversation {
   @@map("conversations")
 }
 
+
+model Bot {
+  id                String   @id @default(cuid())
+  name              String
+  system_bio        String
+  model             String?
+  tools             Tool[]
+  output_type       String?  @default("text")
+  output_parameters String?  @db.LongText
+  organization         Organization       @relation(fields: [organization_id], references: [id])
+  organization_id      Int     @unique
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  @@map("bots")
+}
+
+model Tool {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  parameters  String?  @db.LongText
+  api         String?  @db.LongText
+  bot         Bot?     @relation(fields: [bot_id], references: [id])
+  bot_id      String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@map("tools")
+}

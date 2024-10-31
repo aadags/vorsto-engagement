@@ -14,9 +14,9 @@ export const getBots = async () => {
   };
 
 
-  export const getBot = async (id) => {
+  export const getBot = async () => {
     try {
-      const response = await fetch('/api/get-bot?botId='+id);
+      const response = await fetch('/api/get-bot');
       if (!response.ok) {
         throw new Error('Failed to fetch bots');
       }
