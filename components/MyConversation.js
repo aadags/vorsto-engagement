@@ -124,8 +124,11 @@ export default function MyConversation({ conversationId }) {
             getChat();
             scrollToBottom();
             if (typeof Audio !== "undefined") { 
-                const notificationSound = new Audio('/note.mp3');
-                notificationSound.play();
+                try {
+                    const notificationSound = new Audio('/note.mp3');
+                    notificationSound.play();
+                } catch (error) {
+                }
             }
           }
         });
