@@ -5,10 +5,12 @@ import Link from 'next/link'
 import { Menu } from '@headlessui/react'
 import screenfull from 'screenfull';
 import { auth } from "../firebaseConfig/FirebaseClient";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUser } from '@fortawesome/free-solid-svg-icons'
 
 export default function Header({ searchToggle, user }) {
     // Light/Dark switcher
-    const [skin, setSkin] = useState('dark');
+    const [skin, setSkin] = useState('light');
     const [isFullscreen, setIsFullscreen] = useState(false);
     const router = useRouter();
 
@@ -91,7 +93,7 @@ export default function Header({ searchToggle, user }) {
                         {/* User (bar item) */}
                         <Menu as="div" className="bar__item bar__item_user opened">
                             <Menu.Button as="nav" id="Button3" className="user_opener fn__tooltip" title="User Profile">
-                                <img src="/img/user-icon.png" alt="" />
+                                <FontAwesomeIcon icon={faUser} width={"100%"} />
                             </Menu.Button>
                             <Menu.Items as="div" className="item_popup" data-position="right">
                                 <div className="user_profile">

@@ -23,11 +23,11 @@ export default function Layout({ children, leftMenu }) {
             imageToSvg()
 
         }, 2000);
-
-        if (leftMenu) {
+        
+        if (user && leftMenu) {
             document.querySelector('.techwave_fn_wrapper').classList.add("fn__has_sidebar")
         }
-    }, [])
+    }, [user])
       
   useEffect(() => {
     auth.onAuthStateChanged(async (currentUser) => {

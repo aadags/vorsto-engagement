@@ -4,7 +4,7 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faComment } from '@fortawesome/free-solid-svg-icons'
 
-export default function Lead() {
+export default function AIConversations() {
   const [data, setData] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [totalRows, setTotalRows] = useState(0);
@@ -27,8 +27,8 @@ export default function Lead() {
       sortable: true,
     },
     {
-      name: 'Chat Started',
-      selector: row => new Date(row.created_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }),
+      name: 'Last Activity',
+      selector: row => new Date(row.updated_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }),
       sortable: true,
     },
     {
@@ -47,14 +47,14 @@ export default function Lead() {
   createTheme('dark', {
     background: {
       default: 'transparent',
-      color: '#FFFFFF',
+      color: '#000',
     },
   });
 
 	const fetchUsers = async page => {
 		setLoading(true);
 
-		const response = await axios.get(`/api/get-convos?page=${page}&per_page=${perPage}&`);
+		const response = await axios.get(`/api/get-ai-convos?page=${page}&per_page=${perPage}`);
 
 		setData(response.data.data);
 		setTotalRows(response.data.total);
@@ -68,7 +68,7 @@ export default function Lead() {
 	const handlePerRowsChange = async (newPerPage, page) => {
 		setLoading(true);
 
-		const response = await axios.get(`/api/get-convos?page=${page}&per_page=${perPage}`);
+		const response = await axios.get(`/api/get-ai-convos?page=${page}&per_page=${perPage}`);
 
 		setData(response.data.data);
 		setPerPage(newPerPage);
@@ -87,7 +87,7 @@ export default function Lead() {
           <div className="user__profile">
               <div style={{ width: '100%', margin: '0 auto' }}>
                 <DataTable
-                  title="Tickets"
+                  title="AI Conversations"
                   columns={columns}
                   data={data}
                   progressPending={loading}

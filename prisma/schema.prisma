@@ -57,7 +57,7 @@ model Conversation {
 model Bot {
   id                String   @id @default(cuid())
   name              String
-  system_bio        String
+  system_bio        String   @db.LongText
   model             String?
   tools             Tool[]
   output_type       String?  @default("text")

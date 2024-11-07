@@ -7,8 +7,32 @@ import { socket } from '@/app/socket'
 export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
 
     const [newLead, setNewLead] = useState(false);
+    const [chats, setChats] = useState([]);
+
+    const getChats = async () => {
+    
+        try {
+          const response = await fetch('/api/get-live-chat', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id: 0 }),
+          });
+    
+          if (response.ok) {
+              const liveChats = await response.json();
+              setChats(liveChats);
+          }
+            
+        } catch (error) {
+          console.error('Error fetching agent:', error);
+        }
+    };
 
     useEffect(() => {
+
+        getChats();
 
         setNewLead(localStorage.getItem('newL') || newLead)
 
@@ -20,7 +44,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
             if (typeof Audio !== "undefined") { 
                 const notificationSound = new Audio('/note.mp3');
                 notificationSound.play();
-                newLead(true);
+                setNewLead(true);
                 localStorage.setItem("newL", true);
             }
         });
@@ -53,7 +77,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
         },
         {
             title: "AI Conversations",
-            pathname: "/bot/ongoing",
+            pathname: "/conversations",
             img: "/svg/chat.svg"
     
         },
@@ -85,9 +109,9 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                 <div className="leftpanel_logo">
                     <Link href="/" className="fn_logo">
                         <span className="full_logo">
-                            <img src="/img/vorsto-logo.png" alt="" className="desktop_logo" />
-                            <img src="/img/vorsto-logo.png" alt="" className="retina_logo" />
-                            <span style={{ fontWeight: "bold", fontSize: "20px", color: "#FFF", paddingLeft: "30px" }}>ENGAGEMENT</span>
+                            <img src="/img/1-1.png" alt="" className="desktop_logo" />
+                            <img src="/img/1-1.png" alt="" className="retina_logo" />
+                            <span style={{ fontWeight: "bold", fontSize: "20px", color: "#000", paddingLeft: "30px" }}>ENGAGEMENT</span>
                         </span>
                         <span className="short_logo">
                             <img src="/img/2-0.png" alt="" className="desktop_logo" />
@@ -130,7 +154,17 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                                         <span className="icon">
                                             <img src={item.img} alt="" className="fn__svg" />
                                         </span>
-                                        <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
+                                        <span className="text">{item.title}{newLead && item.counter && <span className="count">new</span>}</span>
+                                    </Link>
+                                </li>
+                            ))}
+                            {chats && chats.map((chat, i) => (
+                                <li key={i}>
+                                    <Link href={`/live/conversation/${chat.id}`} className={`fn__tooltip menu__item ${pathname.includes(chat.id) ? "active" : ""}`} title={chat.name} >
+                                        <span className="icon">
+                                            <img src={"/svg/chat.svg"} alt="" className="fn__svg" />
+                                        </span>
+                                        <span className="text">{chat.name}{chat.counter && <span className="count">{chat.counter}</span>}</span>
                                     </Link>
                                 </li>
                             ))}

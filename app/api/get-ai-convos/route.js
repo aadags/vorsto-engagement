@@ -20,7 +20,7 @@ export async function GET(req) {
     const pageSize = parseInt(req.nextUrl.searchParams.get('per_page'));
 
     const conversations = await prisma.conversation.findMany({
-      where: { organization_id: organizationId, is_lead: true, user_id: null },
+      where: { organization_id: organizationId, is_lead: false, user_id: null },
       skip: (page - 1) * pageSize,
       take: pageSize,
     });
