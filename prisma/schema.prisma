@@ -43,6 +43,7 @@ model Conversation {
   channel         String?
   body         String?     @db.LongText
   is_lead      Boolean     @default(false)
+  is_end      Boolean     @default(false)
   user         User?       @relation(fields: [user_id], references: [id])
   user_id      Int?
   organizations         Organization       @relation(fields: [organization_id], references: [id])
