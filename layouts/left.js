@@ -6,7 +6,7 @@ import { socket } from '@/app/socket'
 
 export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
 
-    const [newLead, setNewLead] = useState(false);
+    const [newLead, setNewLead] = useState(0);
     const [chats, setChats] = useState([]);
 
     const getChats = async () => {
@@ -44,8 +44,8 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
             if (typeof Audio !== "undefined") { 
                 const notificationSound = new Audio('/note.mp3');
                 notificationSound.play();
-                setNewLead(true);
-                localStorage.setItem("newL", true);
+                localStorage.setItem("newL", newLead + 1);
+                setNewLead(newLead + 1);
             }
         });
 
@@ -70,15 +70,21 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
     
         },
         {
-            title: "Tickets",
+            title: "Leads",
             pathname: "/leads",
-            img: "/svg/bookmark.svg",
+            img: "/svg/info.svg",
             counter: newLead
         },
         {
             title: "AI Conversations",
             pathname: "/conversations",
             img: "/svg/chat.svg"
+    
+        },
+        {
+            title: "Archived",
+            pathname: "/archived",
+            img: "/svg/envelope.svg"
     
         },
         {
@@ -90,8 +96,29 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
         {
             title: "AI Agent",
             pathname: "/agent",
-            img: "/svg/setting.svg"
+            img: "/svg/upscale.svg"
     
+        },
+        {
+            title: "Users",
+            pathname: "/users",
+            img: "/svg/community.svg"
+    
+        },
+        {
+            title: "Webchat",
+            pathname: "/channel/webchat",
+            img: "/svg/setting.svg"
+        },
+        {
+            title: "Whatsapp",
+            pathname: "/channel/whatsapp",
+            img: "/svg/setting.svg"
+        },
+        {
+            title: "Email",
+            pathname: "/channel/email",
+            img: "/svg/setting.svg"
         }
     
     ];
@@ -131,13 +158,13 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                     {/* #1 navigation group */}
                     <div className="nav_group">
                         <ul className="group__list">
-                            {data.slice(0, 3).map((item, i) => (
+                            {data.slice(0, 4).map((item, i) => (
                                 <li key={i}>
                                     <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
                                         <span className="icon">
                                             <img src={item.img} alt="" className="fn__svg" />
                                         </span>
-                                        <span className="text">{item.title}{newLead && item.counter && <span className="count">new</span>}</span>
+                                        <span className="text">{item.title}{item.counter > 0 && <span className="count">new</span>}</span>
                                     </Link>
                                 </li>
                             ))}
@@ -148,13 +175,13 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                     <div className="nav_group">
                         <h2 className="group__title">MY CONVERSATIONS</h2>
                         <ul className="group__list">
-                            {data.slice(3, 4).map((item, i) => (
+                            {data.slice(4, 5).map((item, i) => (
                                 <li key={i}>
                                     <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
                                         <span className="icon">
                                             <img src={item.img} alt="" className="fn__svg" />
                                         </span>
-                                        <span className="text">{item.title}{newLead && item.counter && <span className="count">new</span>}</span>
+                                        <span className="text">{item.title}{item.counter && <span className="count">new</span>}</span>
                                     </Link>
                                 </li>
                             ))}
@@ -173,9 +200,26 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                     {/* !#3 navigation group */}
                     {/* #3 navigation group */}
                     <div className="nav_group">
-                        <h2 className="group__title">SETTINGS</h2>
+                        <h2 className="group__title">ADMIN SETTINGS</h2>
                         <ul className="group__list">
-                            {data.slice(4, 5).map((item, i) => (
+                            {data.slice(5, 7).map((item, i) => (
+                                <li key={i}>
+                                    <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
+                                        <span className="icon">
+                                            <img src={item.img} alt="" className="fn__svg" />
+                                        </span>
+                                        <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                    {/* !#3 navigation group */}
+                    {/* #3 navigation group */}
+                    <div className="nav_group">
+                        <h2 className="group__title">CHANNEL SETTINGS</h2>
+                        <ul className="group__list">
+                            {data.slice(7, 11).map((item, i) => (
                                 <li key={i}>
                                     <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
                                         <span className="icon">

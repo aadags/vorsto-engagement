@@ -13,7 +13,7 @@ export async function POST(req) {
     const userId = Number(req.cookies.get('userId').value) ?? 0;
 
     const chat = await prisma.conversation.findFirst({
-        where: { id: conversationId, organization_id: orgId },
+      where: { id: conversationId, organization_id: orgId },
     });
 
     const user = await prisma.user.findFirst({

@@ -25,6 +25,19 @@ export default function MyConversation({ conversationId }) {
         setMessages(prevMessages => [...prevMessages, newMessage]);
         saveChat(newMessage);
     };
+    
+    const endMessage = () => {
+        const isConfirmed = window.confirm("Are you sure you want to end the chat?");
+        if (!isConfirmed) return; // Cancel if the user clicks "Cancel"
+    
+        const newMessage = {
+            id: nanoid(),
+            role: user.name,
+            content: `${user.name} ended the chat`,
+        };
+        endChat(newMessage);
+        router.push(`/leads`);
+    };    
 
     const handleInputChange = (e) => {
         setInputText(e.target.value);
@@ -103,6 +116,28 @@ export default function MyConversation({ conversationId }) {
           if(response.ok)
           {
             socket.emit('sendUserMessage', { message: newMessage, chat_id: conversationId, roomName: conversationId });
+          }
+
+        } catch (error) {
+          console.error('Error fetching agent:', error);
+        }
+    };
+
+    const endChat = async (newMessage) => {
+    
+        try {
+          const response = await fetch('/api/end-chat', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id: conversationId }),
+          });
+
+          if(response.ok)
+          {
+            socket.emit('sendUserMessage', { message: newMessage, chat_id: conversationId, roomName: conversationId });
+            socket.emit('leaveRoom', conversationId);
           }
 
         } catch (error) {
@@ -192,7 +227,7 @@ export default function MyConversation({ conversationId }) {
                 </div>
                 <div className="chat__sidebar">
                     {!chatEnded && <div className="sidebar_header">
-                        <Link href="#" className="fn__new_chat_link">
+                        <Link href="#" onClick={endMessage} className="fn__new_chat_link">
                             <span className="icon" />
                             <span className="text">End Chat</span>
                         </Link>

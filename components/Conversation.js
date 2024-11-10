@@ -73,12 +73,12 @@ export default function Conversation({ conversationId }) {
           });
     
           if (response.ok) {
-              const { name, email, phone, channel, body, updated_at, user } = await response.json();
+              const { name, email, phone, channel, body, is_end, updated_at, user } = await response.json();
               setChat({ name, email, phone, channel, lastMessage: updated_at })
               setUser(user)
               const msgs = JSON.parse(body);
               setMessages(msgs.messages)
-              setChatEnded(msgs.chatEnded)
+              setChatEnded(is_end)
           }
             
         } catch (error) {
@@ -102,6 +102,8 @@ export default function Conversation({ conversationId }) {
           {
             socket.emit('joinRoom', conversationId);
             socket.emit('message', { message: newMessage, chat_id: conversationId, roomName: conversationId });
+            const newLead = localStorage.getItem("newL");
+            localStorage.setItem("newL", newLead - 1);
             router.push(`/live/conversation/${conversationId}`);
           }
 

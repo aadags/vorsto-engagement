@@ -7,16 +7,23 @@ const prisma = new PrismaClient();
 export async function POST(req) {
   try {
     const userId = Number(req.cookies.get('userId').value) ?? 0;
-    const orgId = Number(req.cookies.get('organizationId').value) ?? 0;
 
-    const chats = await prisma.conversation.findMany({
-        where: { user_id: userId, organization_id: orgId, is_end: false },
+    const body = await req.json();
+    const { id } = body;
+
+    const conv = await prisma.conversation.update({
+      data: {
+        is_end: true
+      },
+      where: {
+        id: id, 
+      },
     });
 
-    return NextResponse.json(chats);
+    return NextResponse.json({ message: 'Saved Conversation'});
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: 'Failed to get chats' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to update conversation' }, { status: 500 });
   }
 }
 

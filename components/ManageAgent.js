@@ -148,7 +148,7 @@ export default function ManageAgent() {
           {/* Generation Header */}
           <div className="generation_header">
             <div className="header_top">
-              <h1 className="title">Manage Agent</h1>
+              <h1 className="title">Setup Agent</h1>
             </div>
             {!pageLoad &&
             <div className="header_bottom">
