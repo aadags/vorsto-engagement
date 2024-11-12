@@ -13,7 +13,7 @@
 
       return {
         agentId: urlParams.get("id"),
-        toggleColor: urlParams.get("toggleColor") || "#007ACC",
+        toggleColor: urlParams.get("toggleColor") || "#2d2d2d",
         headerBgColor: urlParams.get("headerBgColor") || "#000000",
         headerTextColor: urlParams.get("headerTextColor") || "#333333",
         btnBgColor: urlParams.get("btnBgColor") || "#2d2d2d"
