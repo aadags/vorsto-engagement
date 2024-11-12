@@ -108,17 +108,17 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
         {
             title: "Webchat",
             pathname: "/channel/webchat",
-            img: "/svg/setting.svg"
+            img: "/svg/webchat.svg"
         },
         {
             title: "Whatsapp",
             pathname: "/channel/whatsapp",
-            img: "/svg/setting.svg"
+            img: "/svg/whatsapp.svg"
         },
         {
             title: "Email",
             pathname: "/channel/email",
-            img: "/svg/setting.svg"
+            img: "/svg/email.svg"
         }
     
     ];

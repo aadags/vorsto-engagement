@@ -16,11 +16,20 @@ export default function WebChat() {
   const [showHeaderTextColorPicker, setShowHeaderTextColorPicker] =
     useState(false);
 
+  async function setStorage(key, value)
+  {
+    localStorage.setItem(key, value);
+  }
+
   useEffect(() => {
     const fetchBot = async () => {
       try {
         const bot = await getBot();
         setBotId(bot.id);
+        setToggleColor(localStorage.getItem("toggleColor") ?? "#2d2d2d")
+        setBtnBgColor(localStorage.getItem("btnBgColor") ?? "#2d2d2d")
+        setHeaderBgColor(localStorage.getItem("headerBgColor") ?? "#2d2d2d")
+        setHeaderTextColor(localStorage.getItem("headerTextColor") ?? "#ffffff")
       } catch (error) {
         console.log(error);
       } finally {
@@ -63,17 +72,19 @@ export default function WebChat() {
                     className="full_width"
                     placeholder={`Click to Change Header Background Color ${headerBgColor}`}
                     onClick={() =>
-                      setShowHeaderBgColorPicker(!showHeaderBgColorPicker)
+                        setShowHeaderBgColorPicker(!showHeaderBgColorPicker)
                     }
                     required
                     readOnly
-                    style={{ backgroundColor: headerBgColor }}
+                    style={{ backgroundColor: headerBgColor, cursor: "pointer" }}
                   />
                   {showHeaderBgColorPicker && (
                     <Sketch
                       color={headerBgColor}
+                      disableAlpha={true}
                       onChange={(color) => {
                         setHeaderBgColor(color.hex);
+                        setStorage("headerBgColor", color.hex)
                       }}
                     />
                   )}
@@ -90,13 +101,15 @@ export default function WebChat() {
                     }
                     required
                     readOnly
-                    style={{ backgroundColor: headerTextColor }}
+                    style={{ backgroundColor: headerTextColor, cursor: "pointer" }}
                   />
                   {showHeaderTextColorPicker && (
                     <Sketch
                       color={headerTextColor}
+                      disableAlpha={true}
                       onChange={(color) => {
                         setHeaderTextColor(color.hex);
+                        setStorage("headerTextColor", color.hex);
                       }}
                     />
                   )}
@@ -118,8 +131,10 @@ export default function WebChat() {
                   {showBtnBgColorPicker && (
                     <Sketch
                       color={btnBgColor}
+                      disableAlpha={true}
                       onChange={(color) => {
                         setBtnBgColor(color.hex);
+                        setStorage("btnBgColor", color.hex);
                       }}
                     />
                   )}
@@ -136,23 +151,25 @@ export default function WebChat() {
                     }
                     required
                     readOnly
-                    style={{ backgroundColor: toggleColor }}
+                    style={{ backgroundColor: toggleColor, cursor: "pointer" }}
                   />
                   {showToggleolorPicker && (
                     <Sketch
                       color={toggleColor}
+                      disableAlpha={true}
                       onChange={(color) => {
                         setToggleColor(color.hex);
+                        setStorage("toggleColor", color.hex);
                       }}
                     />
                   )}
                 </div>
                 <br />
                 <div className="form_group">
-                  <p>
+                  <p><b>
                     Copy and paste the snippet below inside your{" "}
                     {`<body></body>`} tag{" "}
-                  </p>
+                  </b></p>
                   <textarea
                     id="snippet"
                     className="full_width"
@@ -160,6 +177,14 @@ export default function WebChat() {
                     readOnly
                     rows={4}
                     required
+                    style={{ cursor: "pointer", backgroundColor: "lightgray" }}
+                    onClick={() => {
+                      navigator.clipboard.writeText(snippet).then(() => {
+                        alert("Text copied to clipboard!");
+                      }).catch((err) => {
+                        console.error("Failed to copy text: ", err);
+                      });
+                    }}
                   />
                 </div>
                 <br />
