@@ -47,5 +47,8 @@
     "stripe": "^16.9.0",
     "styled-components": "^6.1.13",
     "waypoints": "^4.0.1"
+  },
+  "engines": {
+    "node": "18.x"
   }
 }
