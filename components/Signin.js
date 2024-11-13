@@ -52,7 +52,7 @@ export default function Signin() {
               }
             },
             signInFlow: 'popup',
-            signInSuccessUrl: 'https://engagement.vorsto.io/login',
+            signInSuccessUrl: 'https://engage.vorsto.io/login',
             signInOptions: [
               googleProvider.providerId,
               githubProvider.providerId
