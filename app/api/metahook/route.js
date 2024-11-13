@@ -26,9 +26,11 @@ export async function GET(req) {
   const token = searchParams.get("hub.verify_token");
   const challenge = searchParams.get("hub.challenge");
 
+  console.log(mode, token, challenge);
+
   if (mode === "subscribe" && token === "vorsto2024-11-12") {
     console.log("Webhook verified successfully!");
-    return NextResponse.json(challenge, { status: 200 });
+    return new NextResponse(challenge, { status: 200 });
   } else {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
