@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { getBot } from "@/services/botService";
-import { Sketch } from "@uiw/react-color";
+import EmbeddedSignup from "./WhatsappEmbedded";
 
 export default function Whatsapp() {
 
@@ -16,7 +15,7 @@ export default function Whatsapp() {
             </div>
 
             <div className="header_bottom">
-             
+              <EmbeddedSignup />
             </div>
           </div>
           {/* !Generation Header */}
