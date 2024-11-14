@@ -17,17 +17,22 @@ export async function GET(req) {
     const page = parseInt(req.nextUrl.searchParams.get("page")); // Default to page 1 if not provided
     const pageSize = parseInt(req.nextUrl.searchParams.get("per_page"));
 
-    const conversations = await prisma.conversation.findMany({
-      where: { organization_id: organizationId, is_lead: false, user_id: null },
+    const users = await prisma.user.findMany({
+      where: { organization_id: organizationId, is_deleted: false },
+      include: { role: true },
       skip: (page - 1) * pageSize,
       take: pageSize,
     });
 
-    const total = prisma.conversation.count({
-      where: { organization_id: organizationId, is_lead: false, user_id: null },
+    const total = prisma.user.count({
+      where: { organization_id: organizationId, is_deleted: false },
     });
 
-    return NextResponse.json({ data: conversations, count: total });
+    const roles = await prisma.role.findMany({
+      where: { organization_id: organizationId },
+    });
+
+    return NextResponse.json({ data: users, count: total, roles });
   } catch (error) {
     console.error(error);
     return NextResponse.json(

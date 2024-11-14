@@ -68,7 +68,7 @@ export default function Archived() {
 	const handlePerRowsChange = async (newPerPage, page) => {
 		setLoading(true);
 
-		const response = await axios.get(`/api/get-ai-convos?page=${page}&per_page=${perPage}`);
+		const response = await axios.get(`/api/get-archived?page=${page}&per_page=${perPage}`);
 
 		setData(response.data.data);
 		setPerPage(newPerPage);

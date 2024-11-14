@@ -1,4 +1,0 @@
--- AlterTable
-ALTER TABLE `bots` ADD COLUMN `api_hook` LONGTEXT NULL,
-    ADD COLUMN `key` VARCHAR(191) NULL,
-    ADD COLUMN `model` VARCHAR(191) NULL;

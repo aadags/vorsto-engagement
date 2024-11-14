@@ -4,25 +4,23 @@ import prisma from "@/db/prisma";
 
 export async function POST(req) {
   try {
-    const userId = Number(req.cookies.get("userId").value) ?? 0;
+    const organizationId = Number(req.cookies.get("organizationId").value) ?? 0;
 
     const body = await req.json();
-    const { id } = body;
+    const { title, checkboxes } = body;
 
-    const conv = await prisma.conversation.update({
+    const user = await prisma.role.create({
       data: {
-        is_end: true,
-      },
-      where: {
-        id: id,
+        title,
+        permissions: JSON.stringify(checkboxes),
+        organization_id: organizationId,
       },
     });
-
-    return NextResponse.json({ message: "Saved Conversation" });
+    return NextResponse.json({ message: "Saved Role" });
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: "Failed to update conversation" },
+      { error: "Failed to save Role" },
       { status: 500 }
     );
   }

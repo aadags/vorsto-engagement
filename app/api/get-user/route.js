@@ -1,8 +1,6 @@
 "use server";
-import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { NextResponse } from "next/server";
+import prisma from "@/db/prisma";
 
 export async function POST(req) {
   try {
@@ -11,23 +9,32 @@ export async function POST(req) {
 
     const user = await prisma.user.findUniqueOrThrow({
       where: { email: email },
+      include: {
+        role: true
+      }
     });
 
-    return NextResponse.json({ message: 'User created successfully', data: user });
+    return NextResponse.json({
+      message: "User created successfully",
+      data: user,
+    });
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: 'Failed to create user' }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create user" },
+      { status: 500 }
+    );
   }
 }
 
 export async function GET() {
-  return NextResponse.json({ message: 'Method not allowed' }, { status: 405 });
+  return NextResponse.json({ message: "Method not allowed" }, { status: 405 });
 }
 
 export async function PUT() {
-  return NextResponse.json({ message: 'Method not allowed' }, { status: 405 });
+  return NextResponse.json({ message: "Method not allowed" }, { status: 405 });
 }
 
 export async function DELETE() {
-  return NextResponse.json({ message: 'Method not allowed' }, { status: 405 });
+  return NextResponse.json({ message: "Method not allowed" }, { status: 405 });
 }

@@ -8,6 +8,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
 
     const [newLead, setNewLead] = useState(0);
     const [chats, setChats] = useState([]);
+    const [perms, setPerms] = useState([]);
 
     const getChats = async () => {
     
@@ -31,6 +32,12 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
     };
 
     useEffect(() => {
+
+        const prms = JSON.parse(user.role.permissions);
+        const result = Object.entries(prms)
+            .filter(([key, value]) => value === true)
+            .map(([key]) => key);
+        setPerms(["allow", ...result])
 
         getChats();
 
@@ -66,59 +73,75 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
         {
             title: "Overview",
             pathname: "/",
-            img: "/svg/home.svg"
-    
+            img: "/svg/home.svg",
+            key: "allow"
         },
         {
             title: "Leads",
             pathname: "/leads",
             img: "/svg/info.svg",
+            key: "allow",
             counter: newLead
         },
         {
             title: "AI Conversations",
             pathname: "/conversations",
-            img: "/svg/chat.svg"
+            img: "/svg/chat.svg",
+            key: "allow"
     
         },
         {
             title: "Archived",
             pathname: "/archived",
-            img: "/svg/envelope.svg"
+            img: "/svg/envelope.svg",
+            key: user.role_id > 0 ? "archivedChats" : "allow"
     
         },
-        {
-            title: "Start Conversation",
-            pathname: "/bot/ongoing",
-            img: "/svg/new.svg"
+        // {
+        //     title: "Start Conversation",
+        //     pathname: "/bot/ongoing",
+        //     img: "/svg/new.svg"
     
-        },
+        // },
         {
             title: "AI Agent",
             pathname: "/agent",
-            img: "/svg/upscale.svg"
+            img: "/svg/upscale.svg",
+            key: user.role_id > 0 ? "manageAiAgent": "allow"
     
         },
         {
             title: "Users",
             pathname: "/users",
-            img: "/svg/community.svg"
+            img: "/svg/community.svg",
+            key: user.role_id > 0 ? "viewUsers" : "allow"
+    
+        },
+        {
+            title: "Roles",
+            pathname: "/roles",
+            img: "/svg/hat.svg",
+            key: user.role_id > 0 ? "viewRoles" : "allow"
     
         },
         {
             title: "Webchat",
             pathname: "/channel/webchat",
-            img: "/svg/webchat.svg"
+            img: "/svg/webchat.svg",
+            key: user.role_id > 0 ? "configureWebChat" : "allow"
         },
         {
             title: "Whatsapp",
-            pathname: "/channel/whatsapp",
-            img: "/svg/whatsapp.svg"
+            pathname: "#",
+            // pathname: "/channel/whatsapp",
+            img: "/svg/whatsapp.svg",
+            key: ""
         },
         {
-            title: "Email",
-            pathname: "/channel/email",
-            img: "/svg/email.svg"
+            title: "Support Email",
+            pathname: "#",
+            img: "/svg/email.svg",
+            key: ""
         }
     
     ];
@@ -138,7 +161,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                         <span className="full_logo">
                             <img src="/img/1-1.png" alt="" className="desktop_logo" />
                             <img src="/img/1-1.png" alt="" className="retina_logo" />
-                            <span style={{ fontWeight: "bold", fontSize: "20px", color: "#000", paddingLeft: "30px" }}>ENGAGEMENT</span>
+                            <span style={{ fontWeight: "bold", fontSize: "20px", color: "#000", paddingLeft: "30px" }}>ENGAGE</span>
                         </span>
                         <span className="short_logo">
                             <img src="/img/2-0.png" alt="" className="desktop_logo" />
@@ -159,7 +182,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                     <div className="nav_group">
                         <ul className="group__list">
                             {data.slice(0, 4).map((item, i) => (
-                                <li key={i}>
+                                item.key && perms.includes(item.key) && <li key={i}>
                                     <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
                                         <span className="icon">
                                             <img src={item.img} alt="" className="fn__svg" />
@@ -175,7 +198,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                     <div className="nav_group">
                         <h2 className="group__title">MY CONVERSATIONS</h2>
                         <ul className="group__list">
-                            {data.slice(4, 5).map((item, i) => (
+                            {/* {data.slice(4, 5).map((item, i) => (
                                 <li key={i}>
                                     <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
                                         <span className="icon">
@@ -184,7 +207,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                                         <span className="text">{item.title}{item.counter && <span className="count">new</span>}</span>
                                     </Link>
                                 </li>
-                            ))}
+                            ))} */}
                             {chats && chats.map((chat, i) => (
                                 <li key={i}>
                                     <Link href={`/live/conversation/${chat.id}`} className={`fn__tooltip menu__item ${pathname.includes(chat.id) ? "active" : ""}`} title={chat.name} >
@@ -202,8 +225,8 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                     <div className="nav_group">
                         <h2 className="group__title">ADMIN SETTINGS</h2>
                         <ul className="group__list">
-                            {data.slice(5, 7).map((item, i) => (
-                                <li key={i}>
+                            {data.slice(4, 7).map((item, i) => (
+                                item.key && perms.includes(item.key) && <li key={i}>
                                     <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
                                         <span className="icon">
                                             <img src={item.img} alt="" className="fn__svg" />
@@ -220,7 +243,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                         <h2 className="group__title">CHANNEL SETTINGS</h2>
                         <ul className="group__list">
                             {data.slice(7, 11).map((item, i) => (
-                                <li key={i}>
+                                item.key && perms.includes(item.key) && <li key={i}>
                                     <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
                                         <span className="icon">
                                             <img src={item.img} alt="" className="fn__svg" />

@@ -1,22 +1,18 @@
 "use server";
-import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import faktory from "faktory-worker"
+import { NextResponse } from "next/server";
+import prisma from "@/db/prisma";
+import faktory from "faktory-worker";
 
-const prisma = new PrismaClient();
 export async function POST(req) {
-
   try {
-
     const body = await req.json();
 
-    console.log({body});
+    console.log({ body });
 
     return NextResponse.json({ received: true }, { status: 200 });
-
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: 'Failed to receive' }, { status: 500 });
+    return NextResponse.json({ error: "Failed to receive" }, { status: 500 });
   }
 }
 
@@ -32,6 +28,6 @@ export async function GET(req) {
     console.log("Webhook verified successfully!");
     return new NextResponse(challenge, { status: 200 });
   } else {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 }

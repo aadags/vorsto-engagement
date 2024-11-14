@@ -93,12 +93,13 @@ export default function Header({ searchToggle, user }) {
                         {/* User (bar item) */}
                         <Menu as="div" className="bar__item bar__item_user opened">
                             <Menu.Button as="nav" id="Button3" className="user_opener fn__tooltip" title="User Profile">
-                                <FontAwesomeIcon icon={faUser} width={"100%"} />
+                                <img src="/svg/person.svg" />
                             </Menu.Button>
                             <Menu.Items as="div" className="item_popup" data-position="right">
                                 <div className="user_profile">
                                     <div className="user_info">
                                         <h2 className="user_name">{user.name}</h2>
+                                        <p>{user.role.title}</p>
                                         <p><Link href={"mailto:"+user.email} className="user_email">{user.email}</Link></p>
                                     </div>
                                 </div>

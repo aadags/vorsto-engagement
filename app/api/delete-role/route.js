@@ -4,25 +4,22 @@ import prisma from "@/db/prisma";
 
 export async function POST(req) {
   try {
-    const userId = Number(req.cookies.get("userId").value) ?? 0;
+    const organizationId = Number(req.cookies.get("organizationId").value) ?? 0;
 
     const body = await req.json();
     const { id } = body;
 
-    const conv = await prisma.conversation.update({
-      data: {
-        is_end: true,
-      },
+    const user = await prisma.role.delete({
       where: {
         id: id,
-      },
+        organization_id: organizationId
+      }
     });
-
-    return NextResponse.json({ message: "Saved Conversation" });
+    return NextResponse.json({ message: "Role Deleted" });
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: "Failed to update conversation" },
+      { error: "Failed to delete user" },
       { status: 500 }
     );
   }

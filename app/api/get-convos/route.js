@@ -1,23 +1,21 @@
-import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import { cookies } from 'next/headers'
-const prisma = new PrismaClient();
+import { NextResponse } from "next/server";
+import prisma from "@/db/prisma";
+import { cookies } from "next/headers";
 
- 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 async function getCookieData() {
-  const cookieData = cookies().get('organizationId');
+  const cookieData = cookies().get("organizationId");
   return cookieData ? cookieData.value : null;
 }
 
 export async function GET(req) {
   try {
-    const cookieData = await getCookieData()
+    const cookieData = await getCookieData();
     const organizationId = Number(cookieData) ?? 0;
 
-    const page = parseInt(req.nextUrl.searchParams.get('page')); // Default to page 1 if not provided
-    const pageSize = parseInt(req.nextUrl.searchParams.get('per_page'));
+    const page = parseInt(req.nextUrl.searchParams.get("page")); // Default to page 1 if not provided
+    const pageSize = parseInt(req.nextUrl.searchParams.get("per_page"));
 
     const conversations = await prisma.conversation.findMany({
       where: { organization_id: organizationId, is_lead: true, user_id: null },
@@ -25,11 +23,16 @@ export async function GET(req) {
       take: pageSize,
     });
 
-    const total = prisma.conversation.count();
+    const total = prisma.conversation.count({
+      where: { organization_id: organizationId, is_lead: true, user_id: null },
+    });
 
-    return NextResponse.json({ data: conversations, count: total});
+    return NextResponse.json({ data: conversations, count: total });
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: 'Failed to fetch convos' }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch convos" },
+      { status: 500 }
+    );
   }
 }

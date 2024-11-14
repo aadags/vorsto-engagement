@@ -1,14 +1,22 @@
 "use server";
-import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import RedisHandler from '@/redis/redisHandler';
-
-const prisma = new PrismaClient();
+import { NextResponse } from "next/server";
+import prisma from "@/db/prisma";
+import RedisHandler from "@/redis/redisHandler";
 
 export async function POST(req) {
   try {
     const body = await req.json();
-    const { id, name, systemBio, model, hook, key, outputType, outputParameter, functions } = body;
+    const {
+      id,
+      name,
+      systemBio,
+      model,
+      hook,
+      key,
+      outputType,
+      outputParameter,
+      functions,
+    } = body;
 
     const bot = await prisma.bot.update({
       data: {
@@ -21,21 +29,19 @@ export async function POST(req) {
         output_parameters: JSON.stringify(outputParameter),
       },
       where: {
-        id: id, 
+        id: id,
       },
     });
 
-    await prisma.tool.deleteMany(
-      {
-        where: {
-          bot_id: id
-        }
-      }
-    );
+    await prisma.tool.deleteMany({
+      where: {
+        bot_id: id,
+      },
+    });
 
     for (const func of functions) {
       const { name, description, api, parameterConfig } = func;
-      
+
       await prisma.tool.create({
         data: {
           name,
@@ -48,23 +54,29 @@ export async function POST(req) {
     }
 
     const redisHandler = new RedisHandler(id);
-    await redisHandler.invalidateCacheValue(); 
+    await redisHandler.invalidateCacheValue();
 
-    return NextResponse.json({ message: 'Bot and tools updated functions', data: bot });
+    return NextResponse.json({
+      message: "Bot and tools updated functions",
+      data: bot,
+    });
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: 'Failed to update bot and functions' }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to update bot and functions" },
+      { status: 500 }
+    );
   }
 }
 
 export async function GET() {
-  return NextResponse.json({ message: 'Method not allowed' }, { status: 405 });
+  return NextResponse.json({ message: "Method not allowed" }, { status: 405 });
 }
 
 export async function PUT() {
-  return NextResponse.json({ message: 'Method not allowed' }, { status: 405 });
+  return NextResponse.json({ message: "Method not allowed" }, { status: 405 });
 }
 
 export async function DELETE() {
-  return NextResponse.json({ message: 'Method not allowed' }, { status: 405 });
+  return NextResponse.json({ message: "Method not allowed" }, { status: 405 });
 }
