@@ -99,7 +99,7 @@ export default function Header({ searchToggle, user }) {
                                 <div className="user_profile">
                                     <div className="user_info">
                                         <h2 className="user_name">{user.name}</h2>
-                                        <p>{user.role.title}</p>
+                                        <p>{user.role?.title || "Administrator"}</p>
                                         <p><Link href={"mailto:"+user.email} className="user_email">{user.email}</Link></p>
                                     </div>
                                 </div>

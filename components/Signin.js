@@ -23,7 +23,7 @@ export default function Signin() {
                 headers: {
                   'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email: currentUser.email }),
+                body: JSON.stringify({ name: currentUser.displayName, email: currentUser.email, uid: currentUser.uid }),
               });
         
               if (response.ok) {
@@ -55,7 +55,11 @@ export default function Signin() {
             signInSuccessUrl: 'https://engage.vorsto.io/login',
             signInOptions: [
               googleProvider.providerId,
-              githubProvider.providerId
+              githubProvider.providerId,
+              {
+                provider: emailProvider.providerId,
+                requireDisplayName: true  
+              }
             ],
             tosUrl: 'https://vorsto.io/terms-policy',
             privacyPolicyUrl: 'https://vorsto.io/privacy-policy'
@@ -70,10 +74,14 @@ export default function Signin() {
 
   return (
     <>
-      <div className="techwave_fn_sign">
+      <div className="techwave_fn_sign" style={{
+        backgroundImage: "url('/bckgd1.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        height: "100vh",
+      }}>
         <div className="sign__content" style={{ textAlign: "center" }}>
-          <img src="/img/vorsto-logo-small.png" className="logo2" alt="logo" />
-          <span style={{ fontWeight: "bold", fontSize: "20px", color: "#FFF" }}>CUSTOMER ENGAGEMENT</span><br/><br/>
+          <img src="/white_logo.png" className="logo2" alt="logo" style={{ width: "30% !important" }} />
           {/* <h1>Sign In</h1> */}
           <div id="firebaseui-auth-container">
             {/* Loader can be added here if needed */}

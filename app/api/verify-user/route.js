@@ -5,11 +5,37 @@ import prisma from "@/db/prisma";
 export async function POST(req) {
   try {
     const body = await req.json();
-    const { email } = body;
+    const { name, email, uid } = body;
 
     let user = await prisma.user.findUnique({
       where: { email: email },
     });
+
+    if (!user) {
+
+      let org = await prisma.organization.findUnique({
+        where: { uid: uid },
+      });
+
+      if(!org) {
+
+        org = await prisma.organization.create({
+          data: {
+            name: 'My Company',
+            uid,
+          },
+        });
+
+      }
+
+      user = await prisma.user.create({
+        data: {
+          name,
+          email,
+          organization_id: org.id,
+        },
+      });
+    }
 
     const response = NextResponse.json({
       message: "User verified successfully",

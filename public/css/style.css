@@ -1063,7 +1063,7 @@ frenify_typing span{
 }
 .fn__nav_bar .bar__item_user:hover .user_opener,
 .fn__nav_bar .bar__item_user.opened .user_opener{
-	border-color: var(--techwave-main-color);
+	border-color: black;
 }
 .fn__nav_bar .bar__item_user .user_profile{
 	display: -webkit-flex;

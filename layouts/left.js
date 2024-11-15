@@ -33,7 +33,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
 
     useEffect(() => {
 
-        const prms = JSON.parse(user.role.permissions);
+        const prms = JSON.parse(user.role?.permissions||"[]");
         const result = Object.entries(prms)
             .filter(([key, value]) => value === true)
             .map(([key]) => key);
@@ -159,13 +159,12 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                 <div className="leftpanel_logo">
                     <Link href="/" className="fn_logo">
                         <span className="full_logo">
-                            <img src="/img/1-1.png" alt="" className="desktop_logo" />
-                            <img src="/img/1-1.png" alt="" className="retina_logo" />
-                            <span style={{ fontWeight: "bold", fontSize: "20px", color: "#000", paddingLeft: "30px" }}>ENGAGE</span>
+                            <img src="/logo_black.png" alt="" className="desktop_logo" />
+                            <img src="/logo_black.png" alt="" className="retina_logo" />
                         </span>
                         <span className="short_logo">
-                            <img src="/img/2-0.png" alt="" className="desktop_logo" />
-                            <img src="/img/2-0.png" alt="" className="retina_logo" />
+                            <img src="/logo_only_black.png" alt="" className="desktop_logo" />
+                            <img src="/logo_only_black.png" alt="" className="retina_logo" />
                         </span>
                     </Link>
                     <a className="fn__closer fn__icon_button desktop_closer" onClick={activeTrueFalse}>
