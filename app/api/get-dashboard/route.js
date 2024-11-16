@@ -124,7 +124,7 @@ export async function GET(req) {
     });
 
     closed.forEach(result => {
-      const day = result.created_at.toISOString().split('T')[0];
+      const day = result.updated_at.toISOString().split('T')[0];
       const dayIndex = countsByDay3.findIndex(d => d.day === day);
       if (dayIndex > -1) {
         countsByDay3[dayIndex].count = result._count.id;
@@ -132,7 +132,7 @@ export async function GET(req) {
     });
 
     ongoing.forEach(result => {
-      const day = result.created_at.toISOString().split('T')[0];
+      const day = result.updated_at.toISOString().split('T')[0];
       const dayIndex = countsByDay4.findIndex(d => d.day === day);
       if (dayIndex > -1) {
         countsByDay4[dayIndex].count = result._count.id;
