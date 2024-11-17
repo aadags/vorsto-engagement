@@ -26,6 +26,21 @@ export async function POST(req) {
           },
         });
 
+        const bot = await prisma.bot.findFirst({
+          where: { organization_id: org.id },
+        });
+    
+        if (!bot) {
+          await prisma.bot.create({
+            data: {
+              name: "Customer Engagement Bot",
+              system_bio: "You are a customer engagement bot",
+              model: "vorsto-xa-2",
+              organization_id: org.id,
+            },
+          });
+        }
+
       }
 
       user = await prisma.user.create({
