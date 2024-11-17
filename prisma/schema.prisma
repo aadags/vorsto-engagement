@@ -100,3 +100,14 @@ model Tool {
 
   @@map("tools")
 }
+
+model Hook {
+  id          String   @id @default(cuid())
+  type        String
+  data  String?  @db.LongText
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@map("hooks")
+}
+
