@@ -17,6 +17,8 @@ model Organization {
   id           Int         @id @default(autoincrement())
   name         String?
   uid          String     @unique()
+  waba_id       String?     @unique()
+  wa_phone_id       String?     @unique()
   users          User[]
   roles          Role[]
   conversations  Conversation[]
