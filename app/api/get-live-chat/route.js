@@ -9,6 +9,7 @@ export async function POST(req) {
 
     const chats = await prisma.conversation.findMany({
       where: { user_id: userId, organization_id: orgId, is_end: false },
+      orderBy: { created_at: 'desc' },
     });
 
     return NextResponse.json(chats);
