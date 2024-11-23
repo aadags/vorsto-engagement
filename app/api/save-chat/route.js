@@ -24,7 +24,7 @@ export async function POST(req) {
     });
 
     if(chat.channel==="whatsapp") {
-      if(!chat.user_id)
+      if(chat.user_id == null)
       {
         await sendEngagementTemplateMessage(phone, user.name, org.wa_phone_id)
       }
