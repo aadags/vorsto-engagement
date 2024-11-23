@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const AUTH_TOKEN = `Bearer ${process.env.NEXT_PUBLIC_WHATSAPP_TOKEN}`;
+const AUTH_TOKEN = `Bearer ${process.env.WHATSAPP_TOKEN}`;
 
 export const sendTextMessage = async (to, body, phoneId) => {
   try {
