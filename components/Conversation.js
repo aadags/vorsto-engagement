@@ -95,7 +95,7 @@ export default function Conversation({ conversationId }) {
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ id: conversationId, ...chat, messages: [ ...messages, newMessage ] }),
+            body: JSON.stringify({ id: conversationId, ...chat, messages: [ ...messages, newMessage ], newMessage }),
           });
 
           if(response.ok)
@@ -115,6 +115,22 @@ export default function Conversation({ conversationId }) {
     useEffect(() => {
         getChat();
     }, [conversationId])
+
+    useEffect(() => {
+
+        socket.emit('joinRoom', conversationId);
+
+        socket.on('agentMessage', ({message, chat_id}) => {
+          if(conversationId===chat_id)
+          {
+            getChat();
+          }
+        });
+    
+        return () => {
+          socket.off("agentMessage");
+        };
+      }, []);
 
 
     return (

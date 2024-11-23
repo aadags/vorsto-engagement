@@ -13,6 +13,7 @@ export default function MyConversation({ conversationId }) {
     const [chatEnded, setChatEnded] = useState(false);
     const [messages, setMessages] = useState([]);
     const [inputText, setInputText] = useState('');
+    const [notify, setNotify] = useState(null);
 
     const router = useRouter();
 
@@ -110,7 +111,7 @@ export default function MyConversation({ conversationId }) {
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ id: conversationId, ...chat, messages: [ ...messages, newMessage ] }),
+            body: JSON.stringify({ id: conversationId, ...chat, messages: [ ...messages, newMessage ], newMessage }),
           });
 
           if(response.ok)
@@ -158,13 +159,7 @@ export default function MyConversation({ conversationId }) {
           {
             getChat();
             scrollToBottom();
-            if (typeof Audio !== "undefined") { 
-                try {
-                    const notificationSound = new Audio('/note.mp3');
-                    notificationSound.play();
-                } catch (error) {
-                }
-            }
+            setNotify(nanoid());
           }
         });
     
@@ -172,6 +167,13 @@ export default function MyConversation({ conversationId }) {
           socket.off("agentMessage");
         };
       }, []);
+
+      useEffect(() => {
+        if (notify && typeof Audio !== "undefined") { 
+            const notificationSound = new Audio('/note.mp3');
+            notificationSound.play();
+        }
+    }, [notify])
 
 
     return (
@@ -199,6 +201,8 @@ export default function MyConversation({ conversationId }) {
                                         </div>
                                         <div className="chat">
                                             <p><span dangerouslySetInnerHTML={renderText(message.content)}></span></p>
+                                            {message.mediaUrl && message.mediaType==="image" && <img src={"https://cdn.vorsto.io"+message.mediaUrl} alt="" style={{ width: "50%" }} />}
+                                            {message.mediaUrl && message.mediaType==="document" && <a className="techwave_fn_button" href={"https://cdn.vorsto.io"+message.mediaUrl}>Download File</a>}
                                         </div>
                                     </div>
                                 ))}

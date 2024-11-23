@@ -9,6 +9,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
     const [newLead, setNewLead] = useState(0);
     const [chats, setChats] = useState([]);
     const [perms, setPerms] = useState([]);
+    const [notify, setNotify] = useState(null);
 
     const getChats = async () => {
     
@@ -48,12 +49,8 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
         }
 
         socket.on('notifyLead', (data) => {
-            if (typeof Audio !== "undefined") { 
-                const notificationSound = new Audio('/note.mp3');
-                notificationSound.play();
-                localStorage.setItem("newL", newLead + 1);
-                setNewLead(newLead + 1);
-            }
+            localStorage.setItem("newL", newLead + 1);
+            setNewLead(newLead + 1);
         });
 
 
@@ -150,6 +147,13 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
 
     const [isToggle, setToggle] = useState(false)
     const toggleHandle = () => setToggle(!isToggle);
+
+    useEffect(() => {
+        if (notify && typeof Audio !== "undefined") { 
+            const notificationSound = new Audio('/note.mp3');
+            notificationSound.play();
+        }
+    }, [notify])
 
     return (
         <>
