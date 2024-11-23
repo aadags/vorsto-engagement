@@ -16,7 +16,7 @@ export async function POST(req) {
     });
 
     const org = await prisma.organization.findFirst({
-      where: { organization_id: orgId },
+      where: { id: orgId },
     });
 
     const user = await prisma.user.findUniqueOrThrow({
