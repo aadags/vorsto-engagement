@@ -24,21 +24,23 @@ export async function POST(req) {
     });
 
     if(chat.channel==="whatsapp") {
+      const { content } = newMessage
       if(chat.user_id == null)
       {
-        await sendEngagementTemplateMessage(phone, user.name, org.wa_phone_id)
-      }
-      const { content } = newMessage
-      const now = new Date(); // Current time in GMT
-      const updatedAt = new Date(chat.updated_at); // Parse created_at to Date object
-      
-      // Calculate the difference in hours
-      const differenceInHours = (now - updatedAt) / (1000 * 60 * 60); // Convert ms to hours
-
-      if (differenceInHours < 24) {
+        await sendEngagementTemplateMessage(phone, user.name, org.wa_phone_id);
         await sendTextMessage(phone, content, org.wa_phone_id);
       } else {
-        await sendCheckInTemplateMessage(phone, content, org.wa_phone_id)
+        const now = new Date(); // Current time in GMT
+        const updatedAt = new Date(chat.updated_at); // Parse created_at to Date object
+        
+        // Calculate the difference in hours
+        const differenceInHours = (now - updatedAt) / (1000 * 60 * 60); // Convert ms to hours
+
+        if (differenceInHours < 24) {
+          await sendTextMessage(phone, content, org.wa_phone_id);
+        } else {
+          await sendCheckInTemplateMessage(phone, content, org.wa_phone_id)
+        }
       }
     }
 

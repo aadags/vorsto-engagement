@@ -36,6 +36,8 @@ export default function MyConversation({ conversationId }) {
             role: user.name,
             content: `${user.name} ended the chat`,
         };
+        setMessages(prevMessages => [...prevMessages, newMessage]);
+        saveChat(newMessage);
         endChat(newMessage);
         router.push(`/leads`);
     };    
