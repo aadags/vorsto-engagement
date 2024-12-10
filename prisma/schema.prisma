@@ -19,6 +19,7 @@ model Organization {
   uid          String     @unique()
   waba_id       String?     @unique()
   wa_phone_id       String?     @unique()
+  template_exist       Boolean     @default(false)
   users          User[]
   roles          Role[]
   conversations  Conversation[]

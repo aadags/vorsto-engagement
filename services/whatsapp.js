@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const AUTH_TOKEN = `Bearer ${process.env.WHATSAPP_TOKEN}`;
+const SYS_TOKEN = `Bearer ${process.env.WHATSAPP_SYSTEM_USER_TOKEN}`;
 
 export const sendTextMessage = async (to, body, phoneId) => {
   try {
@@ -123,6 +124,78 @@ export const sendCheckInTemplateMessage = async (
         headers: {
           'Content-Type': 'application/json',
           Authorization: AUTH_TOKEN,
+        },
+      }
+    );
+    return { status: 'success', data: response.data };
+  } catch (error) {
+    console.error(error);
+    return { status: 'error' };
+  }
+};
+
+export const createTemplate = async (name, text, params, wabaId) => {
+  try {
+    const response = await axios.post(
+      `https://graph.facebook.com/v21.0/${wabaId}/message_templates`,
+      {
+          "name": name,
+          "category": "UTILITY",
+          "allow_category_change": true,
+          "language": "en",
+          "components": [{
+            "type": "BODY",
+            "text": text,
+            "example": {
+              "body_text": [
+                params
+              ]
+            }
+          }]
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: SYS_TOKEN,
+        },
+      }
+    );
+    return { status: 'success', data: response.data };
+  } catch (error) {
+    console.error(error);
+    return { status: 'error' };
+  }
+};
+
+export const createTemplateWithHeader = async (name, text, params, headerText, wabaId) => {
+  try {
+    const response = await axios.post(
+      `https://graph.facebook.com/v21.0/${wabaId}/message_templates`,
+      {
+          "name": name,
+          "category": "UTILITY",
+          "allow_category_change": true,
+          "language": "en",
+          "components": [
+            {
+              "type": "HEADER",
+              "format": "TEXT",
+              "text": headerText,
+            },
+            {
+            "type": "BODY",
+            "text": text,
+            "example": {
+              "body_text": [
+                params
+              ]
+            }
+          }]
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: SYS_TOKEN,
         },
       }
     );

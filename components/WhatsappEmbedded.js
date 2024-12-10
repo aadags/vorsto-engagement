@@ -94,28 +94,7 @@ const EmbeddedSignup = () => {
   return (
     <div>
       <div id="fb-root"></div>
-      <button
-        onClick={launchWhatsAppSignup}
-        style={{
-          backgroundColor: '#1877f2',
-          border: 0,
-          borderRadius: '4px',
-          color: '#fff',
-          cursor: 'pointer',
-          fontFamily: 'Helvetica, Arial, sans-serif',
-          fontSize: '16px',
-          fontWeight: 'bold',
-          height: '40px',
-          padding: '0 24px',
-        }}
-      >
-        Login with Facebook
-      </button>
-      <p>Session info response:</p>
-      <pre ref={sessionInfoResponseRef}></pre>
-      <br />
-      <p>SDK response:</p>
-      <pre ref={sdkResponseRef}></pre>
+      <button onClick={launchWhatsAppSignup} className="techwave_fn_button" ><span>Login with Facebook</span></button>
     </div>
   );
 };
