@@ -203,8 +203,8 @@ export default function MyConversation({ conversationId }) {
                                         </div>
                                         <div className="chat">
                                             <p><span dangerouslySetInnerHTML={renderText(message.content)}></span></p>
-                                            {message.mediaUrl && message.mediaType==="image" && <img src={"https://cdn.vorsto.io"+message.mediaUrl} alt="" style={{ width: "50%" }} />}
-                                            {message.mediaUrl && message.mediaType==="document" && <a className="techwave_fn_button" href={"https://cdn.vorsto.io"+message.mediaUrl}>Download File</a>}
+                                            {message.mediaUrl && message.mediaType==="image" && <img src={"https://meta.vorsto.io"+message.mediaUrl} alt="" style={{ width: "50%" }} />}
+                                            {message.mediaUrl && message.mediaType==="document" && <a className="techwave_fn_button" href={"https://meta.vorsto.io"+message.mediaUrl}>Download File</a>}
                                         </div>
                                     </div>
                                 ))}
