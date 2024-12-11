@@ -1,20 +1,25 @@
 "use server";
 import { NextResponse } from "next/server";
 import prisma from "@/db/prisma";
-import { createTemplate, createTemplateWithHeader } from "@/services/whatsapp";
 
 export async function POST(req) {
   try {
     const organizationId = Number(req.cookies.get("organizationId").value) ?? 0;
 
     const body = await req.json();
-    const { waba_id } = body;
+    const { waba_id, wa_phone_id } = body;
 
-    await createTemplateWithHeader("vorsto_support_enquiry", "{{1}} has joined this conversation and will be assisting you with your enquiry.", ["Daniel"], "Support Representative Connected", waba_id);
-    await createTemplate("vorsto_support_check_in", "Hello, Thank you for your patience on your enquiry. {{1}}", ["Your enquiry has been resolved"], waba_id);
-
+    const bot = await prisma.organization.update({
+      data: {
+        wa_phone_id,
+        waba_id
+      },
+      where: {
+        id: organizationId,
+      },
+    });
     
-    return NextResponse.json({ message: "template created" });
+    return NextResponse.json({ message: "org updated" });
   } catch (error) {
     console.error(error);
     return NextResponse.json(

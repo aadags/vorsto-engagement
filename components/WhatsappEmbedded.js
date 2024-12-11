@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/router';
 
 const EmbeddedSignup = () => {
   const sessionInfoResponseRef = useRef(null);
   const sdkResponseRef = useRef(null);
   const [fbReady, setFbReady] = useState(false);
+
+  const router = useRouter();
 
   useEffect(() => {
     // Load Facebook SDK
@@ -57,8 +60,28 @@ const EmbeddedSignup = () => {
     }
   };
 
+  const linkOrg = async (waba_id, waba_phone_id) => {
+    try {
+      const response = await fetch('/api/link-whatsapp-org', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ waba_id, waba_phone_id }),
+      });
+
+      if(response.ok)
+      {
+        router.reload();
+      }
+
+    } catch (error) {
+      console.error('Error linking Business:', error);
+    }
+  };
+
   useEffect(() => {
-    const messageListener = (event) => {
+    const messageListener =  async (event) => {
       if (event.origin !== 'https://www.facebook.com' && event.origin !== 'https://web.facebook.com') {
         return;
       }
@@ -67,6 +90,7 @@ const EmbeddedSignup = () => {
         if (data.type === 'WA_EMBEDDED_SIGNUP') {
           if (data.event === 'FINISH') {
             const { phone_number_id, waba_id } = data.data;
+            await linkOrg(waba_id, phone_number_id);
             console.log('Phone number ID ', phone_number_id, ' WhatsApp business account ID ', waba_id);
           } else if (data.event === 'CANCEL') {
             const { current_step } = data.data;
