@@ -9,7 +9,7 @@ const EmbeddedSignup = () => {
     // Load Facebook SDK
     window.fbAsyncInit = function() {
       window.FB.init({
-        appId: '1744131679686511',
+        appId: '782135337385303',
         autoLogAppEvents: true,
         xfbml: true,
         version: 'v21.0'
@@ -45,7 +45,7 @@ const EmbeddedSignup = () => {
   const launchWhatsAppSignup = () => {
     if (fbReady) {
       window.FB.login(fbLoginCallback, {
-        config_id: '1089993002724542',
+        config_id: '585207984190234',
         response_type: 'code',
         override_default_response_type: true,
         extras: {
