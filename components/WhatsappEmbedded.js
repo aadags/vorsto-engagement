@@ -60,19 +60,19 @@ const EmbeddedSignup = () => {
     }
   };
 
-  const linkOrg = async (waba_id, waba_phone_id) => {
+  const linkOrg = async (waba_id, wa_phone_id) => {
     try {
       const response = await fetch('/api/link-whatsapp-org', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ waba_id, waba_phone_id }),
+        body: JSON.stringify({ waba_id, wa_phone_id }),
       });
 
       if(response.ok)
       {
-        router.reload();
+        router.push("/channel/whatsapp");
       }
 
     } catch (error) {

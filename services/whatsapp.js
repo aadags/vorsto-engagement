@@ -68,7 +68,7 @@ export const sendEngagementTemplateMessage = async (
         to,
         type: 'template',
         template: {
-          name: 'support_enquiry',
+          name: 'vorsto_support_enquiry',
           language: { code: 'en' },
           components: [
             {
@@ -108,7 +108,7 @@ export const sendCheckInTemplateMessage = async (
         to,
         type: 'template',
         template: {
-          name: 'support_check_in',
+          name: 'vorsto_support_check_in',
           language: { code: 'en' },
           components: [
             {

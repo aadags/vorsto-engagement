@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { auth, googleProvider, githubProvider, emailProvider } from "../firebaseConfig/FirebaseClient";
+import { auth, googleProvider, githubProvider, emailProvider, facebookProvider } from "../firebaseConfig/FirebaseClient";
 // import 'firebaseui/dist/firebaseui.css';
 import '../public/css/firebase.css';
 
@@ -54,6 +54,7 @@ export default function Signin() {
             signInFlow: 'popup',
             signInSuccessUrl: 'https://engage.vorsto.io/login',
             signInOptions: [
+              facebookProvider.providerId,
               googleProvider.providerId,
               githubProvider.providerId,
               {
