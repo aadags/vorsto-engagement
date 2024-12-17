@@ -70,9 +70,9 @@ const EmbeddedSignup = () => {
         body: JSON.stringify({ waba_id, wa_phone_id }),
       });
 
-      if(response.ok)
+      if(!response.ok)
       {
-        router.push("/channel/whatsapp");
+        console.error('Error linking Business');
       }
 
     } catch (error) {
@@ -87,11 +87,13 @@ const EmbeddedSignup = () => {
       }
       try {
         const data = JSON.parse(event.data);
+        console.log(data);
         if (data.type === 'WA_EMBEDDED_SIGNUP') {
           if (data.event === 'FINISH') {
             const { phone_number_id, waba_id } = data.data;
             await linkOrg(waba_id, phone_number_id);
             console.log('Phone number ID ', phone_number_id, ' WhatsApp business account ID ', waba_id);
+            router.push("/channel/whatsapp");
           } else if (data.event === 'CANCEL') {
             const { current_step } = data.data;
             console.warn('Cancel at ', current_step);
