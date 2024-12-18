@@ -13,7 +13,7 @@ export default function Signin() {
     if (typeof window !== 'undefined') {
 
       auth.onAuthStateChanged(async (currentUser) => {
-
+        console.log({ currentUser })
         if (currentUser) {
 
             try {
@@ -54,7 +54,6 @@ export default function Signin() {
             signInFlow: 'popup',
             signInSuccessUrl: 'https://engage.vorsto.io/login',
             signInOptions: [
-              facebookProvider.providerId,
               googleProvider.providerId,
               githubProvider.providerId,
               {
