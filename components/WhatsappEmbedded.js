@@ -5,6 +5,7 @@ const EmbeddedSignup = () => {
   const sessionInfoResponseRef = useRef(null);
   const sdkResponseRef = useRef(null);
   const [fbReady, setFbReady] = useState(false);
+  const [wabaReady, setWabaReady] = useState(false);
 
   const router = useRouter();
 
@@ -31,7 +32,16 @@ const EmbeddedSignup = () => {
     return () => {
       document.body.removeChild(script);
     };
-  }, []);
+  }, []);  
+  
+  useEffect(() => {
+
+    if(wabaReady)
+    {
+      router.refresh();
+    }
+    
+  }, [wabaReady]);
 
   // Handler for Facebook Login Callback
   const fbLoginCallback = (response) => {
@@ -70,9 +80,9 @@ const EmbeddedSignup = () => {
         body: JSON.stringify({ waba_id, wa_phone_id }),
       });
 
-      if(!response.ok)
+      if(response.ok)
       {
-        console.error('Error linking Business');
+        setWabaReady(true);
       }
 
     } catch (error) {
@@ -93,7 +103,6 @@ const EmbeddedSignup = () => {
             const { phone_number_id, waba_id } = data.data;
             await linkOrg(waba_id, phone_number_id);
             console.log('Phone number ID ', phone_number_id, ' WhatsApp business account ID ', waba_id);
-            router.push("/channel/whatsapp");
           } else if (data.event === 'CANCEL') {
             const { current_step } = data.data;
             console.warn('Cancel at ', current_step);
