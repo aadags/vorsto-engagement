@@ -6,6 +6,7 @@ const EmbeddedSignup = () => {
   const sdkResponseRef = useRef(null);
   const [fbReady, setFbReady] = useState(false);
   const [wabaReady, setWabaReady] = useState(false);
+  const [codeToken, setCodeToken] = useState(false);
 
   const router = useRouter();
 
@@ -63,11 +64,20 @@ const EmbeddedSignup = () => {
     
   }, [wabaReady]);
 
+  useEffect(() => {
+
+    if(codeToken)
+    {
+      createToken(codeToken);
+    }
+    
+  }, [codeToken]);
+
   // Handler for Facebook Login Callback
-  const fbLoginCallback = async (response) => {
+  const fbLoginCallback = (response) => {
     if (response.authResponse) {
       const { code } = response.authResponse;
-      await createToken(code);
+      setCodeToken(code);
       // Transmit the code to backend for server-to-server access token call
     }
     if (sdkResponseRef.current) {
