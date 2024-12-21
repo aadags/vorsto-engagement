@@ -1,29 +1,32 @@
 "use server";
 import { NextResponse } from "next/server";
 import prisma from "@/db/prisma";
-import { createTemplate, createTemplateWithHeader } from "@/services/whatsapp";
 
 export async function POST(req) {
   try {
     const organizationId = Number(req.cookies.get("organizationId").value) ?? 0;
 
     const body = await req.json();
-    const { waba_id } = body;
+    const { code } = body;
 
-    await createTemplateWithHeader("vorsto_support_enquiry", "{{1}} has joined this conversation and will be assisting you with your enquiry.", ["Daniel"], "Support Representative Connected", waba_id);
-    await createTemplate("vorsto_support_check_in", "Hello, Thank you for your patience on your enquiry. {{1}}", ["Your enquiry has been resolved"], waba_id);
+    const response = await axios.get('https://graph.facebook.com/v21.0/oauth/access_token', {
+      params: {
+        client_id: `${process.env.META_CLIENT_ID}`,
+        client_secret: `${process.env.META_CLIENT_SECRET}`,
+        code: code,
+      },
+    });
 
-    await prisma.organization.update({
+    const bot = await prisma.organization.update({
       data: {
-        template_exist: true
+        wa_token: response.data.access_token
       },
       where: {
         id: organizationId,
       },
     });
-
     
-    return NextResponse.json({ message: "template created" });
+    return NextResponse.json({ message: "org updated" });
   } catch (error) {
     console.error(error);
     return NextResponse.json(

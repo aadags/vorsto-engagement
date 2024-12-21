@@ -9,6 +9,26 @@ const EmbeddedSignup = () => {
 
   const router = useRouter();
 
+  const createToken = async (code) => {
+    try {
+      const response = await fetch('/api/link-whatsapp-code', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ code }),
+      });
+
+      if(response.ok)
+      {
+      
+      }
+
+    } catch (error) {
+      console.error('Error linking Business Token:', error);
+    }
+  };
+
   useEffect(() => {
     // Load Facebook SDK
     window.fbAsyncInit = function() {
@@ -44,10 +64,10 @@ const EmbeddedSignup = () => {
   }, [wabaReady]);
 
   // Handler for Facebook Login Callback
-  const fbLoginCallback = (response) => {
+  const fbLoginCallback = async (response) => {
     if (response.authResponse) {
       const { code } = response.authResponse;
-      console.log({ code });
+      await createToken(code);
       // Transmit the code to backend for server-to-server access token call
     }
     if (sdkResponseRef.current) {
