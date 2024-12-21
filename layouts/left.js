@@ -144,14 +144,14 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
         {
             title: "Instagram",
             pathname: "/channel/instagram",
-            img: "/svg/whatsapp.svg",
+            img: "/svg/instagram.svg",
             key: user.role_id > 0 ? "configureInstagram": "allow"
         },
         {
             title: "Support Email",
             pathname: "#",
             img: "/svg/email.svg",
-            key: ""
+            key: user.role_id > 0 ? "configureSupportEmail": "allow"
         }
     
     ];

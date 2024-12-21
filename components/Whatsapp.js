@@ -36,7 +36,7 @@ export default function Whatsapp() {
   };
 
   useEffect(() => {
-    const fetchOrg = async page => {
+    const fetchOrg = async () => {
       
       const response = await axios.get(`/api/get-org-details`);
       setOrg(response.data);

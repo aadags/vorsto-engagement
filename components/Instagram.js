@@ -8,6 +8,7 @@ export default function Instagram() {
 
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [org, setOrg] = useState(null);
 
   const searchParams = useSearchParams();
   const code = searchParams.get('code');
@@ -24,6 +25,11 @@ export default function Instagram() {
       {
         code
       });
+
+      if(response.data)
+      {
+        router.refresh();
+      }
   
     };
 
@@ -33,6 +39,16 @@ export default function Instagram() {
     }
   }, [code]);
 
+  useEffect(() => {
+    const fetchOrg = async () => {
+      
+      const response = await axios.get(`/api/get-org-details`);
+      setOrg(response.data);
+  
+    };
+    fetchOrg();
+  }, []);
+
   return (
     <>
       <div className="techwave_fn_image_generation_page">
@@ -40,10 +56,14 @@ export default function Instagram() {
           {/* Generation Header */}
           <div className="generation_header">
             <div className="header_top">
-                <h1 className="title">Connect to Instagram Business Account</h1>
+                <h1 className="title">Connect to Instagram Professional Account</h1>
             </div>
             <div className="header_bottom">
+            { org && org.ig_token && org.ig_user_id?
+              <button onClick={launchInstagramSignup} className="techwave_fn_button" ><span>Disconnect Instagram</span></button>
+              :
               <button onClick={launchInstagramSignup} className="techwave_fn_button" ><span>Login with Instagram</span></button>
+            }
             </div>
           </div>
           {/* !Generation Header */}
