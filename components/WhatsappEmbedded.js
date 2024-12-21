@@ -6,18 +6,18 @@ const EmbeddedSignup = () => {
   const sdkResponseRef = useRef(null);
   const [fbReady, setFbReady] = useState(false);
   const [wabaReady, setWabaReady] = useState(false);
-  const [codeToken, setCodeToken] = useState(false);
+  const [codeToken, setCodeToken] = useState(null);
 
   const router = useRouter();
 
-  const createToken = async (code) => {
+  const createToken = async () => {
     try {
       const response = await fetch('/api/link-whatsapp-code', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ code }),
+        body: JSON.stringify({ code: codeToken }),
       });
 
       if(response.ok)
@@ -68,7 +68,11 @@ const EmbeddedSignup = () => {
 
     if(codeToken)
     {
-      createToken(codeToken);
+      const runCode = async () => {
+        await createToken();
+      }
+
+      runCode();
     }
     
   }, [codeToken]);
