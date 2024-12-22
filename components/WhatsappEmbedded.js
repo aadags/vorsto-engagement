@@ -6,23 +6,23 @@ const EmbeddedSignup = () => {
   const sdkResponseRef = useRef(null);
   const [fbReady, setFbReady] = useState(false);
   const [wabaReady, setWabaReady] = useState(false);
-  const [codeToken, setCodeToken] = useState(null);
+  const [wacodeReady, setWacodeReady] = useState(false);
 
   const router = useRouter();
 
-  const createToken = async () => {
+  const createToken = async (code) => {
     try {
       const response = await fetch('/api/link-whatsapp-code', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ code: codeToken }),
+        body: JSON.stringify({ code }),
       });
 
       if(response.ok)
       {
-      
+        setWacodeReady(true)
       }
 
     } catch (error) {
@@ -57,32 +57,18 @@ const EmbeddedSignup = () => {
   
   useEffect(() => {
 
-    if(wabaReady)
+    if(wabaReady && wacodeReady)
     {
       router.refresh();
     }
     
-  }, [wabaReady]);
-
-  useEffect(() => {
-    console.log({ codeToken });
-    if(codeToken)
-    {
-      const runCode = async () => {
-        await createToken();
-      }
-
-      runCode();
-    }
-    
-  }, [codeToken]);
+  }, [wabaReady, wacodeReady]);
 
   // Handler for Facebook Login Callback
-  const fbLoginCallback = (response) => {
+  const fbLoginCallback = async (response) => {
     if (response.authResponse) {
       const { code } = response.authResponse;
-      console.log({ code })
-      setCodeToken(code);
+      await createToken(code);
       // Transmit the code to backend for server-to-server access token call
     }
     if (sdkResponseRef.current) {
