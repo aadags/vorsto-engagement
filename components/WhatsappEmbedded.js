@@ -81,6 +81,7 @@ const EmbeddedSignup = () => {
   const fbLoginCallback = (response) => {
     if (response.authResponse) {
       const { code } = response.authResponse;
+      console.log({ code })
       setCodeToken(code);
       // Transmit the code to backend for server-to-server access token call
     }
