@@ -65,10 +65,10 @@ const EmbeddedSignup = () => {
   }, [wabaReady, wacodeReady]);
 
   // Handler for Facebook Login Callback
-  const fbLoginCallback = async (response) => {
+  const fbLoginCallback = (response) => {
     if (response.authResponse) {
       const { code } = response.authResponse;
-      await createToken(code);
+      createToken(code);
       // Transmit the code to backend for server-to-server access token call
     }
     if (sdkResponseRef.current) {
