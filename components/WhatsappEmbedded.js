@@ -65,7 +65,7 @@ const EmbeddedSignup = () => {
   }, [wabaReady]);
 
   useEffect(() => {
-
+    console.log({ codeToken });
     if(codeToken)
     {
       const runCode = async () => {
