@@ -19,7 +19,7 @@ export default function Whatsapp() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ waba_id: org.waba_id }),
+        body: JSON.stringify({ waba_id: org.waba_id, token: org.wa_token }),
       });
 
       if(response.ok)

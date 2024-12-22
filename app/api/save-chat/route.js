@@ -27,8 +27,8 @@ export async function POST(req) {
       const { content } = newMessage
       if(chat.user_id == null)
       {
-        await sendEngagementTemplateMessage(phone, user.name, org.wa_phone_id);
-        await sendTextMessage(phone, content, org.wa_phone_id);
+        await sendEngagementTemplateMessage(phone, user.name, org.wa_phone_id, org.wa_token);
+        await sendTextMessage(phone, content, org.wa_phone_id, org.wa_token);
       } else {
         const now = new Date(); // Current time in GMT
         const updatedAt = new Date(chat.updated_at); // Parse created_at to Date object
@@ -37,9 +37,9 @@ export async function POST(req) {
         const differenceInHours = (now - updatedAt) / (1000 * 60 * 60); // Convert ms to hours
 
         if (differenceInHours < 24) {
-          await sendTextMessage(phone, content, org.wa_phone_id);
+          await sendTextMessage(phone, content, org.wa_phone_id, org.wa_token);
         } else {
-          await sendCheckInTemplateMessage(phone, content, org.wa_phone_id)
+          await sendCheckInTemplateMessage(phone, content, org.wa_phone_id, org.wa_token)
         }
       }
     }

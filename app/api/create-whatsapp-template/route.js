@@ -8,10 +8,10 @@ export async function POST(req) {
     const organizationId = Number(req.cookies.get("organizationId").value) ?? 0;
 
     const body = await req.json();
-    const { waba_id } = body;
+    const { waba_id, token } = body;
 
-    await createTemplateWithHeader("vorsto_support_enquiry", "{{1}} has joined this conversation and will be assisting you with your enquiry.", ["Daniel"], "Support Representative Connected", waba_id);
-    await createTemplate("vorsto_support_check_in", "Hello, Thank you for your patience on your enquiry. {{1}}", ["Your enquiry has been resolved"], waba_id);
+    await createTemplateWithHeader("vorsto_support_enquiry", "{{1}} has joined this conversation and will be assisting you with your enquiry.", ["Daniel"], "Support Representative Connected", waba_id, token);
+    await createTemplate("vorsto_support_check_in", "Hello, Thank you for your patience on your enquiry. {{1}}", ["Your enquiry has been resolved"], waba_id, token);
 
     await prisma.organization.update({
       data: {

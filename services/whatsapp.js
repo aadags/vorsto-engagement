@@ -3,7 +3,7 @@ import axios from 'axios';
 const AUTH_TOKEN = `Bearer ${process.env.WHATSAPP_TOKEN}`;
 const SYS_TOKEN = `Bearer ${process.env.WHATSAPP_SYSTEM_USER_TOKEN}`;
 
-export const sendTextMessage = async (to, body, phoneId) => {
+export const sendTextMessage = async (to, body, phoneId, token) => {
   try {
     const response = await axios.post(
       `https://graph.facebook.com/v21.0/${phoneId}/messages`,
@@ -18,7 +18,7 @@ export const sendTextMessage = async (to, body, phoneId) => {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: AUTH_TOKEN,
+          Authorization: `Bearer ${token}`,
         },
       }
     );
@@ -29,7 +29,7 @@ export const sendTextMessage = async (to, body, phoneId) => {
   }
 };
 
-export const sendImageMessage = async (to, imageUrl, phoneId) => {
+export const sendImageMessage = async (to, imageUrl, phoneId, token) => {
   try {
     const response = await axios.post(
       `https://graph.facebook.com/v21.0/${phoneId}/messages`,
@@ -43,7 +43,7 @@ export const sendImageMessage = async (to, imageUrl, phoneId) => {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: AUTH_TOKEN,
+          Authorization: `Bearer ${token}`,
         },
       }
     );
@@ -57,7 +57,8 @@ export const sendImageMessage = async (to, imageUrl, phoneId) => {
 export const sendEngagementTemplateMessage = async (
   to,
   name,
-  phoneId
+  phoneId,
+  token
 ) => {
   try {
     const response = await axios.post(
@@ -83,7 +84,7 @@ export const sendEngagementTemplateMessage = async (
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: AUTH_TOKEN,
+          Authorization: `Bearer ${token}`,
         },
       }
     );
@@ -97,7 +98,8 @@ export const sendEngagementTemplateMessage = async (
 export const sendCheckInTemplateMessage = async (
   to,
   content,
-  phoneId
+  phoneId,
+  token
 ) => {
   try {
     const response = await axios.post(
@@ -123,7 +125,7 @@ export const sendCheckInTemplateMessage = async (
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: AUTH_TOKEN,
+          Authorization: `Bearer ${token}`,
         },
       }
     );
@@ -134,7 +136,7 @@ export const sendCheckInTemplateMessage = async (
   }
 };
 
-export const createTemplate = async (name, text, params, wabaId) => {
+export const createTemplate = async (name, text, params, wabaId, token) => {
   try {
     const response = await axios.post(
       `https://graph.facebook.com/v21.0/${wabaId}/message_templates`,
@@ -156,7 +158,7 @@ export const createTemplate = async (name, text, params, wabaId) => {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: SYS_TOKEN,
+          Authorization: `Bearer ${token}`,
         },
       }
     );
@@ -167,7 +169,7 @@ export const createTemplate = async (name, text, params, wabaId) => {
   }
 };
 
-export const createTemplateWithHeader = async (name, text, params, headerText, wabaId) => {
+export const createTemplateWithHeader = async (name, text, params, headerText, wabaId, token) => {
   try {
     const response = await axios.post(
       `https://graph.facebook.com/v21.0/${wabaId}/message_templates`,
@@ -195,7 +197,7 @@ export const createTemplateWithHeader = async (name, text, params, headerText, w
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: SYS_TOKEN,
+          Authorization: `Bearer ${token}`,
         },
       }
     );
