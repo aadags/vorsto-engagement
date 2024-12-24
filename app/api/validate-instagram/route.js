@@ -45,7 +45,7 @@ export async function POST(req) {
 
     const userId = responseUser.data.user_id;
 
-    const ttr = expires_in - 259200;
+    const ttr = (expires_in - 259200) * 1000;
 
     const org = await prisma.organization.update({
       data: {
@@ -63,7 +63,7 @@ export async function POST(req) {
     
     await client.push({
       jobtype: 'RenewInstagramToken',
-      args: [{ userId }],
+      args: [{ user_id: userId }],
       queue: 'default', // or specify another queue
       at: new Date(Date.now() + ttr) 
     });
