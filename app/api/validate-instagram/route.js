@@ -63,7 +63,7 @@ export async function POST(req) {
     
     await client.push({
       jobtype: 'RenewInstagramToken',
-      args: [{ us }],
+      args: [{ userId }],
       queue: 'default', // or specify another queue
       at: new Date(Date.now() + ttr) 
     });
