@@ -29,7 +29,7 @@ export async function POST(req) {
 
     console.log(response.data);
 
-    const { access_token, user_id } = response.data;
+    const { access_token } = response.data;
 
     const responseToken = await axios.get(
       `https://graph.instagram.com/access_token?grant_type=ig_exchange_token&client_secret=${process.env.INSTAGRAM_CLIENT_SECRET}&access_token=${access_token}`
@@ -37,12 +37,20 @@ export async function POST(req) {
 
     const { access_token: llt, expires_in } = responseToken.data;
 
+    const params = {
+      fields: 'user_id,username',
+      access_token: llt
+    };
+    const responseUser = await axios.get(`https://graph.instagram.com/v21.0/me`, { params });
+
+    const userId = responseUser.data.user_id;
+
     const ttr = expires_in - 259200;
 
     const org = await prisma.organization.update({
       data: {
         ig_token: llt,
-        ig_user_id: String(user_id),
+        ig_user_id: String(userId),
       },
       where: {
         id: orgId,
@@ -55,7 +63,7 @@ export async function POST(req) {
     
     await client.push({
       jobtype: 'RenewInstagramToken',
-      args: [{ user_id }],
+      args: [{ us }],
       queue: 'default', // or specify another queue
       at: new Date(Date.now() + ttr) 
     });
