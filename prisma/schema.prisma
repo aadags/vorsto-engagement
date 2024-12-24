@@ -62,6 +62,8 @@ model Conversation {
   name         String?
   email         String?
   phone         String?
+  username         String?
+  meta_id         String?
   channel         String?
   body         String?     @db.LongText
   is_lead      Boolean     @default(false)
