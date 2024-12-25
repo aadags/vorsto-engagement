@@ -21,7 +21,7 @@ export async function POST(req) {
 
     const { access_token: llt, expires_in } = responseToken.data;
 
-    const ttr = expires_in - 259200;
+    const ttr = (expires_in - 259200) * 1000;
 
     await prisma.organization.update({
       data: {
