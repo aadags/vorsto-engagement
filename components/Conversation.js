@@ -143,7 +143,7 @@ export default function Conversation({ conversationId }) {
                     <div className="fn__title_holder">
                         <div className="container">
                             {/* Active chat title */}
-                            <h1 className="title">Chat with {chat.name} via {chat.channel}</h1>
+                            <h1 className="title">Chat with {chat.name || chat.username} via {chat.channel}</h1>
                             {/* !Active chat title */}
                         </div>
                     </div>
@@ -154,7 +154,7 @@ export default function Conversation({ conversationId }) {
                                 {messages?.map((message, index) => (
                                     <div className={`chat__box ${message.role == "assistant" ? "bot__chat" : "your__chat"}`} key={index}>
                                         <div className="author">
-                                            <span>{message.role == "user" ? chat.name : message.role}</span>
+                                            <span>{message.role == "user" ? chat.name || chat.username : message.role}</span>
                                         </div>
                                         <div className="chat">
                                             <p><span dangerouslySetInnerHTML={renderText(message.content)}></span></p>
@@ -199,7 +199,7 @@ export default function Conversation({ conversationId }) {
                             <ul className="group__list">
                                 <li className="group__item">
                                     <div className="fn__chat_link">
-                                        <span className="text">name: {chat.name}</span>
+                                        <span className="text">name: {chat.name || chat.username}</span>
                                     </div>
                                 </li>
                                 <li className="group__item">
@@ -209,7 +209,7 @@ export default function Conversation({ conversationId }) {
                                 </li>
                                 <li className="group__item">
                                     <div className="fn__chat_link">
-                                        <span className="text">contact: {chat.channel==="webchat"? chat.email : chat.phone}</span>
+                                        <span className="text">contact: {chat.channel==="webchat"? chat.email : chat.phone || chat.username}</span>
                                     </div>
                                 </li>
                             </ul>
