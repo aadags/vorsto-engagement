@@ -74,8 +74,8 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
             key: "allow"
         },
         {
-            title: "Leads",
-            pathname: "/leads",
+            title: "Human Assistance",
+            pathname: "/escalated",
             img: "/svg/info.svg",
             key: "allow",
             counter: newLead
@@ -88,7 +88,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
     
         },
         {
-            title: "Archived",
+            title: "Archived Conversations",
             pathname: "/archived",
             img: "/svg/envelope.svg",
             key: user.role_id > 0 ? "archivedChats" : "allow"

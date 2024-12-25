@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/db/prisma";
 import { sendEngagementTemplateMessage, sendTextMessage, sendCheckInTemplateMessage } from "@/services/whatsapp";
+import { sendDirectMessage } from "@/services/instagram";
 
 export async function POST(req) {
   try {
@@ -41,6 +42,18 @@ export async function POST(req) {
         } else {
           await sendCheckInTemplateMessage(phone, content, org.wa_phone_id, org.wa_token)
         }
+      }
+    }
+
+    if(chat.channel==="instagram") {
+      const { content } = newMessage
+      if(chat.user_id == null)
+      {
+        await sendDirectMessage(org.ig_user_id, org.ig_token, chat.meta_id, `Agent ${user.name} has joined your chat.`);
+        await sendDirectMessage(org.ig_user_id, org.ig_token, chat.meta_id, content);
+      } else {
+        await sendDirectMessage(org.ig_user_id, org.ig_token, chat.meta_id, content);
+       
       }
     }
 

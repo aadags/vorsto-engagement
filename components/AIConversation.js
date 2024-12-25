@@ -13,7 +13,7 @@ export default function AIConversations() {
   const columns = [
     {
       name: 'Name',
-      selector: row => row.name,
+      selector: row => row.name || row.username,
       sortable: true,
     },
     {
@@ -23,7 +23,7 @@ export default function AIConversations() {
     },
     {
       name: 'Contact',
-      selector: row => row.email? row.email : row.phone,
+      selector: row => row.email || row.phone || row.username,
       sortable: true,
     },
     {

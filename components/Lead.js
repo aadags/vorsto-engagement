@@ -13,7 +13,7 @@ export default function Lead() {
   const columns = [
     {
       name: 'Name',
-      selector: row => row.name,
+      selector: row => row.name || row.username,
       sortable: true,
     },
     {
@@ -23,7 +23,7 @@ export default function Lead() {
     },
     {
       name: 'Contact',
-      selector: row => row.email? row.email : row.phone,
+      selector: row => row.email || row.phone || row.username,
       sortable: true,
     },
     {
@@ -87,7 +87,7 @@ export default function Lead() {
           <div className="user__profile">
               <div style={{ width: '100%', margin: '0 auto' }}>
                 <DataTable
-                  title="Leads"
+                  title="Human Assistance"
                   columns={columns}
                   data={data}
                   progressPending={loading}
