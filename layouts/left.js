@@ -148,10 +148,10 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
             key: user.role_id > 0 ? "configureInstagram": "allow"
         },
         {
-            title: "Support Email",
+            title: "Email",
             pathname: "#",
             img: "/svg/email.svg",
-            key: user.role_id > 0 ? "configureSupportEmail": "allow"
+            key: user.role_id > 0 ? "configureEmail": "allow"
         }
     
     ];
