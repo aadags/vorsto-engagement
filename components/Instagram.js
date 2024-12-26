@@ -19,6 +19,21 @@ export default function Instagram() {
     router.push("https://www.instagram.com/oauth/authorize?enable_fb_login=0&force_authentication=1&client_id=934739811950493&redirect_uri=https://engage.vorsto.io/channel/instagram&response_type=code&scope=instagram_business_basic%2Cinstagram_business_manage_messages%2Cinstagram_business_manage_comments%2Cinstagram_business_content_publish");
   };
 
+  const disconnectIG = async () => {
+    const confirmed = window.confirm("Are you sure you want to deactivate Instagram?");
+    if (confirmed) {
+      try {
+        const response = await axios.get(`/api/deactivate-instagram`);
+        if (response.data) {
+          router.refresh();
+        }
+      } catch (error) {
+        console.error("Error deactivating Instagram:", error);
+      }
+    }
+  };
+  
+
   useEffect(() => {
     const validateIG = async () => {
       
@@ -68,7 +83,7 @@ export default function Instagram() {
             <div className="header_bottom">
             { org && ig && org.ig_token && org.ig_user_id?
             <div className="techwave_fn_user_profile">
-              <button onClick={launchInstagramSignup} className="techwave_fn_button" ><span>Disconnect Instagram</span></button>
+              <button onClick={disconnectIG} className="techwave_fn_button" ><span>Disconnect Instagram</span></button>
               <br/>
               <div className="user__profile">
               <div className="user_avatar">
