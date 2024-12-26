@@ -18,7 +18,7 @@ export async function GET(req) {
     const pageSize = parseInt(req.nextUrl.searchParams.get("per_page"));
 
     const contacts = await prisma.conversation.findMany({
-      distinct: ['name', 'email', 'phone'], // Ensure uniqueness based on these fields
+      distinct: ['name', 'email', 'phone', 'username'], // Ensure uniqueness based on these fields
       select: {
         name: true,
         email: true,
