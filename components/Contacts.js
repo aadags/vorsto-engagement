@@ -26,7 +26,7 @@ export default function Contacts() {
     },
     {
       name: "Instagram",
-      selector: (row) => row.username,
+      selector: (row) => "@"+row.username,
       sortable: true,
     },
   ];
