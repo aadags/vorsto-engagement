@@ -23,6 +23,7 @@ export async function GET(req) {
         name: true,
         email: true,
         phone: true,
+        username: true,
       },
       where: { organization_id: organizationId },
       orderBy: { created_at: 'desc' },
@@ -31,7 +32,7 @@ export async function GET(req) {
     });
 
     const total = prisma.conversation.count({
-      distinct: ['name', 'email', 'phone'],
+      distinct: ['name', 'email', 'phone', 'username'],
       where: { organization_id: organizationId },
     });
 

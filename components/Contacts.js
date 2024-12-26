@@ -27,16 +27,21 @@ export default function Contacts() {
       sortable: true,
     },
     {
-      name: 'Actions',
-      cell: row => (
-          <div>
-              <a href="#"><FontAwesomeIcon icon={faComment} /> Engage</a><br/>
-          </div>
-      ),
-      ignoreRowClick: true,
-      allowOverflow: true,
-      button: true,
+      name: 'Instagram',
+      selector: row => row.username,
+      sortable: true,
     },
+    // {
+    //   name: 'Actions',
+    //   cell: row => (
+    //       <div>
+    //           <a href="#"><FontAwesomeIcon icon={faComment} /> Engage</a><br/>
+    //       </div>
+    //   ),
+    //   ignoreRowClick: true,
+    //   allowOverflow: true,
+    //   button: true,
+    // },
   ];
 
   createTheme('dark', {
