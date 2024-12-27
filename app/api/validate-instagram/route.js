@@ -57,6 +57,20 @@ export async function POST(req) {
       },
     });
 
+    const url = `https://graph.instagram.com/v21.0/${userId}/subscribed_apps`;
+    const parms = {
+      subscribed_fields: "comments,live_comments,messages",
+      access_token: llt, // Replace with your actual access token
+    };
+
+    axios.post(url, null, { parms })
+    .then(response => {
+      console.log("Response:", response.data);
+    })
+    .catch(error => {
+      console.error("Error:", error.response?.data || error.message);
+    });
+
     const client = await faktory.connect({
       url: process.env.FAKTORY_URL  || ""
     });
