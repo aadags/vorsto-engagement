@@ -20,7 +20,7 @@ export default function Roles() {
     configureWebChat: false,
     configureWhatsapp: false,
     configureInstagram: false,
-    configureEmail: false,
+    // configureEmail: false,
   });
 
   const columns = [

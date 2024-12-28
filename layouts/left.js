@@ -151,7 +151,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
             title: "Email",
             pathname: "#",
             img: "/svg/email.svg",
-            key: user.role_id > 0 ? "configureEmail": "allow"
+            key: ""
         }
     
     ];
