@@ -11,8 +11,8 @@ export default function Footer() {
                     </div>
                     <div className="menu_items">
                         <ul>
-                            <li><Link href="https://www.vorsto.io/terms-policy" target="_blank">Terms of Service</Link></li>
-                            <li><Link href="https://www.vorsto.io/privacy-policy" target="_blank">Privacy Policy</Link></li>
+                            <li><Link href="https://dev.vorsto.io/terms-policy" target="_blank">Terms of Service</Link></li>
+                            <li><Link href="https://dev.vorsto.io/privacy-policy" target="_blank">Privacy Policy</Link></li>
                         </ul>
                     </div>
                 </div>
