@@ -87,7 +87,7 @@ export default function Lead() {
           <div className="user__profile">
               <div style={{ width: '100%', margin: '0 auto' }}>
                 <DataTable
-                  title="Human Assistance"
+                  title="Chat Queue"
                   columns={columns}
                   data={data}
                   progressPending={loading}

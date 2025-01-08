@@ -20,7 +20,7 @@ export default function Instagram() {
   };
 
   const disconnectIG = async () => {
-    const confirmed = window.confirm("Are you sure you want to deactivate Instagram?");
+    const confirmed = window.confirm("Are you sure you want to disconnect Instagram?");
     if (confirmed) {
       try {
         const response = await axios.get(`/api/deactivate-instagram`);

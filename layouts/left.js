@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from 'react';
 import { socket } from '@/app/socket'
+import axios from 'axios';
 
 export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
 
@@ -32,6 +33,11 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
         }
     };
 
+    const fetchLeads = async () => {
+		const response = await axios.get(`/api/get-convos?page=1&per_page=1`);
+		setNewLead(response.data.total);
+	};
+
     useEffect(() => {
 
         const prms = JSON.parse(user.role?.permissions||"[]");
@@ -42,14 +48,13 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
 
         getChats();
 
-        setNewLead(localStorage.getItem('newL') || newLead)
+        fetchLeads();
 
         if (socket.connected) {
             onConnect();
         }
 
         socket.on('notifyLead', (data) => {
-            localStorage.setItem("newL", newLead + 1);
             setNewLead(newLead + 1);
         });
 
@@ -74,7 +79,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
             key: "allow"
         },
         {
-            title: "Human Assistance",
+            title: "Chat Queue",
             pathname: "/escalated",
             img: "/svg/info.svg",
             key: "allow",
