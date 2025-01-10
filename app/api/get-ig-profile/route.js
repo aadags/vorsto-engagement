@@ -15,23 +15,26 @@ export async function GET(req) {
     const cookieData = await getCookieData();
     const orgId = Number(cookieData) ?? 0;
 
-    const org = await prisma.organization.findFirst({
+    const org = await prisma.organization.findFirstOrThrow({
       where: { id: orgId },
     });
 
-    const url = `https://graph.instagram.com/v21.0/${org.ig_user_id}/subscribed_apps`;
-    const parms = {
-      subscribed_fields: "comments,live_comments,messages",
-      access_token: org.ig_token, // Replace with your actual access token
+    const requestOptions = {
+      method: "POST",
+      url: `https://graph.instagram.com/v21.0/${org.ig_user_id}/subscribed_apps`,
+      params: {
+        subscribed_fields: "comments,live_comments,messages",
+        access_token: org.ig_token
+      }
     };
-
-    axios.post(url, null, { parms })
-    .then(response => {
-      console.log("Response:", response.data);
-    })
-    .catch(error => {
-      console.error("Error:", error.response?.data || error.message);
-    });
+    
+    axios(requestOptions)
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
 
     const params = {
       fields: 'name,account_type,username,profile_picture_url',

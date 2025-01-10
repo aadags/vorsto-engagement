@@ -57,19 +57,22 @@ export async function POST(req) {
       },
     });
 
-    const url = `https://graph.instagram.com/v21.0/${userId}/subscribed_apps`;
-    const parms = {
-      subscribed_fields: "comments,live_comments,messages",
-      access_token: llt, // Replace with your actual access token
+    const requestOptions = {
+      method: "POST",
+      url: `https://graph.instagram.com/v21.0/${String(userId)}/subscribed_apps`,
+      params: {
+        subscribed_fields: "comments,live_comments,messages",
+        access_token: llt
+      }
     };
-
-    axios.post(url, null, { parms })
-    .then(response => {
-      console.log("Response:", response.data);
-    })
-    .catch(error => {
-      console.error("Error:", error.response?.data || error.message);
-    });
+    
+    axios(requestOptions)
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
 
     const client = await faktory.connect({
       url: process.env.FAKTORY_URL  || ""
