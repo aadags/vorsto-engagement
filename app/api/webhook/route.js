@@ -6,7 +6,7 @@ import faktory from "faktory-worker"
 
 const prisma = new PrismaClient();
 const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY, {
-  apiVersion: '2024-06-20', // Use the correct API version
+  apiVersion: '2024-12-18.acacia', // Use the correct API version
 });
 
 export async function POST(req) {
