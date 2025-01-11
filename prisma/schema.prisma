@@ -27,6 +27,11 @@ model Organization {
   roles          Role[]
   conversations  Conversation[]
   bot  Bot?
+  stripe_id    String?     @unique
+  plan         String      @default("free")
+  plan_id  String?
+  created_at                           DateTime?                      @default(now())
+  updated_at                           DateTime?                      @updatedAt
 
   @@map("organizations")
 }

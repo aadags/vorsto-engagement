@@ -8,17 +8,9 @@ const Plan = () => {
 
   const router = useRouter();
   const [user, setUser] = useState();
-  const [countryCode, setCountryCode] = useState();
-  const [emailKey, setEmailKey] = useState();
 
   const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
   const pricingTableId = process.env.NEXT_PUBLIC_STRIPE_PRICING_TABLE_ID;
-
-  async function getCountryCode() {
-    const response = await fetch('https://ipapi.co/json/');
-    const data = await response.json();
-    return data.country_code; // Returns the country code, e.g., "US"
-  }
 
   useEffect(() => {
 
@@ -36,6 +28,10 @@ const Plan = () => {
             if (response.ok) {
               const res = await response.json();
               setUser(res.data);
+              if(res.data.organizations.plan !== "free")
+              {
+                router.push(`/billing/${res.data.organizations.stripe_id}`);
+              }
             } 
 
           } catch (error) {
@@ -44,29 +40,6 @@ const Plan = () => {
     });
 
   }, [router])
-
-  
-  useEffect(() => {
-
-    const fetchCc = async () => {
-      let cc = user.location || localStorage.getItem("cc");
-      if(!cc)
-      {
-        cc = await getCountryCode();
-        localStorage.setItem("cc", cc);
-      }
-      setCountryCode(cc);
-      const split = user.email.split("@");
-      const u = split[0] + "+location_"+cc;
-      setEmailKey(u+"@"+split[1]);
-    }
-
-    if(user)
-    {
-      fetchCc();
-    }
-
-  }, [user])
 
   return (
     <>
@@ -77,10 +50,10 @@ const Plan = () => {
             <div className="header_top">
               <h1 className="title">Choose a Plan</h1>
             </div>
-                {emailKey && <stripe-pricing-table pricing-table-id={pricingTableId}
+                {user && <stripe-pricing-table pricing-table-id={pricingTableId}
                     publishable-key={publishableKey}
                     client-reference-id={user.id}
-                    customer-email={emailKey}
+                    customer-email={user.email}
                 >
                 </stripe-pricing-table>}
            </div>

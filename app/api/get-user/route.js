@@ -10,7 +10,8 @@ export async function POST(req) {
     const user = await prisma.user.findUniqueOrThrow({
       where: { email: email },
       include: {
-        role: true
+        role: true,
+        organizations: true,
       }
     });
 

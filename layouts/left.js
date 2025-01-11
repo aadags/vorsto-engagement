@@ -135,7 +135,14 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
     
         },
         {
-            title: "Webchat",
+            title: "Billing",
+            pathname: user.organizations.plan === "free"? "/plan" : `/billing/${user.organizations.stripe_id}`,
+            img: "/svg/dollar.svg",
+            key: user.role_id > 0 ? "manageBilling" : "allow"
+    
+        },
+        {
+            title: "Web",
             pathname: "/channel/webchat",
             img: "/svg/webchat.svg",
             key: user.role_id > 0 ? "configureWebChat" : "allow"
@@ -246,7 +253,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                     <div className="nav_group">
                         <h2 className="group__title">ADMIN SETTINGS</h2>
                         <ul className="group__list">
-                            {data.slice(6, 9).map((item, i) => (
+                            {data.slice(6, 10).map((item, i) => (
                                 item.key && perms.includes(item.key) && <li key={i}>
                                     <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
                                         <span className="icon">
@@ -263,7 +270,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                     <div className="nav_group">
                         <h2 className="group__title">CHANNEL SETTINGS</h2>
                         <ul className="group__list">
-                            {data.slice(9, 14).map((item, i) => (
+                            {data.slice(10, 15).map((item, i) => (
                                 item.key && perms.includes(item.key) && <li key={i}>
                                     <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
                                         <span className="icon">

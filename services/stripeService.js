@@ -7,7 +7,7 @@ export const getCustomerBilling = async (customerId) => {
       
       const session = await stripe.billingPortal.sessions.create({
         customer: customerId,
-        return_url: 'https://console.vorsto.io',
+        return_url: 'https://engage.vorsto.io/billing/'+customerId,
       });
 
       return session;
