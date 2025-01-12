@@ -52,7 +52,7 @@ const Plan = () => {
             </div>
                 {user && <stripe-pricing-table pricing-table-id={pricingTableId}
                     publishable-key={publishableKey}
-                    client-reference-id={user.id}
+                    client-reference-id={user.organizations.id}
                     customer-email={user.email}
                 >
                 </stripe-pricing-table>}
