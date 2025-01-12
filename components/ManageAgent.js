@@ -14,6 +14,7 @@ export default function ManageAgent() {
   const [key, setKey] = useState('');
   const [hook, setHook] = useState('');
   const [systemBio, setSystemBio] = useState('');
+  const [humanTakeOver, setHumanTakeOver] = useState(true);
   const [outputType, setOutputType] = useState('');
   const [outputParameter, setOutputParameter] = useState([]);
   const [functions, setFunctions] = useState([]);
@@ -29,6 +30,7 @@ export default function ManageAgent() {
         const bot = await getBot();
         setId(bot.id);
         setName(bot.id);
+        setHumanTakeOver(bot.human_takeover);
         setModel(bot.model);
         setKey(bot.key);
         setHook(bot.api_hook);
@@ -113,7 +115,7 @@ export default function ManageAgent() {
     }
   
     setLoading(true);
-    const botData = { id: id, name, systemBio, model, hook, key, functions, outputType, outputParameter };
+    const botData = { id: id, name, humanTakeOver, systemBio, model, hook, key, functions, outputType, outputParameter };
   
     try {
       const response = await fetch('/api/update-bot', {
@@ -154,16 +156,36 @@ export default function ManageAgent() {
             <div className="header_bottom">
               <form onSubmit={handleSubmit}>
                 <div className="form_group">
-                  <textarea
-                    id="system_bio"
-                    className="full_width"
-                    value={systemBio}
-                    onChange={(e) => setSystemBio(e.target.value)}
-                    rows={4}
-                    placeholder="General information about your agent, what your agent can do"
-                    required
-                  />
+                <textarea
+                  id="system_bio"
+                  className="full_width"
+                  value={systemBio}
+                  onChange={(e) => setSystemBio(e.target.value)}
+                  rows={10} // Increased height
+                  style={{
+                    resize: 'vertical', // Allows vertical resizing by user
+                    overflow: 'auto', // Adds scroll when content overflows
+                  }}
+                  placeholder="General information about your agent, what your agent can do"
+                  required
+                />
                 </div>
+                <br/>
+
+                <label className="fn__toggle">
+                  <span className="t_in">
+                    <input 
+                      type="checkbox" 
+                      checked={humanTakeOver} 
+                      id="human_takeover" 
+                      onChange={(e) => setHumanTakeOver(e.target.checked)} 
+                    />
+
+                    <span className="t_slider" />
+                    <span className="t_content" />
+                  </span>
+                  Allow human agent takeover
+                </label>
                 <br/>
                 
                 {model !== "vorsto-xa-2" && ( <div className="form_group">

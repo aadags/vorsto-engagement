@@ -87,6 +87,7 @@ model Conversation {
 model Bot {
   id                String   @id @default(cuid())
   name              String
+  human_takeover    Boolean  @default(true)
   system_bio        String   @db.LongText
   model             String?
   tools             Tool[]

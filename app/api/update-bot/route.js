@@ -9,6 +9,7 @@ export async function POST(req) {
     const {
       id,
       name,
+      humanTakeOver,
       systemBio,
       model,
       hook,
@@ -22,6 +23,7 @@ export async function POST(req) {
       data: {
         name,
         system_bio: systemBio,
+        human_takeover: humanTakeOver,
         model,
         api_hook: hook,
         key,
