@@ -30,6 +30,8 @@ model Organization {
   stripe_id    String?     @unique
   plan         String      @default("free")
   plan_id  String?
+  support_email  String?    @unique()
+  support_email_connection  String?    @db.LongText
   created_at                           DateTime?                      @default(now())
   updated_at                           DateTime?                      @updatedAt
 

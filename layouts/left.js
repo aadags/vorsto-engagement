@@ -161,9 +161,9 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
         },
         {
             title: "Email",
-            pathname: "#",
+            pathname: "/channel/email",
             img: "/svg/email.svg",
-            key: ""
+            key: user.role_id > 0 ? "configureEmail": "allow"
         }
     
     ];
