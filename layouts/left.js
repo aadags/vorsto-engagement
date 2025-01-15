@@ -79,9 +79,9 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
             key: "allow"
         },
         {
-            title: "Chat Queue",
+            title: "Conversation Queue",
             pathname: "/escalated",
-            img: "/svg/info.svg",
+            img: "/svg/chat.svg",
             key: "allow",
             counter: newLead
         },
@@ -89,7 +89,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
             title: "AI Conversations",
             pathname: "/conversations",
             img: "/svg/chat.svg",
-            key: "allow"
+            key: ""
     
         },
         {

@@ -31,10 +31,16 @@ export default function Email() {
       {
         setSaved(true);
         setLoading(false);
+        router.refresh();
+
+      } else {
+        alert("Invalid credentials");
+        setSaved(false);
+        setLoading(false)
       }
 
     } catch (error) {
-      console.error('Error creating template:', error);
+      console.error('Error attavhing template:', error);
       setSaved(true);
       setLoading(false);
     }
@@ -44,7 +50,7 @@ export default function Email() {
     const confirmed = window.confirm("Are you sure you want to disconnect your support Email?");
     if (confirmed) {
       try {
-        const response = await axios.get(`/api/deactivate-whatsapp`);
+        const response = await axios.get(`/api/deactivate-support-email`);
         if (response.data) {
           router.refresh();
         }
@@ -59,12 +65,6 @@ export default function Email() {
       
       const response = await axios.get(`/api/get-org-details`);
       setOrg(response.data);
-
-      if(response.data && response.data.template_exist && response.data.waba_id)
-      {
-        const response = await axios.get(`/api/get-ws-profile`);
-        // setWs(response.data);
-      }
   
     };
     fetchOrg();
@@ -89,9 +89,22 @@ export default function Email() {
                   <div className="user_details">
                     <ul>
                       <li>
+                      <div className="item">
+                          <h4 className="subtitle">Server</h4>
+                          <h3 className="title">*******************************</h3>
+                        </div>
+                        
+                      </li>
+                      <li>
                         <div className="item">
                           <h4 className="subtitle">Support Email</h4>
-                          <h3 className="title">contact@vorsto.io</h3>
+                          <h3 className="title">{ org.support_email }</h3>
+                        </div>
+                      </li>
+                      <li>
+                        <div className="item">
+                          <h4 className="subtitle">Port</h4>
+                          <h3 className="title">****</h3>
                         </div>
                       </li>
                     </ul>
