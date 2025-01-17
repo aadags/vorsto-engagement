@@ -96,7 +96,7 @@ model Bot {
   output_type       String?  @default("text")
   output_parameters String?  @db.LongText
   organization         Organization       @relation(fields: [organization_id], references: [id])
-  organization_id      Int     @unique
+  organization_id      Int     @unique()
   created_at        DateTime @default(now())
   updated_at        DateTime @updatedAt
 
@@ -125,5 +125,16 @@ model Hook {
   updated_at  DateTime @updatedAt
 
   @@map("hooks")
+}
+
+model Call {
+  id           String @id @default(cuid())
+  from String
+  conferenceId String
+  userId      Int  @unique()
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("calls")
 }
 

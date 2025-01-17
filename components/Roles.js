@@ -12,6 +12,7 @@ export default function Roles() {
   const [title, setTitle] = useState("");
   const [checkboxes, setCheckboxes] = useState({
     archivedChats: false,
+    archivedTickets: false,
     manageAiAgent: false,
     createUsers: false,
     viewUsers: false,
@@ -20,7 +21,8 @@ export default function Roles() {
     configureWebChat: false,
     configureWhatsapp: false,
     configureInstagram: false,
-    // configureEmail: false,
+    configureEmail: false,
+    configureVoice: false,
   });
 
   const columns = [

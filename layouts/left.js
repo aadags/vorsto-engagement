@@ -100,6 +100,12 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
     
         },
         {
+            title: "Call Queue",
+            pathname: "/voice-queue",
+            img: "/svg/phone-volume.svg",
+            key: "allow",
+        },
+        {
             title: "Contacts",
             pathname: "/contacts",
             img: "/svg/bookmarked.svg",
@@ -107,17 +113,31 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
     
         },
         {
-            title: "Start Conversation",
-            pathname: "/bot/ongoing",
-            img: "/svg/new.svg",
-            key: "allow"
+            title: "Open Tickets",
+            pathname: "/tickets",
+            img: "/svg/tickets-on.svg",
+            key: user.role_id > 0 ? "openTickets" : "allow"
+    
+        },
+        {
+            title: "Archived Tickets",
+            pathname: "/archived-tickets",
+            img: "/svg/tickets.svg",
+            key: user.role_id > 0 ? "archivedTickets" : "allow"
     
         },
         {
             title: "AI Agent",
             pathname: "/agent",
-            img: "/svg/upscale.svg",
+            img: "/svg/robot.svg",
             key: user.role_id > 0 ? "manageAiAgent": "allow"
+    
+        },
+        {
+            title: "Workflow",
+            pathname: "/workflow",
+            img: "/svg/option.svg",
+            key: user.role_id > 0 ? "manageWorkflow": "allow"
     
         },
         {
@@ -164,6 +184,12 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
             pathname: "/channel/email",
             img: "/svg/email.svg",
             key: user.role_id > 0 ? "configureEmail": "allow"
+        },
+        {
+            title: "Voice",
+            pathname: "/channel/voice",
+            img: "/svg/tty.svg",
+            key: user.role_id > 0 ? "configureVoice": "allow"
         }
     
     ];
@@ -209,7 +235,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                     {/* #1 navigation group */}
                     <div className="nav_group">
                         <ul className="group__list">
-                            {data.slice(0, 5).map((item, i) => (
+                            {data.slice(0, 6).map((item, i) => (
                                 item.key && perms.includes(item.key) && <li key={i}>
                                     <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
                                         <span className="icon">
@@ -251,9 +277,41 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                     {/* !#3 navigation group */}
                     {/* #3 navigation group */}
                     <div className="nav_group">
+                        <h2 className="group__title">MY CALL CENTER</h2>
+                        <ul className="group__list">
+                                <li>
+                                    <Link href="/sip-phone" className={`fn__tooltip menu__item ${pathname.includes("sip") ? "active" : ""}`} title="sip phone" >
+                                        <span className="icon">
+                                            <img src={"/svg/headset.svg"} alt="" className="fn__svg" />
+                                        </span>
+                                        <span className="text">Call Phone</span>
+                                    </Link>
+                                </li>
+                        </ul>
+                    </div>
+                    {/* !#3 navigation group */}
+                    {/* #3 navigation group */}
+                    <div className="nav_group">
+                        <h2 className="group__title">TICKETS</h2>
+                        <ul className="group__list">
+                            {data.slice(6, 8).map((item, i) => (
+                                item.key && perms.includes(item.key) && <li key={i}>
+                                    <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
+                                        <span className="icon">
+                                            <img src={item.img} alt="" className="fn__svg" />
+                                        </span>
+                                        <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                    {/* !#3 navigation group */}
+                    {/* #3 navigation group */}
+                    <div className="nav_group">
                         <h2 className="group__title">ADMIN SETTINGS</h2>
                         <ul className="group__list">
-                            {data.slice(6, 10).map((item, i) => (
+                            {data.slice(8, 13).map((item, i) => (
                                 item.key && perms.includes(item.key) && <li key={i}>
                                     <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
                                         <span className="icon">
@@ -270,7 +328,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                     <div className="nav_group">
                         <h2 className="group__title">CHANNEL SETTINGS</h2>
                         <ul className="group__list">
-                            {data.slice(10, 15).map((item, i) => (
+                            {data.slice(13, 19).map((item, i) => (
                                 item.key && perms.includes(item.key) && <li key={i}>
                                     <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
                                         <span className="icon">

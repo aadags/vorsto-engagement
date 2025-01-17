@@ -209,7 +209,18 @@ export default function Conversation({ conversationId }) {
                                 </li>
                                 <li className="group__item">
                                     <div className="fn__chat_link">
-                                        <span className="text">contact: {chat.channel==="webchat"? chat.email : chat.phone || chat.username}</span>
+                                        <span className="text">contact:</span>
+                                    </div>
+                                </li>
+                                <li>
+                                <div className="fn__chat_link">
+                                        <span className="text">{
+                                        chat.channel === "webchat" || chat.channel === "email"
+                                            ? chat.email 
+                                            : chat.channel === "whatsapp"
+                                            ? chat.phone 
+                                            : "@"+chat.username
+                                        }</span>
                                     </div>
                                 </li>
                             </ul>
