@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import DataTable, { createTheme } from 'react-data-table-component';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faComment, faPhoneFlip } from '@fortawesome/free-solid-svg-icons'
+import { faBinoculars } from '@fortawesome/free-solid-svg-icons'
 
-export default function Voice() {
+export default function Ticket() {
   const [data, setData] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [totalRows, setTotalRows] = useState(0);
@@ -12,38 +12,54 @@ export default function Voice() {
 
   const columns = [
     {
-      name: 'Caller',
-      selector: row => row.from,
+      name: 'Name',
+      selector: row => row.name || row.username,
       sortable: true,
     },
     {
-      name: 'Call Started',
-      selector: row => new Date(row.createdAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }),
+      name: 'Category',
+      selector: row => "Billing",
+      sortable: true,
+    },
+    {
+      name: 'Priority',
+      selector: row => "High",
+      sortable: true,
+    },
+    {
+      name: 'Contact',
+      selector: row => row.email || row.phone || row.username,
+      sortable: true,
+    },
+    {
+      name: 'Created',
+      selector: row => new Date(row.created_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }),
       sortable: true,
     },
     {
       name: 'Actions',
       cell: row => (
           <div>
-              <a href="#"><FontAwesomeIcon icon={faPhoneFlip} /> Transfer to Me</a><br/>
+              <a href="#"><FontAwesomeIcon icon={faBinoculars} /> Open</a><br/>
           </div>
       ),
       ignoreRowClick: true,
       allowOverflow: true,
-    },
+      button: true,
+  },
   ];
 
   createTheme('dark', {
     background: {
       default: 'transparent',
-      color: '#000',
+      color: '#FFFFFF',
     },
   });
 
 	const fetchUsers = async page => {
 		setLoading(true);
 
-		const response = await axios.get(`/api/get-calls?page=${page}&per_page=${perPage}`);
+		const response = await axios.get(`/api/get-convos?page=${page}&per_page=${perPage}&`);
 
 		setData(response.data.data);
 		setTotalRows(response.data.total);
@@ -57,7 +73,7 @@ export default function Voice() {
 	const handlePerRowsChange = async (newPerPage, page) => {
 		setLoading(true);
 
-		const response = await axios.get(`/api/get-calls?page=${page}&per_page=${perPage}`);
+		const response = await axios.get(`/api/get-convos?page=${page}&per_page=${perPage}`);
 
 		setData(response.data.data);
 		setPerPage(newPerPage);
@@ -76,7 +92,7 @@ export default function Voice() {
           <div className="user__profile">
               <div style={{ width: '100%', margin: '0 auto' }}>
                 <DataTable
-                  title="Call Queue"
+                  title="Open Tickets"
                   columns={columns}
                   data={data}
                   progressPending={loading}

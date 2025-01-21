@@ -324,6 +324,10 @@ a, nav{cursor:pointer}
 	clear: both;
 	display: table;
 }
+.box {
+    flex: 1; /* Each box takes equal space */
+    padding: 20px;
+}
 @media(max-width: 1040px){.container{padding: 0 20px;}}
 @media(max-width: 480px){.container{padding: 0 10px;}}
 /*------------------------------------------------------------------*/
@@ -4683,6 +4687,7 @@ a.fn__like.no_border .fn__svg{
 	bottom: 0;
 	transform: translateX(105%);
 	transition: all .2s ease;
+	overflow-y: scroll;
 }
 .techwave_fn_wrapper.fn__has_sidebar .techwave_fn_image_generation_page .generation__sidebar,
 .techwave_fn_wrapper.fn__has_sidebar .techwave_fn_doc_page .docsidebar,

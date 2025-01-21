@@ -1,26 +1,24 @@
 "use server";
 import { NextResponse } from "next/server";
-import { VoiceResponse } from 'twilio';
+import prisma from "@/db/prisma";
 
 export async function POST(req) {
   try {
-    
-    const voiceResponse = new VoiceResponse();
-    voiceResponse.say({}, 'Thank you for calling. Please wait in line for a few seconds. An agent will be with you shortly.');
-    voiceResponse.play({}, 'http://com.twilio.music.classical.s3.amazonaws.com/BusyStrings.mp3');
 
+    const body = await req.json();
+    const { socketId } = body;
 
-    return new NextResponse(voiceResponse.toString(), {
-      status: 200,
-      headers: {
-        'Content-Type': 'text/xml',
+    const agent = await prisma.liveCallAgent.delete({
+      where: {
+        id: socketId
       },
     });
+    return NextResponse.json({ message: "Removed Agent" });
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: "Failed to attach mail" },
-      { status: 500 }
+      { message: "Failed to remove agent" },
+      { status: 200 }
     );
   }
 }

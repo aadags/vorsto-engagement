@@ -26,12 +26,15 @@ model Organization {
   users          User[]
   roles          Role[]
   conversations  Conversation[]
+  call_queues  CallQueue[]
+  calls  Call[]
   bot  Bot?
   stripe_id    String?     @unique
   plan         String      @default("free")
   plan_id  String?
   support_email  String?    @unique()
   support_email_connection  String?    @db.LongText
+  call_center_number    String?    @unique()
   created_at                           DateTime?                      @default(now())
   updated_at                           DateTime?                      @updatedAt
 
@@ -49,6 +52,8 @@ model User {
   organizations     Organization   @relation(fields: [organization_id], references: [id])
   organization_id   Int
   conversations     Conversation[]
+  call_queue     CallQueue?
+  calls     Call[]
 
   @@map("users")
 }
@@ -127,14 +132,40 @@ model Hook {
   @@map("hooks")
 }
 
+model CallQueue {
+  id           String @id @default(cuid())
+  from String
+  conferenceId String
+  user         User?       @relation(fields: [user_id], references: [id])
+  user_id      Int?     @unique()
+  organization     Organization   @relation(fields: [organization_id], references: [id])
+  organization_id   Int
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@map("call_queues")
+}
+
 model Call {
   id           String @id @default(cuid())
   from String
   conferenceId String
-  userId      Int  @unique()
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  user         User?       @relation(fields: [user_id], references: [id])
+  user_id      Int?     
+  organization     Organization   @relation(fields: [organization_id], references: [id])
+  organization_id   Int
+  status   String
+  created_at  DateTime @default(now())
+  ended_at  DateTime? 
+  updated_at  DateTime @updatedAt
 
   @@map("calls")
+}
+
+model LiveCallAgent {
+  id           String @id @default(cuid())
+  user_id      Int   @unique
+
+  @@map("live_call_agents")
 }
 
