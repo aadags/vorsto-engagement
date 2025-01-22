@@ -135,8 +135,8 @@ model Hook {
 
 model CallQueue {
   id           String @id @default(cuid())
-  from String
-  conferenceId String
+  from String 
+  conferenceId String @unique()
   user         User?       @relation(fields: [user_id], references: [id])
   user_id      Int?     @unique()
   organization     Organization   @relation(fields: [organization_id], references: [id])

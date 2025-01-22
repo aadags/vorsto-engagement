@@ -5,16 +5,18 @@ import prisma from "@/db/prisma";
 export async function POST(req) {
   try {
 
-    const organizationId = Number(req.cookies.get("organizationId").value) ?? 0;
-
     const body = await req.json();
     const { socketId, userId } = body;
+
+    const user = await prisma.user.findFirst({
+      where: { id: userId },
+    });
 
     const agent = await prisma.liveCallAgent.create({
       data: {
         id: socketId,
         user_id: userId,
-        organization_id: organizationId
+        organization_id: user.organization_id
       },
     });
     return NextResponse.json({ message: "Saved Agent" });
