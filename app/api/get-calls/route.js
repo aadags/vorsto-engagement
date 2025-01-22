@@ -17,15 +17,15 @@ export async function GET(req) {
     const page = parseInt(req.nextUrl.searchParams.get("page")); // Default to page 1 if not provided
     const pageSize = parseInt(req.nextUrl.searchParams.get("per_page"));
 
-    const calls = await prisma.call.findMany({
-      // where: { organization_id: organizationId, is_end: true },
-      orderBy: { createdAt: 'desc' },
+    const calls = await prisma.callQueue.findMany({
+      where: { organization_id: organizationId },
+      orderBy: { created_at: 'desc' },
       skip: (page - 1) * pageSize,
       take: pageSize,
     });
 
-    const total = prisma.call.count({
-      // where: { organization_id: organizationId, is_end: true },
+    const total = prisma.callQueue.count({
+      where: { organization_id: organizationId },
     });
 
     return NextResponse.json({ data: calls, count: total });

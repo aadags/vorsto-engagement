@@ -1,27 +1,25 @@
 "use server";
 import { NextResponse } from "next/server";
-import prisma from "@/db/prisma";
+import { VoiceResponse } from 'twilio';
 
 export async function POST(req) {
   try {
+    
+    const voiceResponse = new VoiceResponse();
+    voiceResponse.say({}, 'Thank you for calling. Please wait in line for a few seconds. An agent will be with you shortly.');
+    voiceResponse.play({}, 'http://com.twilio.music.classical.s3.amazonaws.com/BusyStrings.mp3');
 
-    const organizationId = Number(req.cookies.get("organizationId").value) ?? 0;
 
-    const body = await req.json();
-    const { socketId, userId } = body;
-
-    const agent = await prisma.liveCallAgent.create({
-      data: {
-        id: socketId,
-        user_id: userId,
-        organization_id: organizationId
+    return new NextResponse(voiceResponse.toString(), {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/xml',
       },
     });
-    return NextResponse.json({ message: "Saved Agent" });
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: "Failed to save conversation" },
+      { error: "Failed to attach mail" },
       { status: 500 }
     );
   }

@@ -28,6 +28,7 @@ model Organization {
   conversations  Conversation[]
   call_queues  CallQueue[]
   calls  Call[]
+  live_call_agents  LiveCallAgent[]
   bot  Bot?
   stripe_id    String?     @unique
   plan         String      @default("free")
@@ -165,7 +166,17 @@ model Call {
 model LiveCallAgent {
   id           String @id @default(cuid())
   user_id      Int   @unique
+  organization     Organization   @relation(fields: [organization_id], references: [id])
+  organization_id   Int
 
   @@map("live_call_agents")
+}
+
+
+model CallLog {
+  id           String @id @default(cuid())
+  transcript      String?  @db.LongText
+
+  @@map("call_logs")
 }
 

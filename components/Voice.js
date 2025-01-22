@@ -12,13 +12,13 @@ export default function Voice() {
 
   const columns = [
     {
-      name: 'Caller',
+      name: 'Caller ID',
       selector: row => row.from,
       sortable: true,
     },
     {
       name: 'Call Started',
-      selector: row => new Date(row.createdAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }),
+      selector: row => new Date(row.created_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }),
       sortable: true,
     },
     {
