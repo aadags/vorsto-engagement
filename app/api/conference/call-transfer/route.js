@@ -13,10 +13,12 @@ export async function POST(req) {
     const body = await req.json();
     const { agentId } = body;
 
-    const existingCall = await prisma.call.findUniqueOrThrow({ where: { userId } });
+    const existingCall = await prisma.call.findUniqueOrThrow({ where: { userId }, include: {
+      organization: true
+    } });
 
     const callbackUrl = connectConferenceUrl(process.env.NEXT_PUBLIC_APP_URL, agentId, existingCall.conferenceId);
-    await call(agentId, callbackUrl);
+    await call(agentId, existingCall.organization.call_center_number, callbackUrl);
 
     return NextResponse.json({ message: "call transferred" });
 
