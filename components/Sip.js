@@ -58,11 +58,15 @@ export default function Sip() {
       call.on('cancel', () => {
         setCallStatus("The call has been cancelled.");
         setDeviceStatus(1);
+        setCurrentCall(null);
+        setCallParams(null)
        });
 
        call.on('disconnect', call => {
         setCallStatus('The call has been disconnected.');
         setDeviceStatus(1);
+        setCurrentCall(null);
+        setCallParams(null)
        });
 
        call.on('reconnecting', (twilioError) => {
@@ -108,6 +112,7 @@ export default function Sip() {
     if(currentCall)
     {
       currentCall.disconnect();
+      setC
     }
   };
 
