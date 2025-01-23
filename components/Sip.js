@@ -217,8 +217,8 @@ export default function Sip() {
                   <button onClick={handleAnswerCall} className="techwave_fn_button">Answer Call</button>
                   <br/>
                   <button onClick={handleHangUp} className="techwave_fn_button">Hang Up</button>
-                  <br/>
-                  <button onClick={transferCall} className="techwave_fn_button">Transfer Call</button>
+                  {/* <br/>
+                  <button onClick={transferCall} className="techwave_fn_button">Transfer Call</button> */}
                   <br/>
                 </div>
               )}
