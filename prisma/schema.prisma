@@ -157,7 +157,7 @@ model Call {
   organization_id   Int
   status   String
   created_at  DateTime @default(now())
-  ended_at  DateTime? 
+  duration  Int? 
   updated_at  DateTime @updatedAt
 
   @@map("calls")
