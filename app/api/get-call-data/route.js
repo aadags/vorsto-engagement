@@ -6,11 +6,20 @@ export async function POST(req) {
   try {
 
     const organizationId = Number(req.cookies.get("organizationId").value) ?? 0;
+    const userId = Number(req.cookies.get("userId").value) ?? 0;
     const body = await req.json();
     const { conferenceId } = body;
 
-    const call = await prisma.call.findFirst({
-      where: { conferenceId, organization_id: organizationId },
+    const call = await prisma.callQueue.findFirst({
+      where: { user_id: userId, organization_id: organizationId },
+    });
+
+    await prisma.callQueue.update({
+      where: {
+        user_id: userId,
+        organization_id: organizationId,
+      },
+      data: { status: "insession" }
     });
 
     return NextResponse.json({ call });
