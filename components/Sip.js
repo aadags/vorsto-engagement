@@ -46,6 +46,7 @@ export default function Sip() {
     device.on('incoming', (call) => {
       setCallStatus("Incoming call");
       setCallParams(call.parameters)
+      console.log(call.parameters);
       setCurrentCall(call);
       setDeviceStatus(2);
 
