@@ -82,13 +82,17 @@ export default function Sip() {
   };
 
   const disconnectDevice = () => {
-    if (deviceToken) {
-      deviceToken.destroy();
-      setCallStatus("Offline");
-      setIsConnected(false);
-      setDeviceStatus(0);
+    const confirmation = window.confirm("Are you sure you want to disconnect this device?");
+    if (confirmation) {
+      if (deviceToken) {
+        deviceToken.destroy();
+        setCallStatus("Offline");
+        setIsConnected(false);
+        setDeviceStatus(0);
+      }
     }
   };
+  
   
   const handleAnswerCall = () => {
     if (currentCall) {
@@ -174,11 +178,6 @@ export default function Sip() {
                   </button>
                 </div>
               )}
-              {isConnected && (
-                <div>
-                  <button onClick={disconnectDevice} className="techwave_fn_button">Disconnect Phone</button>
-                </div>
-              )}
               {isConnected && currentCall && (
                 <div>
                   <button onClick={handleAnswerCall} className="techwave_fn_button">Answer Call</button>
@@ -186,6 +185,13 @@ export default function Sip() {
                   <button onClick={handleHangUp} className="techwave_fn_button">Hang Up</button>
                   <br/>
                   <button onClick={transferCall} className="techwave_fn_button">Transfer Call</button>
+                  <br/>
+                </div>
+              )}
+              {isConnected && (
+                <div>
+                  <button onClick={disconnectDevice} className="techwave_fn_button">Disconnect Phone</button>
+                  <br/>
                 </div>
               )}
           </div>
