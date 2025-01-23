@@ -36,6 +36,7 @@ model Organization {
   support_email  String?    @unique()
   support_email_connection  String?    @db.LongText
   call_center_number    String?    @unique()
+  allow_speech        Boolean         @default(false)
   created_at                           DateTime?                      @default(now())
   updated_at                           DateTime?                      @updatedAt
 
