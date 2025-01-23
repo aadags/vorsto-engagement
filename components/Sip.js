@@ -78,8 +78,11 @@ export default function Sip() {
     });
 
     device.on('error', (twilioError, call) => {
-      setCallStatus(`Error: ${twilioError}`);
-     });
+        deviceToken.destroy();
+        setCallStatus("Offline");
+        setIsConnected(false);
+        setDeviceStatus(0);
+    });
   };
 
   const disconnectDevice = () => {
