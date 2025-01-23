@@ -16,6 +16,7 @@ export default function Sip() {
   const [isConnected, setIsConnected] = useState(false);
   const [deviceToken, setDeviceToken] = useState();
   const [callParams, setCallParams] = useState();
+  const [callFrom, setCallFrom] = useState();
 
   const fetchToken = async () => {
     try {
@@ -46,7 +47,6 @@ export default function Sip() {
     device.on('incoming', (call) => {
       setCallStatus("Incoming call");
       setCallParams(call.parameters)
-      console.log(call.parameters);
       setCurrentCall(call);
       setDeviceStatus(2);
 
@@ -57,12 +57,12 @@ export default function Sip() {
 
       call.on('cancel', () => {
         setCallStatus("The call has been cancelled.");
-        setDeviceStatus(2);
+        setDeviceStatus(1);
        });
 
        call.on('disconnect', call => {
         setCallStatus('The call has been disconnected.');
-        setDeviceStatus(2);
+        setDeviceStatus(1);
        });
 
        call.on('reconnecting', (twilioError) => {
@@ -138,6 +138,31 @@ export default function Sip() {
     fetchData();
   }, [])
 
+  useEffect(() => {
+        
+    const fetchCallData = async () => {
+      try {
+
+        const resp = await fetch(`/api/get-call-data`, {
+          method: "POST",
+          body: JSON.stringify({
+            conferenceId: callParams.CallSid,
+          }),
+        });
+        const call = await resp.json();
+        setCallFrom(call.from);
+
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    if(callParams)
+    {
+      fetchCallData();
+    }
+  }, [callParams])
+
   return (
     <>
       <div className="techwave_fn_aichatbot_page fn__chatbot">
@@ -147,7 +172,7 @@ export default function Sip() {
           </div>
           <div className="container">
             <p>Device Status: {callStatus}</p>
-            {callParams && <p>{callParams.From}</p>}
+            {callFrom && <p>{callFrom}</p>}
             <p><img src="/img/blank_smartphone_mockup_isolate_on_background.jpg" alt="" style={{ width: "150px" }} /></p>
             <span style={{ position: "absolute", left: "85px", top: "200px" }}>
                 {deviceStatus==0? 
@@ -161,13 +186,13 @@ export default function Sip() {
                 deviceStatus==2?
                 <div style={{ textAlign: 'center' }}>
                   <FontAwesomeIcon icon={faPhoneSquareAlt} size={"4x"} color={"green"} pulse />
-                  {callParams && <p style={{ fontSize: '10px' }}>{callParams.From}</p>}
+                  {callFrom && <p style={{ fontSize: '10px' }}>{callFrom}</p>}
                 </div>
                 :
                 deviceStatus==3?
                 <div style={{ textAlign: 'center' }}>
                   <FontAwesomeIcon icon={faPhoneVolume} size={"4x"} color={"green"} />
-                  {callParams && <p style={{ fontSize: '10px' }}>{callParams.From}</p>}
+                  {callFrom && <p style={{ fontSize: '10px' }}>{callFrom}</p>}
                 </div>
                 :
                 <FontAwesomeIcon icon={faPhoneSlash} size={"4x"} color={"red"} />}
