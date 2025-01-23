@@ -4,14 +4,18 @@ import Link from "next/link";
 import { Device } from "@twilio/voice-sdk";
 import { socket } from '@/app/socket'
 import { getUser } from '@/services/userService';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPowerOff, faPhoneSquareAlt, faPhoneVolume, faPhoneSlash } from '@fortawesome/free-solid-svg-icons'
 
 export default function Sip() {
   const [user, setUser] = useState();
   const [currentAgentId, setCurrentAgentId] = useState(null);
   const [currentCall, setCurrentCall] = useState(null);
   const [callStatus, setCallStatus] = useState("Offline");
+  const [deviceStatus, setDeviceStatus] = useState(0);
   const [isConnected, setIsConnected] = useState(false);
   const [deviceToken, setDeviceToken] = useState();
+  const [callParams, setCallParams] = useState();
 
   const fetchToken = async () => {
     try {
@@ -27,7 +31,7 @@ export default function Sip() {
   const connectClient = (token) => {
     
     const device = new Device(token);
-    setDeviceToken(token);
+    setDeviceToken(device);
     device.register();
 
     socket.emit('call-agents', user.id);
@@ -35,20 +39,40 @@ export default function Sip() {
     device.addListener('registered', device => {
       setCallStatus("Ready");
       setIsConnected(true);
+      setDeviceStatus(1);
       console.log('The device is ready to receive incoming calls.')
     });
 
     device.on('incoming', (call) => {
-      setCallStatus("Incoming support call");
+      setCallStatus("Incoming call");
+      setCallParams(call.parameters)
       setCurrentCall(call);
+      setDeviceStatus(2);
 
       call.on('accept', call => {
         setCallStatus("The incoming call was accepted");
+        setDeviceStatus(3);
       });
 
       call.on('cancel', () => {
-        setCallStatus("The call has been canceled.");
+        setCallStatus("The call has been cancelled.");
+        setDeviceStatus(2);
        });
+
+       call.on('disconnect', call => {
+        setCallStatus('The call has been disconnected.');
+        setDeviceStatus(2);
+       });
+
+       call.on('reconnecting', (twilioError) => {
+        setCallStatus('The call is trying to reconnect.');
+        setDeviceStatus(4);
+      });
+       
+       call.on('reconnected', () => {
+        setCallStatus('The call has regained connectivity.')
+        setDeviceStatus(3);
+      });
       
     });
 
@@ -57,17 +81,26 @@ export default function Sip() {
      });
   };
 
+  const disconnectDevice = () => {
+    if (deviceToken) {
+      deviceToken.destroy();
+      setCallStatus("Offline");
+      setIsConnected(false);
+      setDeviceStatus(0);
+    }
+  };
+  
   const handleAnswerCall = () => {
     if (currentCall) {
       currentCall.accept();
-      setCallStatus("In call with customer");
     }
   };
 
   const handleHangUp = () => {
-    const device = new Device(deviceToken);
-    device.disconnectAll();
-    setCallStatus('Call has ended.');
+    if(currentCall)
+    {
+      currentCall.disconnect();
+    }
   };
 
   const transferCall = async () => {
@@ -107,11 +140,34 @@ export default function Sip() {
           <div className="font__trigger">
             <span />
           </div>
-          <div className="container" style={{  display: "flex", gap: "20px" }}>
-            <div className="box">
-              <h1>My Call Center</h1>
-              <p>Status: {callStatus}</p>
-              {!isConnected && (
+          <div className="container">
+            <p>Device Status: {callStatus}</p>
+            {callParams && <p>{callParams.From}</p>}
+            <p><img src="/img/blank_smartphone_mockup_isolate_on_background.jpg" alt="" style={{ width: "150px" }} /></p>
+            <span style={{ position: "absolute", left: "85px", top: "200px" }}>
+                {deviceStatus==0? 
+                <FontAwesomeIcon icon={faPowerOff} size={"4x"} color={"darkOrange"} />:
+                deviceStatus==1?
+                <div style={{ textAlign: 'center' }}>
+                  <FontAwesomeIcon icon={faPowerOff} size={"4x"} color={"green"} />
+                  <p style={{ fontSize: '10px' }}>Ready...</p>
+                </div>
+                :
+                deviceStatus==2?
+                <div style={{ textAlign: 'center' }}>
+                  <FontAwesomeIcon icon={faPhoneSquareAlt} size={"4x"} color={"green"} pulse />
+                  {callParams && <p style={{ fontSize: '10px' }}>{callParams.From}</p>}
+                </div>
+                :
+                deviceStatus==3?
+                <div style={{ textAlign: 'center' }}>
+                  <FontAwesomeIcon icon={faPhoneVolume} size={"4x"} color={"green"} />
+                  {callParams && <p style={{ fontSize: '10px' }}>{callParams.From}</p>}
+                </div>
+                :
+                <FontAwesomeIcon icon={faPhoneSlash} size={"4x"} color={"red"} />}
+            </span>
+            {!isConnected && (
                 <div>
                   <button onClick={() => handleConnectAgent()} className="techwave_fn_button">
                     Connect Phone
@@ -120,6 +176,11 @@ export default function Sip() {
               )}
               {isConnected && (
                 <div>
+                  <button onClick={disconnectDevice} className="techwave_fn_button">Disconnect Phone</button>
+                </div>
+              )}
+              {isConnected && currentCall && (
+                <div>
                   <button onClick={handleAnswerCall} className="techwave_fn_button">Answer Call</button>
                   <br/>
                   <button onClick={handleHangUp} className="techwave_fn_button">Hang Up</button>
@@ -127,18 +188,6 @@ export default function Sip() {
                   <button onClick={transferCall} className="techwave_fn_button">Transfer Call</button>
                 </div>
               )}
-            </div>
-            <div className="box" style={{ backgroundImage: "url('/img/blank_smartphone_mockup_isolate_on_background.jpg')",
-              backgroundSize: "cover", // Ensures the image covers the div area
-              backgroundPosition: "center", // Centers the image
-              backgroundRepeat: "no-repeat", // Prevents repeating
-              height: "100vh", }}>
-                <div style={{ padding: "50px 25px" }}>
-
-                  all
-
-                </div>
-            </div>
           </div>
         </div>
         <div className="chat__sidebar">
