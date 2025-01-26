@@ -15,6 +15,7 @@ export async function POST(req) {
         user_id: userId,
         conferenceId: conferenceId,
         organization_id: organizationId,
+        agent_joined_at: new Date(),
       },
       data: { status: "insession" }
     });
