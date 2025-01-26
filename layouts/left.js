@@ -205,6 +205,18 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
             pathname: "/channel/voice",
             img: "/svg/tty.svg",
             key: user.role_id > 0 ? "configureVoice": "allow"
+        },
+        {
+            title: "Calls",
+            pathname: "/metrics/call",
+            img: "/svg/info.svg",
+            key: user.role_id > 0 ? "callMetrics": "allow"
+        },
+        {
+            title: "Conversations",
+            pathname: "/metrics/conversation",
+            img: "/svg/info.svg",
+            key: user.role_id > 0 ? "chatMetrics": "allow"
         }
     
     ];
@@ -260,6 +272,16 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                                     </Link>
                                 </li>
                             ))}
+                            {data.slice(7, 9).map((item, i) => (
+                                item.key && perms.includes(item.key) && <li key={i}>
+                                    <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
+                                        <span className="icon">
+                                            <img src={item.img} alt="" className="fn__svg" />
+                                        </span>
+                                        <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
+                                    </Link>
+                                </li>
+                            ))}
                         </ul>
                     </div>
                     {/* !#1 navigation group */}
@@ -307,9 +329,9 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                     {/* !#3 navigation group */}
                     {/* #3 navigation group */}
                     <div className="nav_group">
-                        <h2 className="group__title">TICKETS</h2>
+                        <h2 className="group__title">Wallboard</h2>
                         <ul className="group__list">
-                            {data.slice(7, 9).map((item, i) => (
+                            {data.slice(19, 20).map((item, i) => (
                                 item.key && perms.includes(item.key) && <li key={i}>
                                     <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
                                         <span className="icon">
@@ -343,7 +365,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                     <div className="nav_group">
                         <h2 className="group__title">CHANNEL SETTINGS</h2>
                         <ul className="group__list">
-                            {data.slice(14, 20).map((item, i) => (
+                            {data.slice(14, 19).map((item, i) => (
                                 item.key && perms.includes(item.key) && <li key={i}>
                                     <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
                                         <span className="icon">
