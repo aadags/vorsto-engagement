@@ -15,9 +15,8 @@ export async function GET(req) {
     const cookieData = await getCookieData();
     const organizationId = Number(cookieData) ?? 0;
 
-    const METABASE_SITE_URL = "http://137.184.227.109:3000";
-    const METABASE_SECRET_KEY =
-      "295f08b1c8cba99d9e61268d93ecc915739a0fad0435f2a8c420776d51fcc306";
+    const METABASE_SITE_URL = "https://metabase.vorsto.io";
+    const METABASE_SECRET_KEY = "d36207cfb10f32288abef0eeee7aa47b73c715b7257330eb21fedd7c2cec8090";
 
     const payload = {
       resource: { dashboard: 2 },
