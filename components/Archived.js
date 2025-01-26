@@ -1,42 +1,49 @@
-import React, { useState, useEffect } from 'react';
-import DataTable, { createTheme } from 'react-data-table-component';
-import axios from 'axios';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faComment } from '@fortawesome/free-solid-svg-icons'
+import React, { useState, useEffect } from "react";
+import DataTable, { createTheme } from "react-data-table-component";
+import axios from "axios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faComment } from "@fortawesome/free-solid-svg-icons";
 
 export default function Archived() {
   const [data, setData] = useState([]);
-	const [loading, setLoading] = useState(false);
-	const [totalRows, setTotalRows] = useState(0);
-	const [perPage, setPerPage] = useState(10);
+  const [loading, setLoading] = useState(false);
+  const [totalRows, setTotalRows] = useState(0);
+  const [perPage, setPerPage] = useState(10);
 
   const columns = [
     {
-      name: 'Name',
-      selector: row => row.name || row.username,
+      name: "Name",
+      selector: (row) => row.name || row.username,
       sortable: true,
     },
     {
-      name: 'Channel',
-      selector: row => row.channel,
+      name: "Channel",
+      selector: (row) => row.channel,
       sortable: true,
     },
     {
-      name: 'Contact',
-      selector: row => row.email || row.phone || row.username,
+      name: "Contact",
+      selector: (row) => row.email || row.phone || row.username,
       sortable: true,
     },
     {
-      name: 'Last Activity',
-      selector: row => new Date(row.updated_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }),
+      name: "Last Activity",
+      selector: (row) =>
+        new Date(row.updated_at).toLocaleString("en-US", {
+          dateStyle: "medium",
+          timeStyle: "short",
+        }),
       sortable: true,
     },
     {
-      name: 'Actions',
-      cell: row => (
-          <div>
-              <a href={`/conversation/${row.id}`}><FontAwesomeIcon icon={faComment} /> Open</a><br/>
-          </div>
+      name: "Actions",
+      cell: (row) => (
+        <div>
+          <a href={`/conversation/${row.id}`}>
+            <FontAwesomeIcon icon={faComment} /> Open
+          </a>
+          <br />
+        </div>
       ),
       ignoreRowClick: true,
       allowOverflow: true,
@@ -44,61 +51,64 @@ export default function Archived() {
     },
   ];
 
-  createTheme('dark', {
+  createTheme("dark", {
     background: {
-      default: 'transparent',
-      color: '#000',
+      default: "transparent",
+      color: "#000",
     },
   });
 
-	const fetchUsers = async page => {
-		setLoading(true);
+  const fetchUsers = async (page) => {
+    setLoading(true);
 
-		const response = await axios.get(`/api/get-archived?page=${page}&per_page=${perPage}`);
+    const response = await axios.get(
+      `/api/get-archived?page=${page}&per_page=${perPage}`
+    );
 
-		setData(response.data.data);
-		setTotalRows(response.data.total);
-		setLoading(false);
-	};
+    setData(response.data.data);
+    setTotalRows(response.data.count);
+    setLoading(false);
+  };
 
-	const handlePageChange = page => {
-		fetchUsers(page);
-	};
+  const handlePageChange = (page) => {
+    fetchUsers(page);
+  };
 
-	const handlePerRowsChange = async (newPerPage, page) => {
-		setLoading(true);
+  const handlePerRowsChange = async (newPerPage, page) => {
+    setLoading(true);
 
-		const response = await axios.get(`/api/get-archived?page=${page}&per_page=${perPage}`);
+    const response = await axios.get(
+      `/api/get-archived?page=${page}&per_page=${perPage}`
+    );
 
-		setData(response.data.data);
-		setPerPage(newPerPage);
-		setLoading(false);
-	};
+    setData(response.data.data);
+    setPerPage(newPerPage);
+    setLoading(false);
+  };
 
-	useEffect(() => {
-		fetchUsers(1); // fetch page 1 of users
-		
-	}, []);
+  useEffect(() => {
+    fetchUsers(1); // fetch page 1 of users
+  }, []);
 
   return (
     <div className="techwave_fn_user_profile_page">
       <div className="container">
         <div className="techwave_fn_user_profile">
           <div className="user__profile">
-              <div style={{ width: '100%', margin: '0 auto' }}>
-                <DataTable
-                  title="Archived Conversations"
-                  columns={columns}
-                  data={data}
-                  progressPending={loading}
-                  pagination
-                  paginationServer
-                  paginationTotalRows={totalRows}
-                  onChangeRowsPerPage={handlePerRowsChange}
-                  onChangePage={handlePageChange}
-                  theme="light"
-                />
-              </div>
+            <div style={{ width: "100%", margin: "0 auto" }}>
+              <DataTable
+                title="Archived Conversations"
+                columns={columns}
+                data={data}
+                progressPending={loading}
+                pagination
+                paginationServer
+                paginationTotalRows={totalRows}
+                onChangeRowsPerPage={handlePerRowsChange}
+                onChangePage={handlePageChange}
+                theme="light"
+              />
+            </div>
           </div>
         </div>
       </div>

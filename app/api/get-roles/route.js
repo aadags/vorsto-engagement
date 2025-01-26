@@ -24,7 +24,7 @@ export async function GET(req) {
       take: pageSize,
     });
 
-    const total = prisma.role.count({
+    const total = await prisma.role.count({
       where: { organization_id: organizationId },
     });
 

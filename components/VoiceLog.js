@@ -4,7 +4,7 @@ import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment, faPhoneFlip } from "@fortawesome/free-solid-svg-icons";
 
-export default function Voice() {
+export default function VoiceLog() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [totalRows, setTotalRows] = useState(0);
@@ -23,6 +23,11 @@ export default function Voice() {
           dateStyle: "medium",
           timeStyle: "short",
         }),
+      sortable: true,
+    },
+    {
+      name: "Duration",
+      selector: (row) => convertSecondsToMinSec(row.duration),
       sortable: true,
     },
     {
@@ -53,7 +58,7 @@ export default function Voice() {
     setLoading(true);
 
     const response = await axios.get(
-      `/api/get-calls?page=${page}&per_page=${perPage}`
+      `/api/get-call-log?page=${page}&per_page=${perPage}`
     );
 
     setData(response.data.data);
@@ -69,13 +74,26 @@ export default function Voice() {
     setLoading(true);
 
     const response = await axios.get(
-      `/api/get-calls?page=${page}&per_page=${perPage}`
+      `/api/get-call-log?page=${page}&per_page=${perPage}`
     );
 
     setData(response.data.data);
     setPerPage(newPerPage);
     setLoading(false);
   };
+
+  function convertSecondsToMinSec(seconds) {
+    if (seconds < 0) {
+      throw new Error("Seconds cannot be negative.");
+    }
+
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+
+    return minutes > 0
+      ? `${minutes}m ${remainingSeconds}s`
+      : `${remainingSeconds}s`;
+  }
 
   useEffect(() => {
     fetchUsers(1); // fetch page 1 of users
@@ -88,7 +106,7 @@ export default function Voice() {
           <div className="user__profile">
             <div style={{ width: "100%", margin: "0 auto" }}>
               <DataTable
-                title="Call Queue"
+                title="Call Log"
                 columns={columns}
                 data={data}
                 progressPending={loading}

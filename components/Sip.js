@@ -53,6 +53,7 @@ export default function Sip() {
       call.on('accept', call => {
         setCallStatus("The incoming call was accepted");
         setDeviceStatus(3);
+        updateCallData();
       });
 
       call.on('cancel', () => {
@@ -112,7 +113,8 @@ export default function Sip() {
     if(currentCall)
     {
       currentCall.disconnect();
-      setC
+      setCurrentCall(null);
+
     }
   };
 
@@ -124,6 +126,22 @@ export default function Sip() {
           agentId: 2,
         }),
       });
+    }
+  };
+
+  const updateCallData = async () => {
+    try {
+
+      const resp = await fetch(`/api/update-call-data`, {
+        method: "POST",
+        body: JSON.stringify({
+          conferenceId: callParams.CallSid,
+        }),
+      });
+      await resp.json();
+
+    } catch (error) {
+      console.log(error);
     }
   };
 

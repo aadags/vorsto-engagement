@@ -26,7 +26,7 @@ export default function Contacts() {
     },
     {
       name: "Instagram",
-      selector: (row) => row.username? "@"+row.username : "",
+      selector: (row) => (row.username ? "@" + row.username : ""),
       sortable: true,
     },
   ];
@@ -46,7 +46,7 @@ export default function Contacts() {
     );
 
     setData(response.data.data);
-    setTotalRows(response.data.total);
+    setTotalRows(response.data.count);
     setLoading(false);
   };
 
@@ -97,7 +97,13 @@ export default function Contacts() {
           <div className="user__profile">
             <div style={{ width: "100%", margin: "0 auto" }}>
               {/* Export Button */}
-              <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "10px" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  marginBottom: "10px",
+                }}
+              >
                 <button
                   onClick={handleExport}
                   style={{

@@ -40,14 +40,16 @@ export default function Roles() {
     },
     {
       name: "Actions",
-      cell: (row) => (
-        row.users && row.users.length < 1 && <div>
-          <a href onClick={() => deleteRole(row.id)}>
-            <FontAwesomeIcon icon={faDeleteLeft} /> Deactivate
-          </a>
-          <br />
-        </div>
-      ),
+      cell: (row) =>
+        row.users &&
+        row.users.length < 1 && (
+          <div>
+            <a href onClick={() => deleteRole(row.id)}>
+              <FontAwesomeIcon icon={faDeleteLeft} /> Deactivate
+            </a>
+            <br />
+          </div>
+        ),
       ignoreRowClick: true,
       allowOverflow: true,
       button: true,
@@ -97,35 +99,35 @@ export default function Roles() {
   };
 
   const deleteRole = async (id) => {
-   
-  
-    const confirmation = window.confirm("Are you sure you want to delete this role?");
-  
+    const confirmation = window.confirm(
+      "Are you sure you want to delete this role?"
+    );
+
     if (!confirmation) {
       return; // Exit the function if the user cancels the action
     }
-  
+
     setLoading(true);
-  
+
     try {
-      const response = await fetch('/api/delete-role', {
-        method: 'POST',
+      const response = await fetch("/api/delete-role", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ id }),
       });
-  
+
       if (response.ok) {
-        fetchUsers(1); 
+        fetchUsers(1);
       } else {
         // Handle error
-        alert("error deleting role, ensure you have no users attached to role")
-        console.error('Error deleting role:', response.statusText);
+        alert("error deleting role, ensure you have no users attached to role");
+        console.error("Error deleting role:", response.statusText);
       }
     } catch (error) {
-      alert("error delete user")
-      console.error('Error deleting role:', error);
+      alert("error delete user");
+      console.error("Error deleting role:", error);
     } finally {
       setLoading(false);
     }
@@ -139,7 +141,7 @@ export default function Roles() {
     );
 
     setData(response.data.data);
-    setTotalRows(response.data.total);
+    setTotalRows(response.data.count);
     setLoading(false);
   };
 
@@ -169,7 +171,7 @@ export default function Roles() {
     const result = Object.entries(prms)
       .filter(([key, value]) => value === true)
       .map(([key]) => key)
-      .join(', ');
+      .join(", ");
     return result;
   };
 
@@ -218,23 +220,25 @@ export default function Roles() {
                 />
               </div>
               <br />
-              
-                {Object.entries(checkboxes).map(([key, value]) => (
-                  <div key={key}>
-                    <label style={{ width: "100%", height: "20px", cursor: "pointer" }}>
-                      <input
-                        type="checkbox"
-                        name={key}
-                        checked={value}
-                        onChange={handleCheckboxChange}
-                      />
-                      {` ${key
-                        .replace(/([A-Z])/g, ' $1')
-                        .replace(/^./, str => str.toUpperCase())}`}
-                    </label>
-                    <br />
-                  </div>
-                ))}
+
+              {Object.entries(checkboxes).map(([key, value]) => (
+                <div key={key}>
+                  <label
+                    style={{ width: "100%", height: "20px", cursor: "pointer" }}
+                  >
+                    <input
+                      type="checkbox"
+                      name={key}
+                      checked={value}
+                      onChange={handleCheckboxChange}
+                    />
+                    {` ${key
+                      .replace(/([A-Z])/g, " $1")
+                      .replace(/^./, (str) => str.toUpperCase())}`}
+                  </label>
+                  <br />
+                </div>
+              ))}
               <p className="text-red">{""}</p>
               <br />
               <div className="generate_section">

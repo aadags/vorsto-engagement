@@ -10,11 +10,16 @@ export async function POST(req) {
     const body = await req.json();
     const { conferenceId } = body;
 
-    const call = await prisma.callQueue.findFirst({
-      where: { user_id: userId, organization_id: organizationId },
+    await prisma.call.update({
+      where: {
+        user_id: userId,
+        conferenceId: conferenceId,
+        organization_id: organizationId,
+      },
+      data: { status: "insession" }
     });
 
-    return NextResponse.json({ call });
+    return NextResponse.json({ message: "Call Updated" });
   } catch (error) {
     console.error(error);
     return NextResponse.json(

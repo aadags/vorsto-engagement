@@ -19,12 +19,13 @@ export async function GET(req) {
 
     const calls = await prisma.callQueue.findMany({
       where: { organization_id: organizationId },
+      include: { user: true },
       orderBy: { created_at: 'desc' },
       skip: (page - 1) * pageSize,
       take: pageSize,
     });
 
-    const total = prisma.callQueue.count({
+    const total = await prisma.callQueue.count({
       where: { organization_id: organizationId },
     });
 

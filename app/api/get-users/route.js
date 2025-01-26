@@ -24,7 +24,7 @@ export async function GET(req) {
       take: pageSize,
     });
 
-    const total = prisma.user.count({
+    const total = await prisma.user.count({
       where: { organization_id: organizationId, is_deleted: false },
     });
 

@@ -24,7 +24,7 @@ export async function GET(req) {
       take: pageSize,
     });
 
-    const total = prisma.conversation.count({
+    const total = await prisma.conversation.count({
       where: { organization_id: organizationId, is_lead: false, user_id: null },
     });
 

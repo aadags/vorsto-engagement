@@ -17,22 +17,23 @@ export async function GET(req) {
     const page = parseInt(req.nextUrl.searchParams.get("page")); // Default to page 1 if not provided
     const pageSize = parseInt(req.nextUrl.searchParams.get("per_page"));
 
-    const conversations = await prisma.conversation.findMany({
-      where: { organization_id: organizationId, is_end: true },
+    const calls = await prisma.call.findMany({
+      where: { organization_id: organizationId },
+      include: { user: true },
       orderBy: { created_at: 'desc' },
       skip: (page - 1) * pageSize,
       take: pageSize,
     });
 
-    const total = await prisma.conversation.count({
-      where: { organization_id: organizationId, is_end: true },
+    const total = await prisma.call.count({
+      where: { organization_id: organizationId },
     });
 
-    return NextResponse.json({ data: conversations, count: total });
+    return NextResponse.json({ data: calls, count: total });
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: "Failed to fetch convos" },
+      { error: "Failed to fetch calls" },
       { status: 500 }
     );
   }

@@ -63,11 +63,20 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
           socket.emit('user-join', user);
         }
 
+        function onDisconnect() {
+            console.warn("Socket disconnected, reloading the page.");
+            window.location.reload();
+        }
+
         socket.on("connect", onConnect);
+
+        socket.on("disconnect", onDisconnect);
+
         
         return () => {
           socket.off("connect");
           socket.off("notifyLead");
+          socket.off("disconnect", onDisconnect);
         };
       }, []);
 
@@ -103,7 +112,13 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
             title: "Call Queue",
             pathname: "/voice-queue",
             img: "/svg/phone-volume.svg",
-            key: "allow",
+            key: user.role_id > 0 ? "callQueue" : "allow",
+        },
+        {
+            title: "Call Log",
+            pathname: "/voice-log",
+            img: "/svg/phonebook.svg",
+            key: user.role_id > 0 ? "callLog" : "allow",
         },
         {
             title: "Contacts",
@@ -235,7 +250,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                     {/* #1 navigation group */}
                     <div className="nav_group">
                         <ul className="group__list">
-                            {data.slice(0, 6).map((item, i) => (
+                            {data.slice(0, 7).map((item, i) => (
                                 item.key && perms.includes(item.key) && <li key={i}>
                                     <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
                                         <span className="icon">
@@ -294,7 +309,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                     <div className="nav_group">
                         <h2 className="group__title">TICKETS</h2>
                         <ul className="group__list">
-                            {data.slice(6, 8).map((item, i) => (
+                            {data.slice(7, 9).map((item, i) => (
                                 item.key && perms.includes(item.key) && <li key={i}>
                                     <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
                                         <span className="icon">
@@ -311,7 +326,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                     <div className="nav_group">
                         <h2 className="group__title">ADMIN SETTINGS</h2>
                         <ul className="group__list">
-                            {data.slice(8, 13).map((item, i) => (
+                            {data.slice(9, 14).map((item, i) => (
                                 item.key && perms.includes(item.key) && <li key={i}>
                                     <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
                                         <span className="icon">
@@ -328,7 +343,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                     <div className="nav_group">
                         <h2 className="group__title">CHANNEL SETTINGS</h2>
                         <ul className="group__list">
-                            {data.slice(13, 19).map((item, i) => (
+                            {data.slice(14, 20).map((item, i) => (
                                 item.key && perms.includes(item.key) && <li key={i}>
                                     <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
                                         <span className="icon">
