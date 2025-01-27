@@ -2,14 +2,14 @@
 "use client"
 import { useEffect, useState } from 'react'
 
-const CallMetric = () => {
+const AgentMetric = () => {
 
   const [iframeUrl, setIframeUrl] = useState();
 
   useEffect(() => {
 
     const getMetric = async () => {
-        const response = await fetch('/api/get-call-metric', {
+        const response = await fetch('/api/get-agent-metric', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -34,7 +34,7 @@ const CallMetric = () => {
           <div className="generation_header">
 
           <div className="header_top">
-              <h1 className="title">Call Metrics</h1>
+              <h1 className="title">Agents Performance Metrics</h1>
             </div>
 
             {iframeUrl && <iframe
@@ -51,4 +51,4 @@ const CallMetric = () => {
   );
 };
 
-export default CallMetric;
+export default AgentMetric;

@@ -24,6 +24,8 @@ export default function Roles() {
     manageBilling: false,
     manageWorkflow: false,
     callMetrics: false,
+    chatMetrics: false,
+    agentMetrics: false,
     configureWebChat: false,
     configureWhatsapp: false,
     configureInstagram: false,
