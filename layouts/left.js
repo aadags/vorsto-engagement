@@ -95,10 +95,10 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
             counter: newLead
         },
         {
-            title: "AI Conversations",
+            title: "Ongoing Conversations",
             pathname: "/conversations",
             img: "/svg/chat.svg",
-            key: ""
+            key: "allow"
     
         },
         {

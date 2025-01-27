@@ -18,14 +18,15 @@ export async function GET(req) {
     const pageSize = parseInt(req.nextUrl.searchParams.get("per_page"));
 
     const conversations = await prisma.conversation.findMany({
-      where: { organization_id: organizationId, is_lead: false, user_id: null },
+      where: { organization_id: organizationId, is_end: false },
+      include: { user: true },
       orderBy: { created_at: 'desc' },
       skip: (page - 1) * pageSize,
       take: pageSize,
     });
 
     const total = await prisma.conversation.count({
-      where: { organization_id: organizationId, is_lead: false, user_id: null },
+      where: { organization_id: organizationId, is_end: false, },
     });
 
     return NextResponse.json({ data: conversations, count: total });

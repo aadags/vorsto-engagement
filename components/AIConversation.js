@@ -27,6 +27,11 @@ export default function AIConversations() {
       sortable: true,
     },
     {
+      name: "Agent",
+      selector: (row) => (row.user)? row.user.name : "AI Agent",
+      sortable: true,
+    },
+    {
       name: "Last Activity",
       selector: (row) =>
         new Date(row.updated_at).toLocaleString("en-US", {
@@ -97,7 +102,7 @@ export default function AIConversations() {
           <div className="user__profile">
             <div style={{ width: "100%", margin: "0 auto" }}>
               <DataTable
-                title="AI Conversations"
+                title="Ongoing Conversations"
                 columns={columns}
                 data={data}
                 progressPending={loading}
