@@ -29,6 +29,7 @@ model Organization {
   call_queues  CallQueue[]
   calls  Call[]
   live_call_agents  LiveCallAgent[]
+  tickets  Ticket[]
   bot  Bot?
   stripe_id    String?     @unique
   plan         String      @default("free")
@@ -56,6 +57,7 @@ model User {
   conversations     Conversation[]
   call_queue     CallQueue?
   calls     Call[]
+  tickets  Ticket[]
 
   @@map("users")
 }
@@ -86,6 +88,7 @@ model Conversation {
   user_id      Int?
   organizations         Organization       @relation(fields: [organization_id], references: [id])
   organization_id      Int
+  tickets  Ticket[]
   created_at                           DateTime                      @default(now())
   updated_at                           DateTime                      @updatedAt
 
@@ -160,6 +163,7 @@ model Call {
   created_at  DateTime @default(now())
   agent_joined_at  DateTime? 
   duration  Int? 
+  tickets  Ticket[]
   updated_at  DateTime @updatedAt
 
   @@map("calls")
@@ -180,5 +184,26 @@ model CallLog {
   transcript      String?  @db.LongText
 
   @@map("call_logs")
+}
+
+model Ticket {
+  id           String @id @default(cuid())
+  title      String
+  category      String
+  priority      String
+  description      String?  @db.LongText
+  conversation         Conversation?       @relation(fields: [conversation_id], references: [id])
+  conversation_id      String?     @unique()
+  call         Call?       @relation(fields: [call_id], references: [id])
+  call_id      String?     @unique()
+  is_closed    Boolean  @default(false)
+  user         User?       @relation(fields: [user_id], references: [id])
+  user_id      Int?
+  organization     Organization   @relation(fields: [organization_id], references: [id])
+  organization_id   Int
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt @default(now())
+
+  @@map("tickets")
 }
 

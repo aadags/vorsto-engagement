@@ -222,7 +222,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
             title: "Agent Performance",
             pathname: "/metrics/agent",
             img: "/svg/chart.svg",
-            key: user.role_id > 0 ? "agentMetrics": "allow"
+            key: ""
         }
     
     ];
@@ -268,7 +268,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                     {/* #1 navigation group */}
                     <div className="nav_group">
                         <ul className="group__list">
-                            {data.slice(0, 7).map((item, i) => (
+                            {data.slice(0, 1).map((item, i) => (
                                 item.key && perms.includes(item.key) && <li key={i}>
                                     <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
                                         <span className="icon">
@@ -278,7 +278,14 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                                     </Link>
                                 </li>
                             ))}
-                            {data.slice(7, 9).map((item, i) => (
+                        </ul>
+                    </div>
+                    {/* !#1 navigation group */}
+                    {/* #3 navigation group */}
+                    <div className="nav_group">
+                        <h2 className="group__title">Chats</h2>
+                        <ul className="group__list">
+                            {data.slice(1, 4).map((item, i) => (
                                 item.key && perms.includes(item.key) && <li key={i}>
                                     <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
                                         <span className="icon">
@@ -288,23 +295,6 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                                     </Link>
                                 </li>
                             ))}
-                        </ul>
-                    </div>
-                    {/* !#1 navigation group */}
-                    {/* #3 navigation group */}
-                    <div className="nav_group">
-                        <h2 className="group__title">MY CONVERSATIONS</h2>
-                        <ul className="group__list">
-                            {/* {data.slice(5, 6).map((item, i) => (
-                                <li key={i}>
-                                    <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
-                                        <span className="icon">
-                                            <img src={item.img} alt="" className="fn__svg" />
-                                        </span>
-                                        <span className="text">{item.title}{item.counter && <span className="count">new</span>}</span>
-                                    </Link>
-                                </li>
-                            ))} */}
                             {chats && chats.map((chat, i) => (
                                 <li key={i}>
                                     <Link href={`/live/conversation/${chat.id}`} className={`fn__tooltip menu__item ${pathname.includes(chat.id) ? "active" : ""}`} title={chat.name} >
@@ -320,9 +310,19 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                     {/* !#3 navigation group */}
                     {/* #3 navigation group */}
                     <div className="nav_group">
-                        <h2 className="group__title">MY CALL CENTER</h2>
+                        <h2 className="group__title">Calls</h2>
                         <ul className="group__list">
-                                <li>
+                            {data.slice(4, 6).map((item, i) => (
+                                item.key && perms.includes(item.key) && <li key={i}>
+                                    <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
+                                        <span className="icon">
+                                            <img src={item.img} alt="" className="fn__svg" />
+                                        </span>
+                                        <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
+                                    </Link>
+                                </li>
+                            ))}
+                            <li>
                                     <Link href="/sip-phone" className={`fn__tooltip menu__item ${pathname.includes("sip") ? "active" : ""}`} title="sip phone" >
                                         <span className="icon">
                                             <img src={"/svg/headset.svg"} alt="" className="fn__svg" />
@@ -330,6 +330,23 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                                         <span className="text">Call Phone</span>
                                     </Link>
                                 </li>
+                        </ul>
+                    </div>
+                    {/* !#3 navigation group */}
+                    {/* #3 navigation group */}
+                    <div className="nav_group">
+                        <h2 className="group__title">Tickets</h2>
+                        <ul className="group__list">
+                            {data.slice(7, 9).map((item, i) => (
+                                item.key && perms.includes(item.key) && <li key={i}>
+                                    <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
+                                        <span className="icon">
+                                            <img src={item.img} alt="" className="fn__svg" />
+                                        </span>
+                                        <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
+                                    </Link>
+                                </li>
+                            ))}
                         </ul>
                     </div>
                     {/* !#3 navigation group */}

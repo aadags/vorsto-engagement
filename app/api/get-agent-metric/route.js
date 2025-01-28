@@ -15,6 +15,9 @@ export async function GET(req) {
     const cookieData = await getCookieData();
     const organizationId = Number(cookieData) ?? 0;
 
+    const { searchParams } = new URL(req.url);
+    const agentId = searchParams.get('agentId');
+
     const METABASE_SITE_URL = "https://metabase.vorsto.io";
     const METABASE_SECRET_KEY = "d36207cfb10f32288abef0eeee7aa47b73c715b7257330eb21fedd7c2cec8090";
 
@@ -22,6 +25,7 @@ export async function GET(req) {
       resource: { dashboard: 4 },
       params: {
         organization: [organizationId],
+        "agent": [agentId]
       },
       exp: Math.round(Date.now() / 1000) + 10 * 60, // 10 minute expiration
     };

@@ -12,23 +12,23 @@ export default function Ticket() {
 
   const columns = [
     {
-      name: "Name",
-      selector: (row) => row.name || row.username,
+      name: "Title",
+      selector: (row) => row.title,
       sortable: true,
     },
     {
       name: "Category",
-      selector: (row) => "Billing",
+      selector: (row) => row.category,
       sortable: true,
     },
     {
       name: "Priority",
-      selector: (row) => "High",
+      selector: (row) => row.priority,
       sortable: true,
     },
     {
-      name: "Contact",
-      selector: (row) => row.email || row.phone || row.username,
+      name: "Agent",
+      selector: (row) => row.user.name,
       sortable: true,
     },
     {
@@ -67,7 +67,7 @@ export default function Ticket() {
     setLoading(true);
 
     const response = await axios.get(
-      `/api/get-convos?page=${page}&per_page=${perPage}&`
+      `/api/get-tickets?page=${page}&per_page=${perPage}&`
     );
 
     setData(response.data.data);
@@ -83,7 +83,7 @@ export default function Ticket() {
     setLoading(true);
 
     const response = await axios.get(
-      `/api/get-convos?page=${page}&per_page=${perPage}`
+      `/api/get-tickets?page=${page}&per_page=${perPage}`
     );
 
     setData(response.data.data);

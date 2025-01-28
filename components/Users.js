@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import DataTable, { createTheme } from "react-data-table-component";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDeleteLeft, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faChartArea, faChartBar, faChartPie, faDeleteLeft, faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 export default function Users() {
   const [data, setData] = useState([]);
@@ -33,10 +33,22 @@ export default function Users() {
     {
       name: "Actions",
       cell: (row) =>
-        row.role_id && (
+        row.role_id? (
           <div>
+            <a target="_blank" href={`/metrics/agent/${row.id}`}>
+              <FontAwesomeIcon icon={faChartPie} /> Metrics
+            </a>
+            <br />
             <a href onClick={() => deleteUser(row.id)}>
               <FontAwesomeIcon icon={faDeleteLeft} /> Deactivate
+            </a>
+            <br />
+          </div>
+        ) : 
+        (
+          <div>
+            <a target="_blank" href={`/metrics/agent/${row.id}`}>
+              <FontAwesomeIcon icon={faChartPie} /> Metrics
             </a>
             <br />
           </div>

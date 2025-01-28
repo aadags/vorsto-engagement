@@ -6,6 +6,7 @@ import { socket } from '@/app/socket'
 import { getUser } from '@/services/userService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPowerOff, faPhoneSquareAlt, faPhoneVolume, faPhoneSlash } from '@fortawesome/free-solid-svg-icons'
+import TicketForm from "./TicketForm";
 
 export default function Sip() {
   const [user, setUser] = useState();
@@ -253,62 +254,7 @@ export default function Sip() {
                     
                         <div style={{ width: "100%", padding: "20px" }}>
                             <h5>Create New Ticket</h5>
-                            <form>
-                                    <div className="form_group">
-                                    <input
-                                        type="text"
-                                        id="bot_name"
-                                        className="full_width"
-                                        placeholder="Title"
-                                        required
-                                    />
-                                    </div>
-                                    <br/>
-                                    <div className="form_group">
-                                    <input
-                                        type="text"
-                                        id="bot_name"
-                                        className="full_width"
-                                        placeholder="Category"
-                                        required
-                                    />
-                                    </div>
-                                    <br/>
-                                    <div className="form_group">
-                                    <select
-                                        className="full_width"
-                                        required
-                                    
-                                        >
-                                            <>
-                                            <option value="">Select Priority</option>
-                                            <option value="">Critical</option>
-                                            <option value="">High</option>
-                                            <option value="">Medium</option>
-                                            <option value="">Low</option>
-                                            </>
-                                        </select><br/>
-                                    </div>
-                                    <br/>
-                                    <div className="form_group">
-                                        <textarea
-                                        id="system_bio"
-                                        className="full_width"
-                                        rows={10} // Increased height
-                                        style={{
-                                            resize: 'vertical', // Allows vertical resizing by user
-                                            overflow: 'auto', // Adds scroll when content overflows
-                                        }}
-                                        placeholder="Ticket Description"
-                                        required
-                                        />
-                                    </div>
-                                    <br/>
-                                    <div className="generate_section">
-                                    {/* <button type="submit" className="techwave_fn_button" aria-readonly={loading}><span>Create User {loading && <FontAwesomeIcon icon={faSpinner} spin={true} />}</span></button> */}
-                                    <button type="submit" className="techwave_fn_button"><span>Create Ticket</span></button>
-                                    </div>
-                                </form>
+                            <TicketForm callId={callParams?.CallSid} />
                         </div>
                     </div>
         </div>

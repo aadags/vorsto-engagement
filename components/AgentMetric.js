@@ -2,14 +2,14 @@
 "use client"
 import { useEffect, useState } from 'react'
 
-const AgentMetric = () => {
+const AgentMetric = ({ agentId }) => {
 
   const [iframeUrl, setIframeUrl] = useState();
 
   useEffect(() => {
 
     const getMetric = async () => {
-        const response = await fetch('/api/get-agent-metric', {
+        const response = await fetch(`/api/get-agent-metric?agentId=${agentId}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
