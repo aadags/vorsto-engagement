@@ -17,22 +17,17 @@ export async function GET(req) {
     const page = parseInt(req.nextUrl.searchParams.get("page")); // Default to page 1 if not provided
     const pageSize = parseInt(req.nextUrl.searchParams.get("per_page"));
 
-    const contacts = await prisma.conversation.findMany({
-      distinct: ['name', 'email', 'phone', 'username'], // Ensure uniqueness based on these fields
-      select: {
-        name: true,
-        email: true,
-        phone: true,
-        username: true,
-      },
+    const contacts = await prisma.conversation.groupBy({
+      by: ['id', 'name', 'email', 'phone', 'username'], // Group by these fields
       where: { organization_id: organizationId },
-      orderBy: { created_at: 'desc' },
+      _max: { created_at: true }, // Optional: keep the most recent entry
       skip: (page - 1) * pageSize,
       take: pageSize,
     });
+    
 
-    const total = await prisma.conversation.count({
-      distinct: ['name', 'email', 'phone', 'username'],
+    const total = await prisma.conversation.groupBy({
+      by: ['id', 'name', 'email', 'phone', 'username'],
       where: { organization_id: organizationId },
     });
 

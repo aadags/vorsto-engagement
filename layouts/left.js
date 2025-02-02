@@ -152,7 +152,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
             title: "Workflow",
             pathname: "/workflow",
             img: "/svg/option.svg",
-            key: user.role_id > 0 ? "manageWorkflow": "allow"
+            key: ""
     
         },
         {
@@ -330,6 +330,23 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                                         <span className="text">Call Phone</span>
                                     </Link>
                                 </li>
+                        </ul>
+                    </div>
+                    {/* !#3 navigation group */}
+                    {/* #3 navigation group */}
+                    <div className="nav_group">
+                        <h2 className="group__title">Contacts</h2>
+                        <ul className="group__list">
+                            {data.slice(6, 7).map((item, i) => (
+                                item.key && perms.includes(item.key) && <li key={i}>
+                                    <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
+                                        <span className="icon">
+                                            <img src={item.img} alt="" className="fn__svg" />
+                                        </span>
+                                        <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
+                                    </Link>
+                                </li>
+                            ))}
                         </ul>
                     </div>
                     {/* !#3 navigation group */}

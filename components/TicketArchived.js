@@ -44,7 +44,7 @@ export default function Ticket() {
       name: "Actions",
       cell: (row) => (
         <div>
-          <a href="#">
+          <a href={`/ticket/${row.id}`}>
             <FontAwesomeIcon icon={faBinoculars} /> Open
           </a>
           <br />

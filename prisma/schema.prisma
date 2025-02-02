@@ -30,6 +30,7 @@ model Organization {
   calls  Call[]
   live_call_agents  LiveCallAgent[]
   tickets  Ticket[]
+  comments  Comment[]
   bot  Bot?
   stripe_id    String?     @unique
   plan         String      @default("free")
@@ -58,6 +59,7 @@ model User {
   call_queue     CallQueue?
   calls     Call[]
   tickets  Ticket[]
+  comments  Comment[]
 
   @@map("users")
 }
@@ -192,6 +194,7 @@ model Ticket {
   category      String
   priority      String
   description      String?  @db.LongText
+  comments  Comment[]
   conversation         Conversation?       @relation(fields: [conversation_id], references: [id])
   conversation_id      String?     @unique()
   call         Call?       @relation(fields: [call_id], references: [id])
@@ -205,5 +208,21 @@ model Ticket {
   updated_at  DateTime @updatedAt @default(now())
 
   @@map("tickets")
+}
+
+
+model Comment {
+  id           String @id @default(cuid())
+  body      String   @db.LongText
+  ticket         Ticket       @relation(fields: [ticket_id], references: [id])
+  ticket_id      String
+  user         User       @relation(fields: [user_id], references: [id])
+  user_id      Int
+  organization     Organization   @relation(fields: [organization_id], references: [id])
+  organization_id   Int
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt @default(now())
+
+  @@map("comments")
 }
 
