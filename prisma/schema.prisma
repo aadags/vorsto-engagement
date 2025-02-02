@@ -33,7 +33,7 @@ model Organization {
   comments  Comment[]
   contacts  Contact[]
   bot  Bot?
-  stripe_id    String?     @unique
+  stripe_id    String?     @unique()
   plan         String      @default("free")
   plan_id  String?
   support_email  String?    @unique()
@@ -174,7 +174,7 @@ model Call {
 
 model LiveCallAgent {
   id           String @id @default(cuid())
-  user_id      Int   @unique
+  user_id      Int   @unique()
   organization     Organization   @relation(fields: [organization_id], references: [id])
   organization_id   Int
 
@@ -229,17 +229,22 @@ model Comment {
 
 model Contact {
   id          String   @id @default(cuid())
-  name         String?
-  email         String? @unique()
-  phone         String? @unique()
-  username         String? @unique()
-  satisfaction_score         Int?
-  sentiment         String?     @db.LongText
-  organization         Organization       @relation(fields: [organization_id], references: [id])
-  organization_id      Int
-  created_at                           DateTime                      @default(now())
-  updated_at                           DateTime                      @updatedAt
+  name        String?
+  email       String?
+  phone       String?
+  username    String?
+  satisfaction_score Int?
+  sentiment   String? @db.LongText
+  organization Organization @relation(fields: [organization_id], references: [id])
+  organization_id Int
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
   @@map("contacts")
+
+  // Composite unique constraints to enforce uniqueness per organization
+  @@unique([organization_id, email])
+  @@unique([organization_id, phone])
+  @@unique([organization_id, username])
 }
 
