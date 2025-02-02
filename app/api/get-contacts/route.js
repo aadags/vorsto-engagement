@@ -17,17 +17,14 @@ export async function GET(req) {
     const page = parseInt(req.nextUrl.searchParams.get("page")); // Default to page 1 if not provided
     const pageSize = parseInt(req.nextUrl.searchParams.get("per_page"));
 
-    const contacts = await prisma.conversation.groupBy({
-      by: ['id', 'name', 'email', 'phone', 'username'], // Group by these fields
+    const contacts = await prisma.contact.findMany({
       where: { organization_id: organizationId },
-      _max: { created_at: true }, // Optional: keep the most recent entry
+      orderBy: { created_at: 'desc' },
       skip: (page - 1) * pageSize,
       take: pageSize,
     });
     
-
-    const total = await prisma.conversation.groupBy({
-      by: ['id', 'name', 'email', 'phone', 'username'],
+    const total = await prisma.contact.count({
       where: { organization_id: organizationId },
     });
 
@@ -35,7 +32,7 @@ export async function GET(req) {
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: "Failed to fetch convos" },
+      { error: "Failed to fetch contacts" },
       { status: 500 }
     );
   }

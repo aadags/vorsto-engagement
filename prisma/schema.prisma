@@ -31,6 +31,7 @@ model Organization {
   live_call_agents  LiveCallAgent[]
   tickets  Ticket[]
   comments  Comment[]
+  contacts  Contact[]
   bot  Bot?
   stripe_id    String?     @unique
   plan         String      @default("free")
@@ -224,5 +225,21 @@ model Comment {
   updated_at  DateTime @updatedAt @default(now())
 
   @@map("comments")
+}
+
+model Contact {
+  id          String   @id @default(cuid())
+  name         String?
+  email         String?
+  phone         String?
+  username         String?
+  satisfaction_score         Int?
+  sentiment         String?     @db.LongText
+  organization         Organization       @relation(fields: [organization_id], references: [id])
+  organization_id      Int
+  created_at                           DateTime                      @default(now())
+  updated_at                           DateTime                      @updatedAt
+
+  @@map("contacts")
 }
 

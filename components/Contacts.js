@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import DataTable, { createTheme } from "react-data-table-component";
 import axios from "axios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBinoculars } from "@fortawesome/free-solid-svg-icons";
 
 export default function Contacts() {
   const [data, setData] = useState([]);
@@ -28,6 +30,25 @@ export default function Contacts() {
       name: "Instagram",
       selector: (row) => (row.username ? "@" + row.username : ""),
       sortable: true,
+    },
+    {
+      name: "Satisfaction Score",
+      selector: (row) => (row.satisfaction_score>=0 && row.satisfaction_score+"%"),
+      sortable: true,
+    },
+    {
+      name: "Actions",
+      cell: (row) => (
+        <div>
+          <a href={`/contact/${row.id}`}>
+            <FontAwesomeIcon icon={faBinoculars} /> Dashboard
+          </a>
+          <br />
+        </div>
+      ),
+      ignoreRowClick: true,
+      allowOverflow: true,
+      button: true,
     },
   ];
 
