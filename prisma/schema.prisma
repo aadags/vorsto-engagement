@@ -166,6 +166,8 @@ model Call {
   created_at  DateTime @default(now())
   agent_joined_at  DateTime? 
   duration  Int? 
+  recording  String?  @db.LongText
+  transcription  String?   @db.LongText
   tickets  Ticket[]
   updated_at  DateTime @updatedAt
 
