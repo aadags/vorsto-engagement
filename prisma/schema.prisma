@@ -230,9 +230,9 @@ model Comment {
 model Contact {
   id          String   @id @default(cuid())
   name         String?
-  email         String?
-  phone         String?
-  username         String?
+  email         String? @unique()
+  phone         String? @unique()
+  username         String? @unique()
   satisfaction_score         Int?
   sentiment         String?     @db.LongText
   organization         Organization       @relation(fields: [organization_id], references: [id])
