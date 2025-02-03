@@ -91,6 +91,8 @@ model Conversation {
   user_id      Int?
   organizations         Organization       @relation(fields: [organization_id], references: [id])
   organization_id      Int
+  contact         Contact?       @relation(fields: [contact_id], references: [id])
+  contact_id      String?
   tickets  Ticket[]
   created_at                           DateTime                      @default(now())
   updated_at                           DateTime                      @updatedAt
@@ -163,6 +165,8 @@ model Call {
   organization     Organization   @relation(fields: [organization_id], references: [id])
   organization_id   Int
   status   String
+  contact         Contact?       @relation(fields: [contact_id], references: [id])
+  contact_id      String?
   created_at  DateTime @default(now())
   agent_joined_at  DateTime? 
   duration  Int? 
@@ -241,6 +245,9 @@ model Contact {
   organization_id Int
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
+
+  conversations  Conversation[]
+  calls  Call[]
 
   @@map("contacts")
 
