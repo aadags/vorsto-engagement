@@ -16,16 +16,16 @@ export async function GET(req) {
     const organizationId = Number(cookieData) ?? 0;
 
     const { searchParams } = new URL(req.url);
-    const agentId = searchParams.get('agentId');
+    const contactId = searchParams.get('contactId');
 
     const METABASE_SITE_URL = "https://metabase.vorsto.io";
     const METABASE_SECRET_KEY = "d36207cfb10f32288abef0eeee7aa47b73c715b7257330eb21fedd7c2cec8090";
 
     const payload = {
-      resource: { dashboard: 4 },
+      resource: { dashboard: 5 },
       params: {
-        organization: [organizationId],
-        "agent": [agentId]
+        "contact": [contactId],
+        "organization": [organizationId]
       },
       exp: Math.round(Date.now() / 1000) + 10 * 60, // 10 minute expiration
     };
@@ -37,14 +37,14 @@ export async function GET(req) {
       token +
       "#background=false&bordered=false&titled=false";
     
-    const user = await prisma.user.findFirst({
+    const contact = await prisma.contact.findFirst({
       where: {
-        id: Number(agentId),
+        id: contactId,
         organization_id: organizationId
       }
     });
 
-    return NextResponse.json({ name: user.name, iframeUrl });
+    return NextResponse.json({ name: contact.name, sentiment: contact.sentiment, iframeUrl });
   } catch (error) {
     console.error(error);
     return NextResponse.json(

@@ -2,15 +2,16 @@
 "use client"
 import { useEffect, useState } from 'react'
 
-const AgentMetric = ({ agentId }) => {
+const CustomerMetric = ({ contactId }) => {
 
   const [name, setName] = useState();
+  const [sentiment, setSentiment] = useState();
   const [iframeUrl, setIframeUrl] = useState();
 
   useEffect(() => {
 
     const getMetric = async () => {
-        const response = await fetch(`/api/get-agent-metric?agentId=${agentId}`, {
+        const response = await fetch(`/api/get-contact-metric?contactId=${contactId}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -20,6 +21,7 @@ const AgentMetric = ({ agentId }) => {
         if (response.ok) {
           const res = await response.json();
           setName(res.name);
+          setSentiment(res.sentiment);
           setIframeUrl(res.iframeUrl);
         } 
     };
@@ -36,16 +38,20 @@ const AgentMetric = ({ agentId }) => {
           <div className="generation_header">
 
           <div className="header_top">
-              {name && <h1 className="title">{name} Performance Metrics</h1>}
+              {name && <h1 className="title">{name} Dashboard</h1>}
             </div>
 
             {iframeUrl && <iframe
               src={iframeUrl}
               frameBorder="0"
               allowTransparency="true"
-              style={{ border: 'none', width: "100%", height: "100vh" }}
+              style={{ border: 'none', width: "100%", height: "38vh" }}
             />}
               
+           <div className="header_bottom">
+             <p>Summary from the last conversation</p>
+             {sentiment && <p>{sentiment}</p>}
+           </div>
            </div>
         </div>
     </div>
@@ -53,4 +59,4 @@ const AgentMetric = ({ agentId }) => {
   );
 };
 
-export default AgentMetric;
+export default CustomerMetric;
