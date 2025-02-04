@@ -58,41 +58,7 @@ export default function VoiceSetup() {
                 <h1 className="title">Setup Voice AI</h1>
             </div>
             <div className="header_bottom">
-            { org && ig && org.ig_token && org.ig_user_id?
-            <div className="techwave_fn_user_profile">
-              <button className="techwave_fn_button" ><span>Disconnect Instagram</span></button>
-              <br/>
-              <div className="user__profile">
-              <div className="user_avatar">
-                <img src={ig.profile_picture_url} alt=""  />
-              </div>
-              <div className="user_details">
-                <ul>
-                  <li>
-                    <div className="item">
-                      <h4 className="subtitle">Name</h4>
-                      <h3 className="title">{ig.name}</h3>
-                    </div>
-                  </li>
-                  <li>
-                    <div className="item">
-                      <h4 className="subtitle">Username</h4>
-                      <h3 className="title">@{ig.username}</h3>
-                    </div>
-                  </li>
-                  <li>
-                    <div className="item">
-                      <h4 className="subtitle">Account Type</h4>
-                      <h3 className="title">{ig.account_type}</h3>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-            </div>
-            </div>
-              :
               <button onClick={sendEmail} className="techwave_fn_button" ><span>Request Access</span></button>
-            }
             </div>
           </div>
           {/* !Generation Header */}
