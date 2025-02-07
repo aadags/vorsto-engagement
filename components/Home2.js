@@ -1,10 +1,27 @@
 'use client'
-import React, { useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
+import axios from 'axios';
 import { animationText } from '@/components/Utilities'
+import { useRouter } from 'next/navigation';
 
 export default function Home2() {
+
+  const router = useRouter();
+
   useEffect(() => {
+
+    const fetchOrg = async () => {
+      
+      const response = await axios.get(`/api/get-org-details`);
+      const org = response.data;
+
+      if(new Date(org.created_at).getTime() < Date.now() - 100 * 24 * 60 * 60 * 1000)
+      {
+        router.push('/');
+      }
+    };
+    fetchOrg();
     animationText()
   }, [])
 
@@ -15,8 +32,8 @@ export default function Home2() {
           <div className="section_left">
             {/* Title Shortcode */}
             <div className="techwave_fn_title_holder">
-              <h1 className="title">Unleash Your Creativity with AI</h1>
-              <p className="desc">Generate your ideas into stunning visuals</p>
+              <h1 className="title">Automate your conversations!</h1>
+              <p className="desc">Let's get you setup</p>
             </div>
             {/* !Title Shortcode */}
             {/* Interactive List Shortcode */}
@@ -24,24 +41,66 @@ export default function Home2() {
               <ul>
                 <li>
                   <div className="item">
-                    <Link href="/image-generation">
+                    <Link href="/agent" target="_blank">
                       <span className="icon">
-                        <img src="svg/image.svg" alt=""  className="fn__svg" />
+                        <img src="svg/robot.svg" alt=""  className="fn__svg" />
                       </span>
-                      <h2 className="title">Image Generation</h2>
-                      <p className="desc">This field of AI combines deep learning algorithms and generative models to create new images that resemble real-world photographs or exhibit creative and imaginative qualities.</p>
+                      <h2 className="title">Setup your agent</h2>
                       <span className="arrow"><img src="svg/arrow.svg" alt=""  className="fn__svg" /></span>
                     </Link>
                   </div>
                 </li>
                 <li>
                   <div className="item">
-                    <Link href="/ai-chat-bot">
+                    <Link href="/channel/webchat" target="_blank">
                       <span className="icon">
-                        <img src="svg/chat.svg" alt=""  className="fn__svg" />
+                        <img src="svg/webchat.svg" alt=""  className="fn__svg" />
                       </span>
-                      <h2 className="title">AI Chat Bot</h2>
-                      <p className="desc">An AI chatbot, short for artificial intelligence chatbot, is a computer program designed to simulate human-like conversations and provide automated responses to user queries or prompts. </p>
+                      <h2 className="title">Setup your website chat widget</h2>
+                      <span className="arrow"><img src="svg/arrow.svg" alt=""  className="fn__svg" /></span>
+                    </Link>
+                  </div>
+                </li>
+                <li>
+                  <div className="item">
+                    <Link href="/channel/whatsapp" target="_blank">
+                      <span className="icon">
+                        <img src="svg/whatsapp.svg" alt=""  className="fn__svg" />
+                      </span>
+                      <h2 className="title">Connect your business whatsapp account</h2>
+                      <span className="arrow"><img src="svg/arrow.svg" alt=""  className="fn__svg" /></span>
+                    </Link>
+                  </div>
+                </li>
+                <li>
+                  <div className="item">
+                    <Link href="/channel/instagram" target="_blank">
+                      <span className="icon">
+                        <img src="svg/instagram.svg" alt=""  className="fn__svg" />
+                      </span>
+                      <h2 className="title">Connect your professional instagram account</h2>
+                      <span className="arrow"><img src="svg/arrow.svg" alt=""  className="fn__svg" /></span>
+                    </Link>
+                  </div>
+                </li>
+                <li>
+                  <div className="item">
+                    <Link href="/channel/email" target="_blank">
+                      <span className="icon">
+                        <img src="svg/email.svg" alt=""  className="fn__svg" />
+                      </span>
+                      <h2 className="title">Connect your email</h2>
+                      <span className="arrow"><img src="svg/arrow.svg" alt=""  className="fn__svg" /></span>
+                    </Link>
+                  </div>
+                </li>
+                <li>
+                  <div className="item">
+                    <Link href="/channel/voice" target="_blank">
+                      <span className="icon">
+                        <img src="svg/tty.svg" alt=""  className="fn__svg" />
+                      </span>
+                      <h2 className="title">Setup your business phone</h2>
                       <span className="arrow"><img src="svg/arrow.svg" alt=""  className="fn__svg" /></span>
                     </Link>
                   </div>
@@ -52,19 +111,9 @@ export default function Home2() {
           </div>
           <div className="section_right">
             <div className="company_info">
-              <img src="img/logo-desktop-full.png" alt=""  />
-              <p className="fn__animated_text">The official server of TECH-AI, a text-to-image AI where your imagination is the only limit. We’re building market-leading features that will give you greater control over your generations.</p>
-              <hr />
-              <div className="fn__members">
-                <div className="active item">
-                  <span className="circle" />
-                  <span className="text">1,154,694 Online</span>
-                </div>
-                <div className="item">
-                  <span className="circle" />
-                  <span className="text">77,345,912 Members</span>
-                </div>
-              </div>
+              <img src="/logo_black.png" alt=""  />
+              <p className="fn__animated_text">Meet your customers where they are—WhatsApp, Web, Instagram, Email, and Voice Calls—with Vorsto’s coordinated AI and human agents.</p>
+
             </div>
           </div>
         </div>

@@ -28,7 +28,7 @@ export default function Signin() {
         
               if (response.ok) {
                 const res = await response.json();
-                router.push('/')
+                router.push('/launch')
                 
               } 
             } catch (error) {
