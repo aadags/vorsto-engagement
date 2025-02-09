@@ -4,10 +4,10 @@ import Layout from '@/layouts/layout'
 
 
 export const metadata = {
-  title:'Home-2',
+  title:'Vorsto AI - LaunchPad',
   content:'text/html',
   openGraph: {
-    title:'Home-2',
+    title:'Vorsto AI - LaunchPad',
     content:'text/html',
   },
 }

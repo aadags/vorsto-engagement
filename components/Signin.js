@@ -55,7 +55,6 @@ export default function Signin() {
             signInSuccessUrl: 'https://engage.vorsto.io/login',
             signInOptions: [
               googleProvider.providerId,
-              githubProvider.providerId,
               {
                 provider: emailProvider.providerId,
                 requireDisplayName: true  
