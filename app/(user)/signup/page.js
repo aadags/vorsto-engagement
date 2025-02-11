@@ -1,13 +1,13 @@
 import React from 'react'
 import '../../globals.css'
 import '../../../public/css/style.css'
-import Signin from '@/components/Signin'
+import Signup from '@/components/Signup'
 
 export const metadata = {
-  title:'Vorsto AI - Login',
+  title:'Vorsto AI - Sign Up',
   content:'text/html',
   openGraph: {
-    title:'Vorsto AI - Login',
+    title:'Vorsto AI - Sign Up',
     content:'text/html',
   },
 }
@@ -15,7 +15,7 @@ export const metadata = {
 export default function page() {
   return (
     <>
-      <Signin />
+      <Signup />
     </>
   )
 }

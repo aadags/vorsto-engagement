@@ -1,13 +1,13 @@
 import React from 'react'
 import '../../globals.css'
 import '../../../public/css/style.css'
-import Signin from '@/components/Signin'
+import ForgotPwd from '@/components/ForgotPwd'
 
 export const metadata = {
-  title:'Vorsto AI - Login',
+  title:'Vorsto AI - Forgot Password',
   content:'text/html',
   openGraph: {
-    title:'Vorsto AI - Login',
+    title:'Vorsto AI - Forgot Password',
     content:'text/html',
   },
 }
@@ -15,7 +15,7 @@ export const metadata = {
 export default function page() {
   return (
     <>
-      <Signin />
+      <ForgotPwd />
     </>
   )
 }
