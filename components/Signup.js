@@ -4,16 +4,40 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation';
 import { auth, googleProvider, githubProvider, emailProvider, facebookProvider } from "../firebaseConfig/FirebaseClient";
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { GoogleReCaptchaProvider, useGoogleReCaptcha } from 'react-google-recaptcha-v3';
+
+
 // import 'firebaseui/dist/firebaseui.css';
 import '../public/css/firebase.css';
 
 export default function Signup() {
+  return (
+    <>
+    <GoogleReCaptchaProvider reCaptchaKey="6LcBq9QqAAAAAIkPQED2Epo4dVikjXOfYWhdaXHP">
+      <SignupPage />
+      </GoogleReCaptchaProvider>
+    </>
+  )
+}
+
+function SignupPage() {
   const router = useRouter();
+  const { executeRecaptcha } = useGoogleReCaptcha();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [recaptchaToken, setRecaptchaToken] = useState("");
+
+  useEffect(() => {
+    async function getRecaptchaToken() {
+      if (!executeRecaptcha) return;
+      const token = await executeRecaptcha("signup");
+      setRecaptchaToken(token);
+    }
+    getRecaptchaToken();
+  }, [executeRecaptcha]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -61,41 +85,39 @@ export default function Signup() {
     }
   }, [router]);
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
-    if (password !== confirmPassword) {
-      setError('Passwords do not match.');
+    if (!recaptchaToken) {
+      setError("Failed to verify CAPTCHA. Please try again.");
       return;
     }
 
     try {
-      // Create the user with email and password
+      // Create user
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user; // Get the user object
-    
-      // Update the user's display name
+      const user = userCredential.user;
       await updateProfile(user, { displayName: name });
-    
-      // Send user data to the backend for verification
-      const response = await fetch('/api/verify-user', {
+
+      // Send user data & reCAPTCHA token to the backend
+      const response = await fetch('/api/verify-user-with-capcha', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: name, // Use the name stored in state
-          email: user.email, // Use userCredential.user.email
-          uid: user.uid, // Use userCredential.user.uid
+          name,
+          email: user.email,
+          uid: user.uid,
+          recaptchaToken, // Send the reCAPTCHA token
         }),
       });
-    
+
       if (response.ok) {
         router.push('/launch');
       }
     } catch (err) {
       setError(err.message);
     }
-    
   };
 
   return (
@@ -118,6 +140,7 @@ export default function Signup() {
                   {error.includes('wrong-password') && 'Incorrect password. Please try again.'}
                   {error.includes('email-already-in-use') && 'Email is already in use!'}
                   {error.includes('Passwords do not match') && 'Passwords do not match!'}
+                  {error.includes('CAPTCHA') && 'Failed to verify human. Please try again.'}
                 </p>
               )}
               <div className="form__username">
