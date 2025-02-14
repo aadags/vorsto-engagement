@@ -50,7 +50,7 @@ export async function POST(req) {
       jobtype: 'PollEmail',
       args: [{ email }],
       queue: 'default', // or specify another queue
-      at: new Date(Date.now() + 300000) // 2 minutes delay
+      at: new Date(Date.now() + 60000) // 2 minutes delay
     });
   
     await client.close();
