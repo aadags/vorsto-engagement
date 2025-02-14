@@ -29,7 +29,7 @@ export async function POST(req) {
       port: 587,
       secure: false, // true for port 465, false for other ports
       auth: {
-        user: "erica.mendez@vorsto.io",
+        user: "mailmaster@vorsto.io",
         pass: "Password77%%",
       },
     });
