@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/db/prisma";
 import { sendEngagementTemplateMessage, sendTextMessage, sendCheckInTemplateMessage } from "@/services/whatsapp";
 import { sendDirectMessage } from "@/services/instagram";
+import faktory from "faktory-worker";
 
 export async function POST(req) {
   try {
@@ -55,6 +56,23 @@ export async function POST(req) {
         await sendDirectMessage(org.ig_user_id, org.ig_token, chat.meta_id, content);
        
       }
+    }
+
+    if(chat.channel==="email") {
+      const { content } = newMessage
+      
+      const client = await faktory.connect({
+        url: process.env.FAKTORY_URL  || ""
+      });
+      
+      await client.push({
+        jobtype: 'SendConversationEmail',
+        args: [{ body: content, name: org.name, subject: 'Re: ' + chat.subject, to: chat.email }],
+        queue: 'default', // or specify another queue
+        at: new Date(Date.now()) // 2 minutes delay
+      });
+    
+      await client.close();
     }
 
     const conv = await prisma.conversation.update({
