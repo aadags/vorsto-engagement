@@ -36,7 +36,7 @@ export async function POST(req) {
 
     // Email content
     const mailOptions = {
-      from: `${user.name} <erica.mendez@vorsto.io>`,
+      from: `${user.name} <mailmaster@vorsto.io>`,
       to: "ayoola@vorsto.io", // Recipient's email
       subject: "Voice AI Request",
       text: `${user.name} with email ${user.email} of organization ${org.uid} has requested for voice ai.`,
