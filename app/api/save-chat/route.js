@@ -67,7 +67,7 @@ export async function POST(req) {
       
       await client.push({
         jobtype: 'SendConversationEmail',
-        args: [{ body: content, name: user.name || org.name, subject: 'Re: ' + chat.subject, to: chat.email }],
+        args: [{ body: content, name: user.name || org.name, subject: 'Re: ' + chat.subject, to: chat.email, replyTo: org.support_email  }],
         queue: 'default', // or specify another queue
         at: new Date(Date.now()) // 2 minutes delay
       });
