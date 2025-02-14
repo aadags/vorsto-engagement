@@ -66,10 +66,10 @@ export default function MyConversation({ conversationId }) {
     };
 
     const handleKeyDown = (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault(); // Prevents a new line from being added in the textarea
-            handleSubmit();
-        }
+        // if (e.key === 'Enter') {
+        //     e.preventDefault(); // Prevents a new line from being added in the textarea
+        //     handleSubmit();
+        // }
     };
 
     const renderText = (input) => {
