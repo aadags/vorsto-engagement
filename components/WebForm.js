@@ -25,6 +25,10 @@ export default function WebForm() {
     const fetchForms = async () => {
         const response = await axios.get(`/api/get-web-forms`);
         setForms(response.data.forms);
+        if(response.data.forms.length < 1)
+        {
+            handleOnClick(2);
+        }
     };
 
     const fetchForm = async (id) => {
@@ -76,6 +80,7 @@ export default function WebForm() {
                                 </div>
                                 <div className="fn__tabs_content">
                                     <div id="tab1" className={activeIndex === 1 ? "tab__item active" : "tab__item"}>
+                                        {!forms || forms && forms.length < 1 && <h5>No Web Forms Created</h5>}
                                         {forms && <ul className="fn__model_items">
                                             {/*  model item goes here */}{
                                                 forms.map((form, index) => (
