@@ -38,7 +38,10 @@ export default function MyConversation({ conversationId }) {
             content: `${user.name} ended the chat`,
         };
         setMessages(prevMessages => [...prevMessages, newMessage]);
-        saveChat(newMessage);
+        if(chat.channel != "email")
+        {
+            saveChat(newMessage);
+        }
         endChat(newMessage);
         router.push(`/leads`);
     };    

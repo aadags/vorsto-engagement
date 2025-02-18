@@ -31,6 +31,7 @@ model Organization {
   live_call_agents  LiveCallAgent[]
   tickets  Ticket[]
   comments  Comment[]
+  forms  Form[]
   contacts  Contact[]
   bot  Bot?
   stripe_id    String?     @unique()
@@ -256,5 +257,18 @@ model Contact {
   @@unique([organization_id, email])
   @@unique([organization_id, phone])
   @@unique([organization_id, username])
+}
+
+model Form {
+  id           String @id @default(cuid())
+  name      String   
+  description      String   
+  data   String? @db.LongText
+  organization     Organization   @relation(fields: [organization_id], references: [id])
+  organization_id   Int
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt @default(now())
+
+  @@map("forms")
 }
 

@@ -80,13 +80,23 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
         };
       }, []);
 
-    const data = [
+    const main = [
         {
             title: "Overview",
             pathname: "/",
             img: "/svg/home.svg",
             key: "allow"
         },
+        {
+            title: "Contacts",
+            pathname: "/contacts",
+            img: "/svg/bookmarked.svg",
+            key: user.role_id > 0 ? "contacts" : "allow"
+    
+        },
+    ];
+
+    const chat = [
         {
             title: "Conversation Queue",
             pathname: "/escalated",
@@ -108,6 +118,9 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
             key: user.role_id > 0 ? "archivedChats" : "allow"
     
         },
+    ];
+
+    const call = [
         {
             title: "Call Queue",
             pathname: "/voice-queue",
@@ -120,13 +133,9 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
             img: "/svg/phonebook.svg",
             key: user.role_id > 0 ? "callLog" : "allow",
         },
-        {
-            title: "Contacts",
-            pathname: "/contacts",
-            img: "/svg/bookmarked.svg",
-            key: user.role_id > 0 ? "contacts" : "allow"
-    
-        },
+    ];
+
+    const ticket = [
         {
             title: "Open Tickets",
             pathname: "/tickets",
@@ -141,20 +150,40 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
             key: user.role_id > 0 ? "archivedTickets" : "allow"
     
         },
+    ];
+
+    const report = [
+        {
+            title: "Call Metrics",
+            pathname: "/metrics/call",
+            img: "/svg/chart.svg",
+            key: user.role_id > 0 ? "callMetrics": "allow"
+        },
+        {
+            title: "Chat Metrics",
+            pathname: "/metrics/chat",
+            img: "/svg/chart.svg",
+            key: user.role_id > 0 ? "chatMetrics": "allow"
+        },
+    ];
+
+    const admin = [
         {
             title: "AI Agent",
             pathname: "/agent",
             img: "/svg/robot.svg",
             key: user.role_id > 0 ? "manageAiAgent": "allow"
-    
         },
         {
-            title: "Workflow",
-            pathname: "/workflow",
-            img: "/svg/option.svg",
-            key: ""
+            title: "Billing",
+            pathname: user.organizations.plan === "free"? "/plan" : `/billing/${user.organizations.stripe_id}`,
+            img: "/svg/dollar.svg",
+            key: user.role_id > 0 ? "manageBilling" : "allow"
     
         },
+    ];
+
+    const access = [
         {
             title: "Users",
             pathname: "/users",
@@ -167,20 +196,21 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
             pathname: "/roles",
             img: "/svg/hat.svg",
             key: user.role_id > 0 ? "viewRoles" : "allow"
-    
-        },
+        }
+    ];
+
+    const channel = [
         {
-            title: "Billing",
-            pathname: user.organizations.plan === "free"? "/plan" : `/billing/${user.organizations.stripe_id}`,
-            img: "/svg/dollar.svg",
-            key: user.role_id > 0 ? "manageBilling" : "allow"
-    
-        },
-        {
-            title: "Web",
+            title: "Web Chat",
             pathname: "/channel/webchat",
             img: "/svg/webchat.svg",
             key: user.role_id > 0 ? "configureWebChat" : "allow"
+        },
+        {
+            title: "Web Forms",
+            pathname: "/channel/webform",
+            img: "/svg/form.svg",
+            key: user.role_id > 0 ? "configureWebForm" : "allow"
         },
         {
             title: "Whatsapp",
@@ -206,31 +236,55 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
             img: "/svg/tty.svg",
             key: user.role_id > 0 ? "configureVoice": "allow"
         },
-        {
-            title: "Voice Metrics",
-            pathname: "/metrics/call",
-            img: "/svg/chart.svg",
-            key: user.role_id > 0 ? "callMetrics": "allow"
-        },
-        {
-            title: "Chat Metrics",
-            pathname: "/metrics/chat",
-            img: "/svg/chart.svg",
-            key: user.role_id > 0 ? "chatMetrics": "allow"
-        },
+    ];
+
+    const data = [
         {
             title: "Agent Performance",
             pathname: "/metrics/agent",
             img: "/svg/chart.svg",
             key: ""
         }
-    
     ];
 
     const pathname = usePathname()
 
-    const [isToggle, setToggle] = useState(false)
-    const toggleHandle = () => setToggle(!isToggle);
+    const isChannelActive = channel.some((item) => item.pathname === pathname);
+    const [isChannelToggle, setChannelToggle] = useState(isChannelActive)
+    const toggleChannelHandle = () => setChannelToggle(!isChannelToggle);
+
+    const isAccActive = access.some((item) => item.pathname === pathname);
+    const [isAccToggle, setAccToggle] = useState(isAccActive)
+    const toggleAccHandle = () => setAccToggle(!isAccToggle);
+
+    const isReportActive = report.some((item) => item.pathname === pathname);
+    const [isReportToggle, setReportToggle] = useState(isReportActive)
+    const toggleReportHandle = () => setReportToggle(!isReportToggle);
+
+    const isChatActive =
+    chat.some((item) => item.pathname === pathname) ||
+    (chats && chats.some((chat) => pathname.includes(chat.id)));
+    const [isChatToggle, setChatToggle] = useState(isChatActive);
+    const toggleChatHandle = () => setChatToggle((prev) => !prev);
+
+    const isCallActive =
+    call.some((item) => item.pathname === pathname) ||
+    pathname.includes("sip");
+    const [isCallToggle, setCallToggle] = useState(isCallActive)
+    const toggleCallHandle = () => setCallToggle((prev) => !prev);
+
+    const isTicketActive = ticket.some((item) => item.pathname === pathname);
+    const [isTicketToggle, setTicketToggle] = useState(isTicketActive);
+    const toggleTicketHandle = () => setTicketToggle((prev) => !prev);
+
+    useEffect(() => {
+        setChatToggle(isChatActive);
+        setCallToggle(isCallActive);
+        setTicketToggle(isTicketActive);
+        setReportToggle(isReportActive);
+        setAccToggle(isAccActive);
+        setChannelToggle(isChannelActive);
+    }, [pathname]);
 
     useEffect(() => {
         if (notify && typeof Audio !== "undefined") { 
@@ -268,7 +322,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                     {/* #1 navigation group */}
                     <div className="nav_group">
                         <ul className="group__list">
-                            {data.slice(0, 1).map((item, i) => (
+                            {main.slice(0, 1).map((item, i) => (
                                 item.key && perms.includes(item.key) && <li key={i}>
                                     <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
                                         <span className="icon">
@@ -278,117 +332,100 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                                     </Link>
                                 </li>
                             ))}
+                            <li className={`menu-item-has-children ${isChatToggle ? "closed" : ""}`} >
+                                <a className="fn__tooltip menu__item" title="Chat" onClick={toggleChatHandle} >
+                                    <span className="icon"><img src="/svg/chat.svg" alt="" className="fn__svg" /></span>
+                                    <span className="text">Chat</span>
+                                    <span className="trigger"><img src="/svg/arrow.svg" alt="" className="fn__svg" /></span>
+                                </a>
+                                <ul className="sub-menu" style={{ display: `${isChatToggle ? "block" : "none"}` }}>
+                                    {chat.map((item, i) => (
+                                        item.key && perms.includes(item.key) && <li key={i}>
+                                            <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
+                                                <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
+                                            </Link>
+                                        </li>
+                                    ))}
+                                    {chats.length > 0 && <li>------------------------------------</li>}
+                                    {chats && chats.map((chat, i) => (
+                                        <li key={i}>
+                                            <Link href={`/live/conversation/${chat.id}`} className={`fn__tooltip menu__item ${pathname.includes(chat.id) ? "active" : ""}`} title={chat.name} >
+                                                <span className="text">{chat.name}{chat.counter && <span className="count">{chat.counter}</span>}</span>
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </li>
+                            <li className={`menu-item-has-children ${isCallToggle ? "closed" : ""}`} >
+                                <a className="fn__tooltip menu__item" title="Calls" onClick={toggleCallHandle} >
+                                    <span className="icon"><img src="/svg/phone-volume.svg" alt="" className="fn__svg" /></span>
+                                    <span className="text">Call</span>
+                                    <span className="trigger"><img src="/svg/arrow.svg" alt="" className="fn__svg" /></span>
+                                </a>
+                                <ul className="sub-menu" style={{ display: `${isCallToggle ? "block" : "none"}` }}>
+                                {call.map((item, i) => (
+                                    item.key && perms.includes(item.key) && <li key={i}>
+                                        <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
+                                            <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
+                                        </Link>
+                                    </li>
+                                ))}
+                                <li>
+                                        <Link href="/sip-phone" target="_blank" className={`fn__tooltip menu__item ${pathname.includes("sip") ? "active" : ""}`} title="sip phone" >
+                                            <span className="text">Call Phone</span>
+                                        </Link>
+                                    </li>
+                                    </ul>
+                            </li>
+                            <li className={`menu-item-has-children ${isTicketToggle ? "closed" : ""}`} >
+                                <a className="fn__tooltip menu__item" title="Tickets" onClick={toggleTicketHandle} >
+                                    <span className="icon"><img src="/svg/tickets.svg" alt="" className="fn__svg" /></span>
+                                    <span className="text">Tickets</span>
+                                    <span className="trigger"><img src="/svg/arrow.svg" alt="" className="fn__svg" /></span>
+                                </a>
+                                <ul className="sub-menu" style={{ display: `${isTicketToggle ? "block" : "none"}` }}>
+                                    {ticket.map((item, i) => (
+                                        item.key && perms.includes(item.key) && <li key={i}>
+                                            <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
+                                                <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </li>
+                            {main.slice(1, 2).map((item, i) => (
+                                item.key && perms.includes(item.key) && <li key={i}>
+                                    <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
+                                        <span className="icon">
+                                            <img src={item.img} alt="" className="fn__svg" />
+                                        </span>
+                                        <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
+                                    </Link>
+                                </li>
+                            ))}
+                            <li className={`menu-item-has-children ${isReportToggle ? "closed" : ""}`} >
+                                <a className="fn__tooltip menu__item" title="Reports" onClick={toggleReportHandle} >
+                                    <span className="icon"><img src="/svg/chart.svg" alt="" className="fn__svg" /></span>
+                                    <span className="text">Reports</span>
+                                    <span className="trigger"><img src="/svg/arrow.svg" alt="" className="fn__svg" /></span>
+                                </a>
+                                <ul className="sub-menu" style={{ display: `${isReportToggle ? "block" : "none"}` }}>
+                                    {report.map((item, i) => (
+                                        item.key && perms.includes(item.key) && <li key={i}>
+                                            <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
+                                                <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </li>
                         </ul>
                     </div>
                     {/* !#1 navigation group */}
-                    {/* #3 navigation group */}
-                    <div className="nav_group">
-                        <h2 className="group__title">Chats</h2>
-                        <ul className="group__list">
-                            {data.slice(1, 4).map((item, i) => (
-                                item.key && perms.includes(item.key) && <li key={i}>
-                                    <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
-                                        <span className="icon">
-                                            <img src={item.img} alt="" className="fn__svg" />
-                                        </span>
-                                        <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
-                                    </Link>
-                                </li>
-                            ))}
-                            {chats && chats.map((chat, i) => (
-                                <li key={i}>
-                                    <Link href={`/live/conversation/${chat.id}`} className={`fn__tooltip menu__item ${pathname.includes(chat.id) ? "active" : ""}`} title={chat.name} >
-                                        <span className="icon">
-                                            <img src={"/svg/chat.svg"} alt="" className="fn__svg" />
-                                        </span>
-                                        <span className="text">{chat.name}{chat.counter && <span className="count">{chat.counter}</span>}</span>
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                    {/* !#3 navigation group */}
-                    {/* #3 navigation group */}
-                    <div className="nav_group">
-                        <h2 className="group__title">Calls</h2>
-                        <ul className="group__list">
-                            {data.slice(4, 6).map((item, i) => (
-                                item.key && perms.includes(item.key) && <li key={i}>
-                                    <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
-                                        <span className="icon">
-                                            <img src={item.img} alt="" className="fn__svg" />
-                                        </span>
-                                        <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
-                                    </Link>
-                                </li>
-                            ))}
-                            <li>
-                                    <Link href="/sip-phone" className={`fn__tooltip menu__item ${pathname.includes("sip") ? "active" : ""}`} title="sip phone" >
-                                        <span className="icon">
-                                            <img src={"/svg/headset.svg"} alt="" className="fn__svg" />
-                                        </span>
-                                        <span className="text">Call Phone</span>
-                                    </Link>
-                                </li>
-                        </ul>
-                    </div>
-                    {/* !#3 navigation group */}
-                    {/* #3 navigation group */}
-                    <div className="nav_group">
-                        <h2 className="group__title">Contacts</h2>
-                        <ul className="group__list">
-                            {data.slice(6, 7).map((item, i) => (
-                                item.key && perms.includes(item.key) && <li key={i}>
-                                    <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
-                                        <span className="icon">
-                                            <img src={item.img} alt="" className="fn__svg" />
-                                        </span>
-                                        <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                    {/* !#3 navigation group */}
-                    {/* #3 navigation group */}
-                    <div className="nav_group">
-                        <h2 className="group__title">Tickets</h2>
-                        <ul className="group__list">
-                            {data.slice(7, 9).map((item, i) => (
-                                item.key && perms.includes(item.key) && <li key={i}>
-                                    <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
-                                        <span className="icon">
-                                            <img src={item.img} alt="" className="fn__svg" />
-                                        </span>
-                                        <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                    {/* !#3 navigation group */}
-                    {/* #3 navigation group */}
-                    <div className="nav_group">
-                        <h2 className="group__title">Wallboard</h2>
-                        <ul className="group__list">
-                            {data.slice(19, 22).map((item, i) => (
-                                item.key && perms.includes(item.key) && <li key={i}>
-                                    <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
-                                        <span className="icon">
-                                            <img src={item.img} alt="" className="fn__svg" />
-                                        </span>
-                                        <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                    {/* !#3 navigation group */}
-                    {/* #3 navigation group */}
                     <div className="nav_group">
                         <h2 className="group__title">ADMIN SETTINGS</h2>
                         <ul className="group__list">
-                            {data.slice(9, 14).map((item, i) => (
+                            {admin.map((item, i) => (
                                 item.key && perms.includes(item.key) && <li key={i}>
                                     <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
                                         <span className="icon">
@@ -398,23 +435,38 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                                     </Link>
                                 </li>
                             ))}
-                        </ul>
-                    </div>
-                    {/* !#3 navigation group */}
-                    {/* #3 navigation group */}
-                    <div className="nav_group">
-                        <h2 className="group__title">CHANNEL SETTINGS</h2>
-                        <ul className="group__list">
-                            {data.slice(14, 19).map((item, i) => (
-                                item.key && perms.includes(item.key) && <li key={i}>
-                                    <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
-                                        <span className="icon">
-                                            <img src={item.img} alt="" className="fn__svg" />
-                                        </span>
-                                        <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
-                                    </Link>
-                                </li>
-                            ))}
+                            <li className={`menu-item-has-children ${isAccToggle ? "closed" : ""}`} >
+                                <a className="fn__tooltip menu__item" title="Channels" onClick={toggleAccHandle} >
+                                    <span className="icon"><img src="/svg/community.svg" alt="" className="fn__svg" /></span>
+                                    <span className="text">Access Management</span>
+                                    <span className="trigger"><img src="/svg/arrow.svg" alt="" className="fn__svg" /></span>
+                                </a>
+                                <ul className="sub-menu" style={{ display: `${isAccToggle ? "block" : "none"}` }}>
+                                    {access.map((item, i) => (
+                                        item.key && perms.includes(item.key) && <li key={i}>
+                                            <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
+                                                <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </li>
+                            <li className={`menu-item-has-children ${isChannelToggle ? "closed" : ""}`} >
+                                <a className="fn__tooltip menu__item" title="Channels" onClick={toggleChannelHandle} >
+                                    <span className="icon"><img src="/svg/setting.svg" alt="" className="fn__svg" /></span>
+                                    <span className="text">Channels</span>
+                                    <span className="trigger"><img src="/svg/arrow.svg" alt="" className="fn__svg" /></span>
+                                </a>
+                                <ul className="sub-menu" style={{ display: `${isChannelToggle ? "block" : "none"}` }}>
+                                    {channel.map((item, i) => (
+                                        item.key && perms.includes(item.key) && <li key={i}>
+                                            <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
+                                                <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </li>
                         </ul>
                     </div>
                     {/* !#3 navigation group */}
