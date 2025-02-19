@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEdit } from '@fortawesome/free-solid-svg-icons'
+import { faEdit, faCode, faExternalLink } from '@fortawesome/free-solid-svg-icons'
 import SurveyFormBuilder from './SurveyFormBuilder';
 import EditSurveyFormBuilder from './EditSurveyFormBuilder';
 
@@ -92,7 +92,11 @@ export default function WebForm() {
                                                                 <p className="desc">{form.description}</p>
                                                             </div>
                                                             <div className="item__author">
-                                                                <Link href="#" onClick={() => updateForm(form.id)}><span><FontAwesomeIcon icon={faEdit} /> Update</span></Link>
+                                                                <Link href="#" onClick={() => updateForm(form.id)}><span><FontAwesomeIcon icon={faEdit} /> Edit</span></Link>
+                                                              
+                                                                <Link href="#" onClick={() => updateForm(form.id)}><span><FontAwesomeIcon icon={faCode} /> Code</span></Link>
+                                                           
+                                                                <Link href="#" onClick={() => updateForm(form.id)}><span><FontAwesomeIcon icon={faExternalLink} /> Link</span></Link>
                                                             </div>
                                                             
                                                         </div>

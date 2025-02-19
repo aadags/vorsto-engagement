@@ -6418,6 +6418,8 @@ a.fn__like.no_border .fn__svg{
 	display: flex;
 	-ms-align-items: center;
 	align-items: center;
+	justify-content: space-between;
+    gap: 10px;
 }
 .fn__model_item .item__author img{
 	margin-right: 7px;

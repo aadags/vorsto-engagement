@@ -80,7 +80,7 @@ const EditSurveyFormBuilder = ({ data }) => {
   if (!data) return null; // Prevent rendering until `data` is available
 
   return (
-    <div className="form_container">
+    <div className="form_container" style={{ width: "70%" }}>
       <div className="form_group">
         <input
           type="text"
@@ -117,6 +117,7 @@ const EditSurveyFormBuilder = ({ data }) => {
             onChange={(e) => handleQuestionChange(index, "answerType", e.target.value)}
           >
             <option value="text">Text</option>
+            <option value="email">Email</option>
             <option value="number">Number</option>
             <option value="textarea">Text Area</option>
             <option value="radio">Radio Button</option>

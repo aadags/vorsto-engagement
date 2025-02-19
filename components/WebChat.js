@@ -64,7 +64,7 @@ export default function WebChat() {
             </div>
 
             <div className="header_bottom">
-              <form>
+              <form style={{ width: "70%" }}>
                 <div className="form_group">
                   <input
                     type="text"
@@ -170,10 +170,9 @@ export default function WebChat() {
                     Copy and paste the snippet below inside your{" "}
                     {`<body></body>`} tag{" "}
                   </b></p>
-                  <textarea
+                  <pre
                     id="snippet"
                     className="full_width"
-                    value={snippet}
                     readOnly
                     rows={4}
                     required
@@ -185,7 +184,9 @@ export default function WebChat() {
                         console.error("Failed to copy text: ", err);
                       });
                     }}
-                  />
+                  >
+                    {snippet}
+                  </pre>
                 </div>
                 <br />
               </form>

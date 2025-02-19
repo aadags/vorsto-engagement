@@ -269,6 +269,19 @@ model Form {
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt @default(now())
 
+  for_responses  FormResponse[]
+
   @@map("forms")
+}
+
+model FormResponse {
+  id           String @id @default(cuid())  
+  data   String? @db.LongText
+  form     Form   @relation(fields: [form_id], references: [id])
+  form_id   String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt @default(now())
+
+  @@map("form_response")
 }
 
