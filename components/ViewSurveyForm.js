@@ -43,7 +43,7 @@ const ViewSurveyForm = ({ data }) => {
       <br/>
       <h5 className="title">Or use the form link</h5>
       <pre>
-        http://localhost:3000/form/{formId}
+        https://engage.vorsto.io/form/{formId}
       </pre>
     </div>
   );
