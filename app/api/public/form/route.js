@@ -16,6 +16,9 @@ export async function GET(req) {
 
     const form = await prisma.form.findFirst({
       where: { id },
+      include: {
+        organization: true
+      }
     });
 
     let response = NextResponse.json({ form });

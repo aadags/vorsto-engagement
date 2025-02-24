@@ -36,7 +36,7 @@ class DynamicForm {
     this.container.style.background = this.options.backgroundColor;
     this.container.style.fontFamily = this.options.fontFamily;
     this.container.style.padding = "20px";
-    this.container.style.maxWidth = "400px";
+    this.container.style.maxWidth = "100%";
     this.container.style.margin = "auto";
     this.container.style.color = this.options.textColor;
     this.container.style.border = this.options.showBorder ? "1px solid #ccc" : "none";

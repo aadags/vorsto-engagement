@@ -3,8 +3,9 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEdit, faCode, faExternalLink } from '@fortawesome/free-solid-svg-icons'
+import { faEdit, faEye } from '@fortawesome/free-solid-svg-icons'
 import SurveyFormBuilder from './SurveyFormBuilder';
+import ViewSurveyForm from './ViewSurveyForm';
 import EditSurveyFormBuilder from './EditSurveyFormBuilder';
 
 
@@ -15,6 +16,8 @@ export default function WebForm() {
     const [forms, setForms] = useState();
     const [editForm, setEditForm] = useState(false);
     const [editFormData, setEditFormData] = useState(false);
+    const [formDetail, setFormDetail] = useState(false);
+
 
     const handleOnClick = (index) => {
         setActiveIndex(index);
@@ -44,6 +47,14 @@ export default function WebForm() {
         
     };
 
+    const seeForm = (id) => {
+
+        fetchForm(id);
+        setFormDetail(true);
+        handleOnClick(4);
+        
+    };
+
 
     // store the filter keyword in a state
     useEffect(() => {
@@ -66,6 +77,7 @@ export default function WebForm() {
                                 <a className={activeIndex === 1 ? "active" : ""} onClick={() => handleOnClick(1)}>Web Forms</a>
                                 <a className={activeIndex === 2 ? "active" : ""} onClick={() => handleOnClick(2)}>Create Web Form</a>
                                 {editForm && <a className={activeIndex === 3 ? "active" : ""} onClick={() => handleOnClick(3)}>Edit - {editFormData.name}</a>}
+                                {formDetail && <a className={activeIndex === 4 ? "active" : ""} onClick={() => handleOnClick(4)}>Details - {editFormData.name}</a>}
                             </div>
                         </div>
                     </div>
@@ -94,9 +106,7 @@ export default function WebForm() {
                                                             <div className="item__author">
                                                                 <Link href="#" onClick={() => updateForm(form.id)}><span><FontAwesomeIcon icon={faEdit} /> Edit</span></Link>
                                                               
-                                                                <Link href="#" onClick={() => updateForm(form.id)}><span><FontAwesomeIcon icon={faCode} /> Code</span></Link>
-                                                           
-                                                                <Link href="#" onClick={() => updateForm(form.id)}><span><FontAwesomeIcon icon={faExternalLink} /> Link</span></Link>
+                                                                <Link href="#" onClick={() => seeForm(form.id)}><span><FontAwesomeIcon icon={faEye} /> Details</span></Link>
                                                             </div>
                                                             
                                                         </div>
@@ -109,6 +119,9 @@ export default function WebForm() {
                                     </div>
                                     <div id="tab3" className={activeIndex === 3 ? "tab__item active" : "tab__item"}>
                                        {editFormData && <EditSurveyFormBuilder data={editFormData} />}
+                                    </div>
+                                    <div id="tab4" className={activeIndex === 4 ? "tab__item active" : "tab__item"}>
+                                       {editFormData && <ViewSurveyForm data={editFormData} />}
                                     </div>
                                    
                                 </div>
