@@ -22,6 +22,8 @@ const ViewSurveyForm = ({ data }) => {
     <div className="form_container">
       <h5 className="title">Copy and Paste the Web Form Code Snippet</h5>
       <pre>
+        {'<div id="lead-form" style="width: 70%;"></div>'}
+        <br/>
         {'<script src="https://engage.vorsto.io/js/form.js"></script>'}<br/>
         {'<script>'}<br/>
         {'  const options = {'}<br/>
