@@ -3,9 +3,10 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEdit, faEye } from '@fortawesome/free-solid-svg-icons'
+import { faEdit, faEye, faChartSimple } from '@fortawesome/free-solid-svg-icons'
 import SurveyFormBuilder from './SurveyFormBuilder';
 import ViewSurveyForm from './ViewSurveyForm';
+import ViewSurveyFormResult from './ViewSurveyFormResult';
 import EditSurveyFormBuilder from './EditSurveyFormBuilder';
 
 
@@ -17,6 +18,7 @@ export default function WebForm() {
     const [editForm, setEditForm] = useState(false);
     const [editFormData, setEditFormData] = useState(false);
     const [formDetail, setFormDetail] = useState(false);
+    const [formResp, setFormResp] = useState(false);
 
 
     const handleOnClick = (index) => {
@@ -55,6 +57,14 @@ export default function WebForm() {
         
     };
 
+    const formResult = (id) => {
+
+        fetchForm(id);
+        setFormResp(true);
+        handleOnClick(5);
+        
+    };
+
 
     // store the filter keyword in a state
     useEffect(() => {
@@ -78,6 +88,7 @@ export default function WebForm() {
                                 <a className={activeIndex === 2 ? "active" : ""} onClick={() => handleOnClick(2)}>Create Web Form</a>
                                 {editForm && <a className={activeIndex === 3 ? "active" : ""} onClick={() => handleOnClick(3)}>Edit - {editFormData.name}</a>}
                                 {formDetail && <a className={activeIndex === 4 ? "active" : ""} onClick={() => handleOnClick(4)}>Details - {editFormData.name}</a>}
+                                {formResp && <a className={activeIndex === 5 ? "active" : ""} onClick={() => handleOnClick(5)}>Results - {editFormData.name}</a>}
                             </div>
                         </div>
                     </div>
@@ -108,6 +119,9 @@ export default function WebForm() {
                                                               
                                                                 <Link href="#" onClick={() => seeForm(form.id)}><span><FontAwesomeIcon icon={faEye} /> Details</span></Link>
                                                             </div>
+                                                            <div className="item__author">
+                                                                <Link href="#" onClick={() => formResult(form.id)}><span><FontAwesomeIcon icon={faChartSimple} /> Results</span></Link>
+                                                            </div>
                                                             
                                                         </div>
                                                     </li>
@@ -122,6 +136,9 @@ export default function WebForm() {
                                     </div>
                                     <div id="tab4" className={activeIndex === 4 ? "tab__item active" : "tab__item"}>
                                        {editFormData && <ViewSurveyForm data={editFormData} />}
+                                    </div>
+                                    <div id="tab5" className={activeIndex === 5 ? "tab__item active" : "tab__item"}>
+                                       {editFormData && <ViewSurveyFormResult form={editFormData} />}
                                     </div>
                                    
                                 </div>
