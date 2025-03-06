@@ -27,7 +27,7 @@ const ViewSurveyForm = ({ data }) => {
         {'<script src="https://engage.vorsto.io/js/form.js"></script>'}<br/>
         {'<script>'}<br/>
         {'  const options = {'}<br/>
-        {'    designColor: "#b49132", // Custom primary color'}<br/>
+        {'    designColor: "#000000", // Custom primary color'}<br/>
         {'    textColor: "#222222", // Custom text color'}<br/>
         {'    background: "transparent", // Background color (default is transparent)'}<br/>
         {'    fontFamily: "Arial, sans-serif", // Font family'}<br/>

@@ -88,8 +88,6 @@ async function handleCustomerCreation(session) {
 
 async function handleSubscriptionCreated(subscription) {
 
-  console.log({ subscription });
-
   const client = await faktory.connect({
     url: process.env.FAKTORY_URL  || ""
   });

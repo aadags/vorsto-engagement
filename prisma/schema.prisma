@@ -33,6 +33,7 @@ model Organization {
   comments  Comment[]
   forms  Form[]
   contacts  Contact[]
+  numbers  Number[]
   bot  Bot?
   stripe_id    String?     @unique()
   plan         String      @default("free")
@@ -283,5 +284,21 @@ model FormResponse {
   updated_at  DateTime @updatedAt @default(now())
 
   @@map("form_response")
+}
+
+model Number {
+  id           String @id @default(cuid())  
+  number    String?    @unique()
+  voice      Boolean    
+  sms      Boolean    
+  plan      String    
+  locality      String?    
+  sid      String?    
+  organization     Organization   @relation(fields: [organization_id], references: [id])
+  organization_id   Int
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt @default(now())
+
+  @@map("numbers")
 }
 
