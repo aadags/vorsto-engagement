@@ -38,6 +38,7 @@ model Organization {
   stripe_id    String?     @unique()
   plan         String      @default("free")
   plan_id  String?
+  number_plan_id  String?
   support_email  String?    @unique()
   support_email_connection  String?    @db.LongText
   call_center_number    String?    @unique()
@@ -302,3 +303,16 @@ model Number {
   @@map("numbers")
 }
 
+model DeletedNumber {
+  id           String @id @default(cuid())  
+  number    String?    @unique()
+  voice      Boolean    
+  sms      Boolean     
+  locality      String?    
+  sid      String?    
+  organization_id   Int
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt @default(now())
+
+  @@map("deleted_numbers")
+}

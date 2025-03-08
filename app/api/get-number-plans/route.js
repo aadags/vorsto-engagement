@@ -25,8 +25,13 @@ export async function GET(req) {
       where: { id: orgId },
     });
 
+    const paidPlans = await prisma.number.count({
+      where: { organization_id: orgId, plan: "paid" },
+    });
+
     return NextResponse.json({
       free: freePlans,
+      paid: paidPlans,
       plan: org.plan,
     });
 

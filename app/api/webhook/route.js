@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import Stripe from 'stripe';
 import faktory from "faktory-worker"
+import twilio from "twilio";
 
 const prisma = new PrismaClient();
 const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY, {
@@ -74,6 +75,50 @@ async function handleCustomerCreation(session) {
 
   console.log({...session});
   const id = session.client_reference_id;
+
+  if(id.length > 10)
+  {
+    const decoded = Buffer.from(id, 'base64').toString('utf-8');
+    const jsonData = JSON.parse(decoded);
+    const { organization_id, numberData } = jsonData;
+
+
+    if(session.payment_status === "paid") {
+      const customerId = session.customer;
+      // Update the user in the database with the Stripe subscription details
+      await prisma.organization.update({
+        where: { id: Number(organization_id) },
+        data: {
+          stripe_id: customerId,
+        },
+      });
+
+      const accountSid = process.env.TWILIO_ACCOUNT_SID;
+      const authToken = process.env.TWILIO_AUTH_TOKEN;
+      const client = twilio(accountSid, authToken);
+  
+      const incomingPhoneNumber = await client.incomingPhoneNumbers.create({
+        phoneNumber: numberData.phoneNumber,
+        voiceUrl: "https://voice.vorsto.io/api/conference/client-connect",
+        smsUrl: "https://sms.vorsto.io/api/hook",
+      });
+  
+      const number = await prisma.number.create({
+        data: {
+          number: numberData.phoneNumber,
+          sms: numberData.capabilities.SMS,
+          voice: numberData.capabilities.voice,
+          locality: numberData.locality,
+          sid: incomingPhoneNumber.sid,
+          plan: "paid",
+          organization_id: Number(organization_id),
+        },
+      });
+
+    }
+
+  } else {
+
     if(session.payment_status === "paid") {
       const customerId = session.customer;
       // Update the user in the database with the Stripe subscription details
@@ -84,6 +129,7 @@ async function handleCustomerCreation(session) {
         },
       });
     }
+  }
 }
 
 async function handleSubscriptionCreated(subscription) {

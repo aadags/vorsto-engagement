@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import DataTable, { createTheme } from "react-data-table-component";
 import axios from "axios";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { useRouter } from 'next/navigation';
 import { faPlus, faShoppingCart, faCheck, faCancel, } from '@fortawesome/free-solid-svg-icons'
 
 const ActiveNumbers = () => {
@@ -10,6 +11,8 @@ const ActiveNumbers = () => {
   const [loading, setLoading] = useState(false);
   const [totalRows, setTotalRows] = useState(0);
   const [perPage, setPerPage] = useState(10);
+
+  const router = useRouter();
 
   const columns = [
     {
@@ -45,7 +48,7 @@ const ActiveNumbers = () => {
       name: "Actions",
       cell: (row) => (
         <div>
-          <a href={`#`}>
+          <a href={`#`} onClick={()=>deactivateNumber(row)}>
             <FontAwesomeIcon icon={faCancel} /> Deactivate
           </a>
           <br />
@@ -90,6 +93,22 @@ const ActiveNumbers = () => {
     setData(response.data.data);
     setPerPage(newPerPage);
     setLoading(false);
+  };
+
+  const deactivateNumber = async (numberData) => {
+    const confirmAction = window.confirm(`Do you confirm to deactivate ${numberData.number}? This action immediately disables your phone number permanently. You may not be able to repurchase it back after 7 days of deactivation.`);
+    if (!confirmAction) return;
+
+    try {
+      const response = await axios.post(`/api/deactivate-number`, { numberData });
+      if(response.data.status)
+      {
+        router.refresh();
+      }
+    } catch (error) {
+      console.error("Error deactivating number:", error);
+      alert("Error deactivating number");
+    }
   };
 
   useEffect(() => {

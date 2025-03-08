@@ -8,30 +8,34 @@ export async function POST(req) {
     const organizationId = Number(req.cookies.get("organizationId").value) ?? 0;
 
     const body = await req.json();
-    const { numberData } = body;
+    const { id, sid, number, voice, sms, locality, organization_id } = body;
 
     const accountSid = process.env.TWILIO_ACCOUNT_SID;
     const authToken = process.env.TWILIO_AUTH_TOKEN;
     const client = twilio(accountSid, authToken);
 
-    const incomingPhoneNumber = await client.incomingPhoneNumbers.create({
-      phoneNumber: numberData.phoneNumber,
-      voiceUrl: "https://voice.vorsto.io/api/conference/client-connect",
-      smsUrl: "https://sms.vorsto.io/api/hook",
-    });
+    // await client
+    // .incomingPhoneNumbers(sid)
+    // .remove();
 
-    const number = await prisma.number.create({
-      data: {
-        number: numberData.phoneNumber,
-        sms: numberData.capabilities.SMS,
-        voice: numberData.capabilities.voice,
-        locality: numberData.locality,
-        sid: incomingPhoneNumber.sid,
-        plan: "free",
-        organization_id: organizationId,
+    await prisma.number.delete({
+      where: {
+        id
       },
     });
-    return NextResponse.json({ status: true, message: "Number Activated" });
+
+    await prisma.deletedNumber.create({
+      data: {
+        number,
+        voice,
+        sms,
+        locality,
+        sid,
+        organization_id
+      }
+    });
+
+    return NextResponse.json({ status: true, message: "Number Deactivated" });
   } catch (error) {
     console.error(error);
     return NextResponse.json(

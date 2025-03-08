@@ -40,6 +40,7 @@ export default function VoiceSetup() {
       };
 
       fetchUser();
+      fetchNumberPlans();
     }, [])
 
 
@@ -79,9 +80,17 @@ export default function VoiceSetup() {
         cell: (row) => (
           <div>
             {numberPlans && (numberPlans.plan=="free" || numberPlans.free > 0)?
-             user && <a href={`https://buy.stripe.com/${process.env.NEXT_PUBLIC_NUMBER_BUY_LINK}?client_reference_id=${user.organization_id}${row.phone_number}&prefilled_email=${user.email}`}>
-              <FontAwesomeIcon icon={faShoppingCart} /> Buy
-            </a> :
+              numberPlans.paid > 0 ?
+                <a href={`#`} onClick={()=>activateAdditionalNumber(row)}>
+                  <FontAwesomeIcon icon={faShoppingCart} /> Buy
+                </a>
+                :
+                user && <a href={`https://buy.stripe.com/${process.env.NEXT_PUBLIC_NUMBER_BUY_LINK}?client_reference_id=${btoa(
+                  JSON.stringify({ organization_id: user.organization_id, numberData: row })
+                )}&prefilled_email=${user.email}`}>
+                  <FontAwesomeIcon icon={faShoppingCart} /> Buy
+                </a>
+              :
             <a href={`#`} onClick={()=>activateNumber(row)}>
               <FontAwesomeIcon icon={faShoppingCart} /> Activate
             </a>}
@@ -155,11 +164,27 @@ export default function VoiceSetup() {
   };
 
   const activateNumber = async (numberData) => {
-    const confirmAction = window.confirm(`Are you sure you want to activate ${numberData.friendlyName}?`);
+    const confirmAction = window.confirm(`Confirm you want to activate ${numberData.friendlyName} as your free number?`);
     if (!confirmAction) return;
-  
+
     try {
       const response = await axios.post(`/api/activate-number`, { numberData });
+      if(response.data.status)
+      {
+        router.refresh();
+      }
+    } catch (error) {
+      console.error("Error activating number:", error);
+      alert("Error activating number");
+    }
+  };
+
+  const activateAdditionalNumber = async (numberData) => {
+    const confirmAction = window.confirm(`Confirm you want activate ${numberData.friendlyName}?`);
+    if (!confirmAction) return;
+
+    try {
+      const response = await axios.post(`/api/activate-additional-number`, { numberData });
       if(response.data.status)
       {
         router.refresh();
