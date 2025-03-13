@@ -89,10 +89,6 @@ const ViewSurveyFormResult = ({ form }) => {
 
 
   return (
-    <div className="techwave_fn_user_profile_page">
-      <div className="container">
-        <div className="techwave_fn_user_profile">
-          <div className="user__profile">
             <div style={{ width: "100%", margin: "0 auto" }}>
               <div
                 style={{
@@ -116,7 +112,7 @@ const ViewSurveyFormResult = ({ form }) => {
                 </button>
               </div>
               <DataTable
-                title={`${form.name} - Results`}
+                title={``}
                 columns={columns}
                 data={data}
                 progressPending={loading}
@@ -128,10 +124,7 @@ const ViewSurveyFormResult = ({ form }) => {
                 theme="light"
               />
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
+          
   );
 };
 

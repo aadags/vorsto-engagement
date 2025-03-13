@@ -34,7 +34,7 @@ model Organization {
   forms  Form[]
   contacts  Contact[]
   numbers  Number[]
-  bot  Bot?
+  bots  Bot[]
   stripe_id    String?     @unique()
   plan         String      @default("free")
   plan_id  String?
@@ -109,13 +109,14 @@ model Bot {
   id                String   @id @default(cuid())
   name              String
   human_takeover    Boolean  @default(true)
+  category          String?  @default("Custom")
   system_bio        String   @db.LongText
   model             String?
   tools             Tool[]
   output_type       String?  @default("text")
   output_parameters String?  @db.LongText
   organization         Organization       @relation(fields: [organization_id], references: [id])
-  organization_id      Int     @unique()
+  organization_id      Int   
   created_at        DateTime @default(now())
   updated_at        DateTime @updatedAt
 

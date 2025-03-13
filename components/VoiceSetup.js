@@ -202,7 +202,7 @@ export default function VoiceSetup() {
             <div className="techwave_fn_models_page">
                 <div className="fn__title_holder">
                     <div className="container">
-                        <h1 className="title">Voice Setup</h1>
+                        <h1 className="title">Voice & SMS Setup</h1>
                     </div>
                 </div>
                 {/* Models */}

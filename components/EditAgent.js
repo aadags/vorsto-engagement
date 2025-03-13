@@ -1,18 +1,21 @@
 'use client'
 import React, { useState, useEffect } from 'react'
+import { getBot } from '@/services/botService'
+import { getTools } from '@/services/toolService'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSpinner, faCheckCircle } from '@fortawesome/free-solid-svg-icons'
 import { replaceAccents } from '@/utils/helper'
-import { useRouter } from 'next/navigation';
+import { getUser } from '@/services/userService';
 
-export default function ManageAgent() {
-  const [name, setName] = useState('');
-  const [model, setModel] = useState('vorsto-xa-2');
+export default function EditAgent({ agent }) {
+  const [id, setId] = useState(agent.id);
+  const [name, setName] = useState(agent.name);
+  const [model, setModel] = useState(agent.model);
   const [key, setKey] = useState('');
   const [hook, setHook] = useState('');
-  const [systemBio, setSystemBio] = useState('');
-  const [humanTakeOver, setHumanTakeOver] = useState(true);
-  const [outputType, setOutputType] = useState('');
+  const [systemBio, setSystemBio] = useState(agent.system_bio);
+  const [humanTakeOver, setHumanTakeOver] = useState(agent.human_takeover);
+  const [outputType, setOutputType] = useState(agent.output_type);
   const [outputParameter, setOutputParameter] = useState([]);
   const [functions, setFunctions] = useState([]);
   const [pageLoad, setPageLoad] = useState(true);
@@ -20,8 +23,33 @@ export default function ManageAgent() {
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState('');
 
-  const router = useRouter();
+  useEffect(() => {
+    const fetchBot = async () => {
+      try {
+        
+        const tools = await getTools(id);
+        
+        const transformedFunctions = tools.map(tool => ({
+          name: tool.name,
+          description: tool.description,
+          api: tool.api,
+          parameterConfig: Object.keys(tool.parameters || {}).reduce((acc, key, index) => {
+            acc[index] = tool.parameters[key];
+            return acc;
+          }, {})
+        }));
 
+        setFunctions(transformedFunctions);
+        setPageLoad(false);
+
+      } catch (error) {
+        console.log(error);
+      } finally {
+      }
+    };
+
+    fetchBot();
+  }, []);
 
   const handleFunctionChange = (index, key, value) => {
     const updatedFunctions = [...functions];
@@ -69,17 +97,17 @@ export default function ManageAgent() {
   const handleSubmit = async (e) => {
     e.preventDefault();
   
-    const confirmation = window.confirm("Do you want to save the changes to your agent?");
+    const confirmation = window.confirm("Are you sure you want to update the changes to your agent?");
   
     if (!confirmation) {
       return; // Exit the function if the user cancels the action
     }
   
     setLoading(true);
-    const botData = { name, humanTakeOver, systemBio, model, hook, key, functions, outputType, outputParameter };
+    const botData = { id: id, name, humanTakeOver, systemBio, model, hook, key, functions, outputType, outputParameter };
   
     try {
-      const response = await fetch('/api/create-bot', {
+      const response = await fetch('/api/update-bot', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -90,7 +118,6 @@ export default function ManageAgent() {
       if (response.ok) {
         // Handle success, e.g., show a success message or redirect
         setSaved(true);
-        router.refresh();
       } else {
         // Handle error
         setError("An error occurred while saving your agent!");
@@ -111,9 +138,10 @@ export default function ManageAgent() {
         <div className="generation__page">
           {/* Generation Header */}
           <div className="generation_header">
+            {!pageLoad &&
             <div className="header_bottom">
               <form onSubmit={handleSubmit}>
-                <div className="form_group">
+              <div className="form_group">
                   <input
                     type="text"
                     id="name"
@@ -154,10 +182,12 @@ export default function ManageAgent() {
                     <span className="t_slider" />
                     <span className="t_content" />
                   </span>
-                  Activate human-AI collaboration
+                  Allow human agent takeover
                 </label>
                 <br/>
                 
+                
+                <br/>
                   {outputType === "text" && (<div className="form_group">
                   {functions.map((func, index) => (
                     <div key={index} className="function_group">
@@ -253,11 +283,11 @@ export default function ManageAgent() {
                 <br/>
                 <div className="generate_section">
                   <button type="submit" className="techwave_fn_button" aria-readonly={loading}>
-                    <span>Create Agent {loading && <FontAwesomeIcon icon={faSpinner} spin={true} />} {saved && <FontAwesomeIcon icon={faCheckCircle} />}</span>
+                    <span>Update Agent {loading && <FontAwesomeIcon icon={faSpinner} spin={true} />} {saved && <FontAwesomeIcon icon={faCheckCircle} />}</span>
                   </button>
                 </div>
               </form>
-            </div>
+            </div>}
           </div>
           {/* !Generation Header */}
         </div>

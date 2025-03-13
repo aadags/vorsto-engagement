@@ -169,7 +169,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
 
     const admin = [
         {
-            title: "AI Agent",
+            title: "AI Agents",
             pathname: "/agent",
             img: "/svg/robot.svg",
             key: user.role_id > 0 ? "manageAiAgent": "allow"
@@ -231,7 +231,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
             key: user.role_id > 0 ? "configureEmail": "allow"
         },
         {
-            title: "Voice",
+            title: "Voice & SMS",
             pathname: "/channel/voice",
             img: "/svg/tty.svg",
             key: user.role_id > 0 ? "configureVoice": "allow"

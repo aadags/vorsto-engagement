@@ -1,5 +1,5 @@
 "use client"
-import ManageAgent from '@/components/ManageAgent'
+import AgentSetup from '@/components/AgentSetup'
 import Layout from '@/layouts/layout'
 import React from 'react'
 
@@ -7,7 +7,7 @@ import React from 'react'
 export default function page() {
   return (
     <Layout>
-      <ManageAgent />
+      <AgentSetup />
     </Layout>
   )
 }

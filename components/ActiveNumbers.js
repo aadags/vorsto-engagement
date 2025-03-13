@@ -3,7 +3,7 @@ import DataTable, { createTheme } from "react-data-table-component";
 import axios from "axios";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useRouter } from 'next/navigation';
-import { faPlus, faShoppingCart, faCheck, faCancel, } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faShoppingCart, faCheck, faCancel, faScrewdriverWrench } from '@fortawesome/free-solid-svg-icons'
 
 const ActiveNumbers = () => {
   
@@ -45,7 +45,20 @@ const ActiveNumbers = () => {
       selector: (row) => row.plan=="free"? "free" : "$1.50"
     },
     {
-      name: "Actions",
+      name: "Incoming Calls",
+      cell: (row) => (
+        <div>
+          <a href={`#`} onClick={()=>deactivateNumber(row)}>
+            <FontAwesomeIcon icon={faScrewdriverWrench} /> Incoming
+          </a>
+          <br />
+        </div>
+      ),
+      button: true,
+      grow: 10
+    },
+    {
+      name: "Deactivate",
       cell: (row) => (
         <div>
           <a href={`#`} onClick={()=>deactivateNumber(row)}>
@@ -54,9 +67,8 @@ const ActiveNumbers = () => {
           <br />
         </div>
       ),
-      ignoreRowClick: true,
-      allowOverflow: true,
       button: true,
+      grow: 10
     },
   ];
 
@@ -117,10 +129,6 @@ const ActiveNumbers = () => {
 
 
   return (
-    <div className="techwave_fn_user_profile_page">
-      <div className="container">
-        <div className="techwave_fn_user_profile">
-          <div className="user__profile">
             <div style={{ width: "100%", margin: "0 auto" }}>
               <DataTable
                 title={`Active Numbers`}
@@ -135,10 +143,6 @@ const ActiveNumbers = () => {
                 theme="light"
               />
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
   );
 };
 

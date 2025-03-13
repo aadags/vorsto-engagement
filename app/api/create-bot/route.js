@@ -1,13 +1,13 @@
 "use server";
 import { NextResponse } from "next/server";
 import prisma from "@/db/prisma";
-import RedisHandler from "@/redis/redisHandler";
 
 export async function POST(req) {
   try {
     const body = await req.json();
+    const organizationId = Number(req.cookies.get("organizationId").value) ?? 0;
+
     const {
-      id,
       name,
       humanTakeOver,
       systemBio,
@@ -17,7 +17,7 @@ export async function POST(req) {
       functions,
     } = body;
 
-    const bot = await prisma.bot.update({
+    const bot = await prisma.bot.create({
       data: {
         name,
         system_bio: systemBio,
@@ -25,16 +25,8 @@ export async function POST(req) {
         model,
         output_type: outputType,
         output_parameters: JSON.stringify(outputParameter),
-      },
-      where: {
-        id: id,
-      },
-    });
-
-    await prisma.tool.deleteMany({
-      where: {
-        bot_id: id,
-      },
+        organization_id: organizationId
+      }
     });
 
     for (const func of functions) {
@@ -51,17 +43,17 @@ export async function POST(req) {
       });
     }
 
-    const redisHandler = new RedisHandler(id);
-    await redisHandler.invalidateCacheValue();
+    // const redisHandler = new RedisHandler(id);
+    // await redisHandler.invalidateCacheValue();
 
     return NextResponse.json({
-      message: "Bot and tools updated functions",
+      message: "Bot and tools created functions",
       data: bot,
     });
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: "Failed to update bot and functions" },
+      { error: "Failed to create bot and functions" },
       { status: 500 }
     );
   }

@@ -96,10 +96,6 @@ export default function AIConversations() {
   }, []);
 
   return (
-    <div className="techwave_fn_user_profile_page">
-      <div className="container">
-        <div className="techwave_fn_user_profile">
-          <div className="user__profile">
             <div style={{ width: "100%", margin: "0 auto" }}>
               <DataTable
                 title="Ongoing Conversations"
@@ -114,9 +110,5 @@ export default function AIConversations() {
                 theme="light"
               />
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
   );
 }
