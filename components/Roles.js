@@ -27,10 +27,12 @@ export default function Roles() {
     chatMetrics: false,
     agentMetrics: false,
     configureWebChat: false,
+    configureWebForm: false,
     configureWhatsapp: false,
     configureInstagram: false,
     configureEmail: false,
     configureVoice: false,
+    paymentProviders: false,
   });
 
   const columns = [

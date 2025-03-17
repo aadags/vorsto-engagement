@@ -17,7 +17,7 @@ export async function POST(req) {
       functions,
     } = body;
 
-    const bot = await prisma.bot.update({
+    const bot = await prisma.agent.update({
       data: {
         name,
         system_bio: systemBio,
@@ -33,7 +33,7 @@ export async function POST(req) {
 
     await prisma.tool.deleteMany({
       where: {
-        bot_id: id,
+        agent_id: id,
       },
     });
 
@@ -46,7 +46,7 @@ export async function POST(req) {
           description,
           api,
           parameters: JSON.stringify(parameterConfig),
-          bot_id: bot.id, // Associate the tool with the updated bot
+          agent_id: bot.id, // Associate the tool with the updated bot
         },
       });
     }

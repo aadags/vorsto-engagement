@@ -7,7 +7,7 @@ export async function POST(req) {
     const { product } = await req.json();
     const organizationId = Number(req.cookies.get("organizationId").value) ?? 0;
 
-    const bot = await prisma.bot.create({
+    const agent = await prisma.agent.create({
       data: {
         name: product.title,
         category: product.author_name,
@@ -29,14 +29,14 @@ export async function POST(req) {
     //       description,
     //       api,
     //       parameters: JSON.stringify(parameterConfig),
-    //       bot_id: bot.id, // Associate the tool with the updated bot
+    //       agent_id: bot.id, // Associate the tool with the updated bot
     //     },
     //   });
     // }
 
     return NextResponse.json({
       status: true,
-      data: bot,
+      data: agent,
     });
   } catch (error) {
     console.error(error);

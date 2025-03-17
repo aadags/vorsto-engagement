@@ -247,6 +247,48 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
         }
     ];
 
+    const sales = [
+        {
+            title: "Payments",
+            pathname: "/payments",
+            img: "/svg/phone-volume.svg",
+            key: user.role_id > 0 ? "callQueue" : "allow",
+        },
+        {
+            title: "Orders",
+            pathname: "/payments",
+            img: "/svg/phone-volume.svg",
+            key: user.role_id > 0 ? "callQueue" : "allow",
+        },
+        {
+            title: "Subscriptions",
+            pathname: "/payments",
+            img: "/svg/phone-volume.svg",
+            key: user.role_id > 0 ? "callQueue" : "allow",
+        },
+        {
+            title: "Loyalty",
+            pathname: "/payments",
+            img: "/svg/phone-volume.svg",
+            key: user.role_id > 0 ? "callQueue" : "allow",
+        },
+        {
+            title: "Coupons",
+            pathname: "/payments",
+            img: "/svg/phone-volume.svg",
+            key: user.role_id > 0 ? "callQueue" : "allow",
+        },
+    ];
+
+    const integration = [
+        {
+            title: "Payment Providers",
+            pathname: "/integration/payments",
+            img: "/svg/phone-volume.svg",
+            key: user.role_id > 0 ? "paymentProviders" : "allow",
+        }
+    ];
+
     const pathname = usePathname()
 
     const isChannelActive = channel.some((item) => item.pathname === pathname);
@@ -277,6 +319,14 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
     const [isTicketToggle, setTicketToggle] = useState(isTicketActive);
     const toggleTicketHandle = () => setTicketToggle((prev) => !prev);
 
+    const isSalesActive = sales.some((item) => item.pathname === pathname);
+    const [isSalesToggle, setSalesToggle] = useState(isSalesActive);
+    const toggleSalesHandle = () => setSalesToggle((prev) => !prev);
+
+    const isItgActive = integration.some((item) => item.pathname === pathname);
+    const [isItgToggle, setItgToggle] = useState(isItgActive);
+    const toggleItgHandle = () => setItgToggle((prev) => !prev);
+
     useEffect(() => {
         setChatToggle(isChatActive);
         setCallToggle(isCallActive);
@@ -284,6 +334,8 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
         setReportToggle(isReportActive);
         setAccToggle(isAccActive);
         setChannelToggle(isChannelActive);
+        setSalesToggle(isSalesActive);
+        setItgToggle(isItgActive);
     }, [pathname]);
 
     useEffect(() => {
@@ -393,6 +445,22 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                                     ))}
                                 </ul>
                             </li>
+                            <li className={`menu-item-has-children ${isSalesToggle ? "closed" : ""}`} >
+                                <a className="fn__tooltip menu__item" title="Sales" onClick={toggleSalesHandle} >
+                                    <span className="icon"><img src="/svg/sales.svg" alt="" className="fn__svg" /></span>
+                                    <span className="text">Sales</span>
+                                    <span className="trigger"><img src="/svg/arrow.svg" alt="" className="fn__svg" /></span>
+                                </a>
+                                <ul className="sub-menu" style={{ display: `${isSalesToggle ? "block" : "none"}` }}>
+                                    {sales.map((item, i) => (
+                                        item.key && perms.includes(item.key) && <li key={i}>
+                                            <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
+                                                <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </li>
                             {main.slice(1, 2).map((item, i) => (
                                 item.key && perms.includes(item.key) && <li key={i}>
                                     <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
@@ -435,6 +503,22 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                                     </Link>
                                 </li>
                             ))}
+                            <li className={`menu-item-has-children ${isItgToggle ? "closed" : ""}`} >
+                                <a className="fn__tooltip menu__item" title="Integration" onClick={toggleItgHandle} >
+                                    <span className="icon"><img src="/svg/plug.svg" alt="" className="fn__svg" /></span>
+                                    <span className="text">Integration</span>
+                                    <span className="trigger"><img src="/svg/arrow.svg" alt="" className="fn__svg" /></span>
+                                </a>
+                                <ul className="sub-menu" style={{ display: `${isItgToggle ? "block" : "none"}` }}>
+                                    {integration.map((item, i) => (
+                                        item.key && perms.includes(item.key) && <li key={i}>
+                                            <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
+                                                <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </li>
                             <li className={`menu-item-has-children ${isAccToggle ? "closed" : ""}`} >
                                 <a className="fn__tooltip menu__item" title="Channels" onClick={toggleAccHandle} >
                                     <span className="icon"><img src="/svg/community.svg" alt="" className="fn__svg" /></span>

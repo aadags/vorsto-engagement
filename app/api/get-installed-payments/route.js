@@ -17,22 +17,11 @@ export async function GET(req) {
     const cookieData = await getCookieData();
     const orgId = Number(cookieData) ?? 0;
 
-    const page = parseInt(req.nextUrl.searchParams.get("page")); // Default to page 1 if not provided
-    const pageSize = parseInt(req.nextUrl.searchParams.get("per_page"));
-
-    const bots = await prisma.agent.findMany({
-      where: { organization_id: orgId },
-      orderBy: { created_at: 'desc' },
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-    });
-
-    const total = await prisma.agent.count({
+    const payments = await prisma.paymentProcessor.findMany({
       where: { organization_id: orgId },
     });
-   
 
-    return NextResponse.json({ data: bots, count: total });
+    return NextResponse.json(payments);
 
   } catch (error) {
     console.error(error);
