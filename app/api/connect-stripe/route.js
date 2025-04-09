@@ -1,19 +1,12 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import Stripe from 'stripe';
 import prisma from "@/db/prisma";
-
 
 export const dynamic = "force-dynamic";
 
 const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY, {
   apiVersion: '2024-12-18.acacia', // Use the correct API version
 });
-
-async function getCookieData() {
-  const cookieData = cookies().get("organizationId");
-  return cookieData ? cookieData.value : null;
-}
 
 export async function POST(req) {
   try {
@@ -27,12 +20,19 @@ export async function POST(req) {
       code: code,
     });
 
-    const stripeAccountId = response.stripe_user_id;
+    await prisma.paymentProcessor.deleteMany({
+      where: {
+        organization_id: organizationId
+      }
+    });
 
     await prisma.paymentProcessor.create({
       data: { 
         name: "Stripe",
-        account_id: stripeAccountId,
+        access_token: response.access_token, 
+        refresh_token: response.refresh_token, 
+        public_token: response.stripe_publishable_key,
+        accountId: response.stripe_user_id,
         organization_id: organizationId 
       },
     });

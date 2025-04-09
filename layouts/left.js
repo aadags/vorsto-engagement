@@ -94,6 +94,18 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
             key: user.role_id > 0 ? "contacts" : "allow"
     
         },
+        {
+            title: "Loyalty",
+            pathname: "/payments",
+            img: "/svg/phone-volume.svg",
+            key: user.role_id > 0 ? "callQueue" : "allow",
+        },
+        {
+            title: "Coupons",
+            pathname: "/payments",
+            img: "/svg/phone-volume.svg",
+            key: user.role_id > 0 ? "callQueue" : "allow",
+        },
     ];
 
     const chat = [
@@ -249,35 +261,23 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
 
     const sales = [
         {
-            title: "Payments",
-            pathname: "/payments",
+            title: "Catalog",
+            pathname: "/sales/payments",
             img: "/svg/phone-volume.svg",
-            key: user.role_id > 0 ? "callQueue" : "allow",
+            key: user.role_id > 0 ? "payments" : "allow",
+        },
+        {
+            title: "Payments",
+            pathname: "/sales/payments",
+            img: "/svg/phone-volume.svg",
+            key: user.role_id > 0 ? "payments" : "allow",
         },
         {
             title: "Orders",
             pathname: "/payments",
             img: "/svg/phone-volume.svg",
-            key: user.role_id > 0 ? "callQueue" : "allow",
-        },
-        {
-            title: "Subscriptions",
-            pathname: "/payments",
-            img: "/svg/phone-volume.svg",
-            key: user.role_id > 0 ? "callQueue" : "allow",
-        },
-        {
-            title: "Loyalty",
-            pathname: "/payments",
-            img: "/svg/phone-volume.svg",
-            key: user.role_id > 0 ? "callQueue" : "allow",
-        },
-        {
-            title: "Coupons",
-            pathname: "/payments",
-            img: "/svg/phone-volume.svg",
-            key: user.role_id > 0 ? "callQueue" : "allow",
-        },
+            key: user.role_id > 0 ? "orders" : "allow",
+        }
     ];
 
     const integration = [
@@ -286,7 +286,13 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
             pathname: "/integration/payments",
             img: "/svg/phone-volume.svg",
             key: user.role_id > 0 ? "paymentProviders" : "allow",
-        }
+        },
+        {
+            title: "Ordering & Delivery",
+            pathname: "/integration/orrder-delivery",
+            img: "/svg/phone-volume.svg",
+            key: user.role_id > 0 ? "orderingDelivery" : "allow",
+        },
     ];
 
     const pathname = usePathname()

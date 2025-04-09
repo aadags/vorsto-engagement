@@ -11,7 +11,7 @@ export default function PreModels() {
     const products = [
         { id: 1, category: 1, img: "img/danny3.jpg", title: 'Danny', hasBookmark: false, desc: "is an ecommerce agent that specializes in ecommerce customer support, targetted marketing and business revenue growth.", author_pic: "img/danny3.jpg", author_name: "Ecommerce", tags: ['Ecommerce', ''] },
         { id: 2, category: 1, img: "img/lexi.jpg", title: 'Lexi', hasBookmark: false, desc: "is a real estate agent that specializes in real estate customer appointment scheduling, lead tracking and client interaction.", author_pic: "img/lexi.jpg", author_name: "Real Estate", tags: ['Real Estate', ''] },
-        { id: 3, category: 1, img: "img/Neha.jpg", title: 'Neha', hasBookmark: false, desc: "is a generic agent for most businesses that specializes customer support, targetted marketing and revenue growth.", author_pic: "img/Neha.jpg", author_name: "Neha", tags: ['Generic', ''] },
+        { id: 3, category: 1, img: "img/Neha.jpg", title: 'Neha', hasBookmark: false, desc: "is a generic agent for most businesses that specializes customer support, targetted marketing and revenue growth.", author_pic: "img/Neha.jpg", author_name: "Generic", tags: ['Generic', ''] },
     ]
 
     // Initialize your component state

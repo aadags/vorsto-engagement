@@ -36,6 +36,7 @@ model Organization {
   numbers  Number[]
   agents  Agent[]
   payment_processors  PaymentProcessor[]
+  orders  Order[]
   stripe_id    String?     @unique()
   plan         String      @default("free")
   plan_id  String?
@@ -245,6 +246,7 @@ model Contact {
   email       String?
   phone       String?
   username    String?
+  stripe_id    String?
   satisfaction_score Int?
   sentiment   String? @db.LongText
   organization Organization @relation(fields: [organization_id], references: [id])
@@ -261,6 +263,7 @@ model Contact {
   @@unique([organization_id, email])
   @@unique([organization_id, phone])
   @@unique([organization_id, username])
+  @@unique([organization_id, stripe_id])
 }
 
 model Form {
@@ -322,11 +325,34 @@ model DeletedNumber {
 model PaymentProcessor {
   id      String @id @default(cuid())  
   name    String 
-  account_id      String    
+  accountId    String @unique()
+  access_token      String?      
+  refresh_token      String?      
+  public_token      String?      
+  ttl      String?      
+  hook_secret      String?      
   organization     Organization   @relation(fields: [organization_id], references: [id])
   organization_id   Int
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt @default(now())
 
   @@map("payment_processors")
+
+  @@unique([organization_id, name])
+}
+
+model Order {
+  id      String @id @default(cuid())  
+  contact    String? 
+  product      String?      
+  quantity      String?      
+  amount      Int?      
+  status      String?      
+  order_date      Int?      
+  organization     Organization   @relation(fields: [organization_id], references: [id])
+  organization_id   Int
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt @default(now())
+
+  @@map("orders")
 }

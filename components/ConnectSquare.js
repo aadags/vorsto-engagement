@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { useRouter, useSearchParams } from 'next/navigation';
 
-const ConnectStripe = () => {
+const ConnectSquare = () => {
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -14,7 +14,7 @@ const ConnectStripe = () => {
   useEffect(() => {
 
     const getMetric = async () => {
-        const response = await fetch(`/api/connect-stripe`, {
+        const response = await fetch(`/api/connect-square`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -53,4 +53,4 @@ const ConnectStripe = () => {
   );
 };
 
-export default ConnectStripe;
+export default ConnectSquare;
