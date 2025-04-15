@@ -5,7 +5,9 @@ import prisma from "@/db/prisma";
 export async function POST(req) {
   try {
     const body = await req.json();
-    const organizationId = Number(req.cookies.get("organizationId").value) ?? 0;
+    const organizationId = Number(
+      req.cookies.get("organizationId")?.value ?? 0
+    );
 
     const {
       name,
@@ -25,8 +27,8 @@ export async function POST(req) {
         model,
         output_type: outputType,
         output_parameters: JSON.stringify(outputParameter),
-        organization_id: organizationId
-      }
+        organization_id: organizationId,
+      },
     });
 
     for (const func of functions) {

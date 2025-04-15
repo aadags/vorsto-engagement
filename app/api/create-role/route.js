@@ -4,7 +4,9 @@ import prisma from "@/db/prisma";
 
 export async function POST(req) {
   try {
-    const organizationId = Number(req.cookies.get("organizationId").value) ?? 0;
+    const organizationId = Number(
+      req.cookies.get("organizationId")?.value ?? 0
+    );
 
     const body = await req.json();
     const { title, checkboxes } = body;
@@ -19,10 +21,7 @@ export async function POST(req) {
     return NextResponse.json({ message: "Saved Role" });
   } catch (error) {
     console.error(error);
-    return NextResponse.json(
-      { error: "Failed to save Role" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to save Role" }, { status: 500 });
   }
 }
 

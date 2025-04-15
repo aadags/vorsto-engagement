@@ -4,8 +4,10 @@ import prisma from "@/db/prisma";
 
 export async function POST(req) {
   try {
-    const organizationId = Number(req.cookies.get("organizationId").value) ?? 0;
-    const userId = Number(req.cookies.get("userId").value) ?? 0;
+    const organizationId = Number(
+      req.cookies.get("organizationId")?.value ?? 0
+    );
+    const userId = Number(req.cookies.get("userId")?.value ?? 0);
 
     const body = await req.json();
     const { ticketId, comment } = body;
@@ -15,7 +17,7 @@ export async function POST(req) {
         body: comment,
         ticket_id: ticketId,
         organization_id: organizationId,
-        user_id: userId
+        user_id: userId,
       },
     });
     return NextResponse.json({ message: "Comment Saved" });

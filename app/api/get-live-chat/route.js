@@ -4,12 +4,12 @@ import prisma from "@/db/prisma";
 
 export async function POST(req) {
   try {
-    const userId = Number(req.cookies.get("userId").value) ?? 0;
-    const orgId = Number(req.cookies.get("organizationId").value) ?? 0;
+    const userId = Number(req.cookies.get("userId")?.value ?? 0);
+    const orgId = Number(req.cookies.get("organizationId")?.value ?? 0);
 
     const chats = await prisma.conversation.findMany({
       where: { user_id: userId, organization_id: orgId, is_end: false },
-      orderBy: { created_at: 'desc' },
+      orderBy: { created_at: "desc" },
     });
 
     return NextResponse.json(chats);

@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/db/prisma";
 
 export async function GET(request) {
-  const orgId = Number(request.cookies.get("organizationId").value) ?? 0;
+  const orgId = Number(request.cookies.get("organizationId")?.value ?? 0);
 
   try {
     let bot = await prisma.bot.findFirst({

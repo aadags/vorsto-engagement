@@ -6,7 +6,7 @@ import faktory from "faktory-worker";
 
 export async function POST(req) {
   try {
-    const orgId = Number(req.cookies.get("organizationId").value) ?? 0;
+    const orgId = Number(req.cookies.get("organizationId")?.value ?? 0);
     const body = await req.json();
     const { code } = body;
 
@@ -14,9 +14,12 @@ export async function POST(req) {
     formData.append("client_id", process.env.INSTAGRAM_CLIENT_ID);
     formData.append("client_secret", process.env.INSTAGRAM_CLIENT_SECRET);
     formData.append("grant_type", "authorization_code");
-    formData.append("redirect_uri", "https://engage.vorsto.io/channel/instagram");
+    formData.append(
+      "redirect_uri",
+      "https://engage.vorsto.io/channel/instagram"
+    );
     formData.append("code", code);
-  
+
     const response = await axios.post(
       "https://api.instagram.com/oauth/access_token",
       formData.toString(),
@@ -38,10 +41,13 @@ export async function POST(req) {
     const { access_token: llt, expires_in } = responseToken.data;
 
     const params = {
-      fields: 'user_id,username',
-      access_token: llt
+      fields: "user_id,username",
+      access_token: llt,
     };
-    const responseUser = await axios.get(`https://graph.instagram.com/v21.0/me`, { params });
+    const responseUser = await axios.get(
+      `https://graph.instagram.com/v21.0/me`,
+      { params }
+    );
 
     const userId = responseUser.data.user_id;
 
@@ -59,13 +65,15 @@ export async function POST(req) {
 
     const requestOptions = {
       method: "POST",
-      url: `https://graph.instagram.com/v21.0/${String(userId)}/subscribed_apps`,
+      url: `https://graph.instagram.com/v21.0/${String(
+        userId
+      )}/subscribed_apps`,
       params: {
         subscribed_fields: "comments,live_comments,messages",
-        access_token: llt
-      }
+        access_token: llt,
+      },
     };
-    
+
     axios(requestOptions)
       .then((response) => {
         console.log(response.data);
@@ -75,20 +83,20 @@ export async function POST(req) {
       });
 
     const client = await faktory.connect({
-      url: process.env.FAKTORY_URL  || ""
+      url: process.env.FAKTORY_URL || "",
     });
-    
+
     await client.push({
-      jobtype: 'RenewInstagramToken',
+      jobtype: "RenewInstagramToken",
       args: [{ user_id: userId }],
-      queue: 'default', // or specify another queue
-      at: new Date(Date.now() + ttr) 
+      queue: "default", // or specify another queue
+      at: new Date(Date.now() + ttr),
     });
-  
+
     await client.close();
 
     return NextResponse.json({
-      message: "IG Account connecyed successfully"
+      message: "IG Account connecyed successfully",
     });
   } catch (error) {
     console.error(error);

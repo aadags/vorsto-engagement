@@ -54,9 +54,14 @@ function SignupPage() {
               }),
             });
 
-            if (response.ok) {
-              router.push('/launch');
-            }
+            const res = await response.json();
+                if(!res.is_validated)
+                {
+                  router.push('/validate')
+                } else {
+                  router.push('/launch')
+                }
+
           } catch (err) {
             console.error('Error verifying user:', err);
           }
@@ -112,9 +117,13 @@ const handleSubmit = async (e) => {
         }),
       });
 
-      if (response.ok) {
-        router.push('/launch');
-      }
+      const res = await response.json();
+                if(!res.is_validated)
+                {
+                  router.push('/validate')
+                } else {
+                  router.push('/launch')
+                }
     } catch (err) {
       setError(err.message);
     }
@@ -129,7 +138,8 @@ const handleSubmit = async (e) => {
         height: "100vh",
       }}>
         <div className="sign__content" style={{ textAlign: "center" }}>
-          <img src="/white_logo.png" className="logo2" alt="logo" style={{ width: "30% !important" }} />
+          <br/><br/>
+          <img src="/vorsto-logo.png" className="logo2" alt="logo" style={{ width: "30% !important" }} />
           {/* <h1>Sign In</h1> */}
           <form className="login" onSubmit={handleSubmit}>
             <div className="form__content">
@@ -182,12 +192,10 @@ const handleSubmit = async (e) => {
                   {/* Loader can be added here if needed */}
                   <div id="loader">Loading...</div>
                 </div>
+                <p>Already have an account? <Link href="/login" style={{ color: "#7c5fe3" }}>Sign In</Link></p>
               </div>
             </div>
           </form>
-          <div className="sign__desc">
-            <p>Already have an account yet? <Link href="/login">Login</Link></p>
-          </div>
         </div>
       </div>
     </>

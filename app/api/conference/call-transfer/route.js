@@ -9,19 +9,29 @@ function connectConferenceUrl(host, agentId, conferenceId) {
 
 export async function POST(req) {
   try {
-    const userId = Number(req.cookies.get("userId").value) ?? 0;
+    const userId = Number(req.cookies.get("userId")?.value ?? 0);
     const body = await req.json();
     const { agentId } = body;
 
-    const existingCall = await prisma.call.findUniqueOrThrow({ where: { userId }, include: {
-      organization: true
-    } });
+    const existingCall = await prisma.call.findUniqueOrThrow({
+      where: { userId },
+      include: {
+        organization: true,
+      },
+    });
 
-    const callbackUrl = connectConferenceUrl(process.env.NEXT_PUBLIC_APP_URL, agentId, existingCall.conferenceId);
-    await call(agentId, existingCall.organization.call_center_number, callbackUrl);
+    const callbackUrl = connectConferenceUrl(
+      process.env.NEXT_PUBLIC_APP_URL,
+      agentId,
+      existingCall.conferenceId
+    );
+    await call(
+      agentId,
+      existingCall.organization.call_center_number,
+      callbackUrl
+    );
 
     return NextResponse.json({ message: "call transferred" });
-
   } catch (error) {
     console.error(error);
     return NextResponse.json(

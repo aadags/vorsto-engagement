@@ -4,17 +4,19 @@ import prisma from "@/db/prisma";
 
 export async function POST(req) {
   try {
-    const organizationId = Number(req.cookies.get("organizationId").value) ?? 0;
+    const organizationId = Number(
+      req.cookies.get("organizationId")?.value ?? 0
+    );
 
     const { ticketId } = await req.json();
 
     await prisma.ticket.update({
       where: {
         id: ticketId,
-        organization_id: organizationId
+        organization_id: organizationId,
       },
       data: {
-        is_closed: false
+        is_closed: false,
       },
     });
     return NextResponse.json({ message: "Ticket Saved" });

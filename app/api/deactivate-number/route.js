@@ -5,7 +5,9 @@ import twilio from "twilio";
 
 export async function POST(req) {
   try {
-    const organizationId = Number(req.cookies.get("organizationId").value) ?? 0;
+    const organizationId = Number(
+      req.cookies.get("organizationId")?.value ?? 0
+    );
 
     const body = await req.json();
     const { id, sid, number, voice, sms, locality, organization_id } = body;
@@ -20,7 +22,7 @@ export async function POST(req) {
 
     await prisma.number.delete({
       where: {
-        id
+        id,
       },
     });
 
@@ -31,8 +33,8 @@ export async function POST(req) {
         sms,
         locality,
         sid,
-        organization_id
-      }
+        organization_id,
+      },
     });
 
     return NextResponse.json({ status: true, message: "Number Deactivated" });

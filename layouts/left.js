@@ -359,8 +359,8 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                 <div className="leftpanel_logo">
                     <Link href="/" className="fn_logo">
                         <span className="full_logo">
-                            <img src="/logo_black.png" alt="" className="desktop_logo" />
-                            <img src="/logo_black.png" alt="" className="retina_logo" />
+                            <img src="/vorsto-dark.png" alt="" className="desktop_logo" />
+                            <img src="/vorsto-dark.png" alt="" className="retina_logo" />
                         </span>
                         <span className="short_logo">
                             <img src="/logo_only_black.png" alt="" className="desktop_logo" />

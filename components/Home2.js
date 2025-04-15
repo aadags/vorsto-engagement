@@ -5,9 +5,22 @@ import axios from 'axios';
 import { animationText } from '@/components/Utilities'
 import { useRouter } from 'next/navigation';
 
+import { useStripeConnect } from "../hooks/useStripeConnect";
+import {
+  ConnectAccountOnboarding,
+  ConnectComponentsProvider,
+} from "@stripe/react-connect-js";
+
 export default function Home2() {
 
   const router = useRouter();
+  const [organization, setOrganization] = useState('');
+  const [accountCreatePending, setAccountCreatePending] = useState(false);
+  const [onboardingExited, setOnboardingExited] = useState(false);
+  const [error, setError] = useState(false);
+  const [connectedAccountId, setConnectedAccountId] = useState();
+  const stripeConnectInstance = useStripeConnect(connectedAccountId);
+
 
   useEffect(() => {
 
@@ -15,8 +28,9 @@ export default function Home2() {
       
       const response = await axios.get(`/api/get-org-details`);
       const org = response.data;
+      setOrganization(org);
 
-      if(new Date(org.created_at).getTime() < Date.now() - 100 * 24 * 60 * 60 * 1000)
+      if(org.onboarding)
       {
         router.push('/');
       }
@@ -27,92 +41,59 @@ export default function Home2() {
 
   return (
     <>
-      <div className="techwave_fn_home">
-        <div className="section_home">
-          <div className="section_left">
-            {/* Title Shortcode */}
-            <div className="techwave_fn_title_holder">
-              <h1 className="title">Automate your conversations!</h1>
-              <p className="desc">Let's get you setup</p>
-            </div>
-            {/* !Title Shortcode */}
-            {/* Interactive List Shortcode */}
-            <div className="techwave_fn_interactive_list modern">
-              <ul>
-                <li>
-                  <div className="item">
-                    <Link href="/agent" target="_blank">
-                      <span className="icon">
-                        <img src="svg/robot.svg" alt=""  className="fn__svg" />
-                      </span>
-                      <h2 className="title">Setup your agent</h2>
-                      <span className="arrow"><img src="svg/arrow.svg" alt=""  className="fn__svg" /></span>
-                    </Link>
-                  </div>
-                </li>
-                <li>
-                  <div className="item">
-                    <Link href="/channel/webchat" target="_blank">
-                      <span className="icon">
-                        <img src="svg/webchat.svg" alt=""  className="fn__svg" />
-                      </span>
-                      <h2 className="title">Setup your website chat widget</h2>
-                      <span className="arrow"><img src="svg/arrow.svg" alt=""  className="fn__svg" /></span>
-                    </Link>
-                  </div>
-                </li>
-                <li>
-                  <div className="item">
-                    <Link href="/channel/whatsapp" target="_blank">
-                      <span className="icon">
-                        <img src="svg/whatsapp.svg" alt=""  className="fn__svg" />
-                      </span>
-                      <h2 className="title">Connect your business whatsapp account</h2>
-                      <span className="arrow"><img src="svg/arrow.svg" alt=""  className="fn__svg" /></span>
-                    </Link>
-                  </div>
-                </li>
-                <li>
-                  <div className="item">
-                    <Link href="/channel/instagram" target="_blank">
-                      <span className="icon">
-                        <img src="svg/instagram.svg" alt=""  className="fn__svg" />
-                      </span>
-                      <h2 className="title">Connect your professional instagram account</h2>
-                      <span className="arrow"><img src="svg/arrow.svg" alt=""  className="fn__svg" /></span>
-                    </Link>
-                  </div>
-                </li>
-                <li>
-                  <div className="item">
-                    <Link href="/channel/email" target="_blank">
-                      <span className="icon">
-                        <img src="svg/email.svg" alt=""  className="fn__svg" />
-                      </span>
-                      <h2 className="title">Connect your email</h2>
-                      <span className="arrow"><img src="svg/arrow.svg" alt=""  className="fn__svg" /></span>
-                    </Link>
-                  </div>
-                </li>
-                <li>
-                  <div className="item">
-                    <Link href="/channel/voice" target="_blank">
-                      <span className="icon">
-                        <img src="svg/tty.svg" alt=""  className="fn__svg" />
-                      </span>
-                      <h2 className="title">Setup your business phone</h2>
-                      <span className="arrow"><img src="svg/arrow.svg" alt=""  className="fn__svg" /></span>
-                    </Link>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            {/* !Interactive List Shortcode */}
-          </div>
-          <div className="section_right">
-            <div className="company_info">
-              <img src="/logo_black.png" alt=""  />
-              <p className="fn__animated_text">Meet your customers where they are—WhatsApp, Web, Instagram, Email, and Voice Calls—with Vorsto’s coordinated AI and human agents.</p>
+      <div className="techwave_fn_image_generation_page">
+        <div className="generation__page">
+          {/* Generation Header */}
+          <div className="generation_header">
+            <div className="header_bottom">
+              {!connectedAccountId && <h2>Getting ready for take off</h2>}
+              {connectedAccountId && !stripeConnectInstance && <h2>Add information to start accepting money</h2>}
+              {!connectedAccountId && <p>PallyTech Co is the world's leading air travel platform: join our team of pilots to help people travel faster.</p>}
+              
+
+              {!accountCreatePending && !connectedAccountId && (
+                <div>
+                  <button
+                    onClick={async () => {
+                      setAccountCreatePending(true);
+                      setError(false);
+                      fetch("/api/account", {
+                        method: "POST",
+                      })
+                        .then((response) => response.json())
+                        .then((json) => {
+                          setAccountCreatePending(false);
+                          const { account, error } = json;
+
+                          if (account) {
+                            setConnectedAccountId(account);
+                          }
+
+                          if (error) {
+                            setError(true);
+                          }
+                        });
+                    }}
+                  >
+                    Sign up
+                  </button>
+                </div>
+              )}
+              {stripeConnectInstance && (
+                <ConnectComponentsProvider connectInstance={stripeConnectInstance}>
+                  <ConnectAccountOnboarding
+                    onExit={() => setOnboardingExited(true)}
+                  />
+                </ConnectComponentsProvider>
+              )}
+              {error && <p className="error">Something went wrong!</p>}
+              {(connectedAccountId || accountCreatePending || onboardingExited) && (
+                <div className="dev-callout">
+                  {connectedAccountId && <p>Your connected account ID is: <code className="bold">{connectedAccountId}</code></p>}
+                  {accountCreatePending && <p>Setting up your account...</p>}
+                  {onboardingExited && <p>The Account Onboarding component has exited</p>}
+                </div>
+              )}
 
             </div>
           </div>

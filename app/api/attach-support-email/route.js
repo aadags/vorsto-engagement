@@ -3,11 +3,13 @@ import { NextResponse } from "next/server";
 import prisma from "@/db/prisma";
 import { AESCrypto } from "@/services/aes";
 import { ImapFetcher } from "@/services/imap";
-import faktory from "faktory-worker"
+import faktory from "faktory-worker";
 
 export async function POST(req) {
   try {
-    const organizationId = Number(req.cookies.get("organizationId").value) ?? 0;
+    const organizationId = Number(
+      req.cookies.get("organizationId")?.value ?? 0
+    );
 
     const body = await req.json();
     const { email, password, server } = body;
@@ -20,14 +22,14 @@ export async function POST(req) {
         port: 993,
         tls: true,
         authTimeout: 3000,
-        tlsOptions: { rejectUnauthorized: false }
+        tlsOptions: { rejectUnauthorized: false },
       },
     };
-  
+
     const emailFetcher = new ImapFetcher(imapConfig);
-  
+
     await emailFetcher.connect();
-    
+
     const textToEncrypt = JSON.stringify({ email, password, server });
     const aesCrypto = new AESCrypto(process.env.AESKEY || "");
     const { encryptedData, iv } = aesCrypto.encrypt(textToEncrypt);
@@ -35,24 +37,27 @@ export async function POST(req) {
     await prisma.organization.update({
       data: {
         support_email: email,
-        support_email_connection: JSON.stringify({ id: encryptedData, data: iv })
+        support_email_connection: JSON.stringify({
+          id: encryptedData,
+          data: iv,
+        }),
       },
       where: {
         id: organizationId,
       },
     });
-  
+
     const client = await faktory.connect({
-      url: process.env.FAKTORY_URL  || ""
+      url: process.env.FAKTORY_URL || "",
     });
-    
+
     await client.push({
-      jobtype: 'PollEmail',
+      jobtype: "PollEmail",
       args: [{ email }],
-      queue: 'default', // or specify another queue
-      at: new Date(Date.now() + 60000) // 2 minutes delay
+      queue: "default", // or specify another queue
+      at: new Date(Date.now() + 60000), // 2 minutes delay
     });
-  
+
     await client.close();
 
     return NextResponse.json({ message: "email attached" });

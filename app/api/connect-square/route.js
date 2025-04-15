@@ -5,11 +5,15 @@ import { SquareClient } from "square";
 
 export const dynamic = "force-dynamic";
 
-const client = new SquareClient({ environment: process.env.NEXT_PUBLIC_SQUARE_BASE });
+const client = new SquareClient({
+  environment: process.env.NEXT_PUBLIC_SQUARE_BASE,
+});
 
 export async function POST(req) {
   try {
-    const organizationId = Number(req.cookies.get("organizationId").value) ?? 0;
+    const organizationId = Number(
+      req.cookies.get("organizationId")?.value ?? 0
+    );
 
     const { code } = await req.json();
 
@@ -20,12 +24,12 @@ export async function POST(req) {
       grantType: "authorization_code",
     });
 
-    console.log({ response })
+    console.log({ response });
 
     await prisma.paymentProcessor.deleteMany({
       where: {
-        organization_id: organizationId
-      }
+        organization_id: organizationId,
+      },
     });
 
     await prisma.paymentProcessor.create({

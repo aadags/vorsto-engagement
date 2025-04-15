@@ -5,7 +5,9 @@ import prisma from "@/db/prisma";
 export async function POST(req) {
   try {
     const { product } = await req.json();
-    const organizationId = Number(req.cookies.get("organizationId").value) ?? 0;
+    const organizationId = Number(
+      req.cookies.get("organizationId")?.value ?? 0
+    );
 
     const agent = await prisma.agent.create({
       data: {
@@ -16,8 +18,8 @@ export async function POST(req) {
         model: "vorsto-xa-2",
         output_type: "text",
         output_parameters: JSON.stringify([]),
-        organization_id: organizationId
-      }
+        organization_id: organizationId,
+      },
     });
 
     // for (const func of functions) {

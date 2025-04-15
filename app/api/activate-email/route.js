@@ -1,30 +1,34 @@
 "use server";
 import { NextResponse } from "next/server";
 import prisma from "@/db/prisma";
+import twilio from "twilio";
 
 export async function POST(req) {
   try {
-    const body = await req.json();
-    const { conversationId } = body;
-
-    const orgId = Number(req.cookies.get("organizationId")?.value ?? 0);
     const userId = Number(req.cookies.get("userId")?.value ?? 0);
+    const oscode = Number(req.cookies.get("code")?.value ?? 0);
 
-    const chat = await prisma.conversation.findFirst({
-      where: { id: conversationId, organization_id: orgId },
+    const body = await req.json();
+    const { code } = body;
+    
+    if(oscode != code)
+    {
+      return NextResponse.json( { status: false, error: "Failed to verify code" }
+      );
+    }
+
+    await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: { is_validated: true }
     });
-
-    const user = await prisma.user.findFirst({
-      where: { id: userId, organization_id: orgId },
-    });
-
-    return NextResponse.json({ ...chat, user });
+    
+    return NextResponse.json({ status: true, message: "Account Activated" });
   } catch (error) {
     console.error(error);
-    return NextResponse.json(
-      { error: "Failed to update bot and functions" },
-      { status: 500 }
-    );
+    return NextResponse.json( { status: false, error: "Failed to verify code" }
+      );
   }
 }
 

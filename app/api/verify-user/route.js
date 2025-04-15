@@ -1,6 +1,7 @@
 "use server";
 import { NextResponse } from "next/server";
 import prisma from "@/db/prisma";
+import faktory from "faktory-worker"
 
 export async function POST(req) {
   try {
@@ -35,23 +36,56 @@ export async function POST(req) {
           organization_id: org.id,
         },
       });
+
+    }
+
+    const oscode = Number(req.cookies.get("code")?.value ?? 0);
+
+    console.log({ oscode });
+
+    let code = 0;
+
+
+    if(!user.is_validated && oscode == 0)
+    {
+      code = Math.floor(10000 + Math.random() * 90000).toString();
+      const client = await faktory.connect({
+        url: process.env.FAKTORY_URL  || ""
+      });
+      
+      await client.push({
+        jobtype: 'SendEmail',
+        args: [{ name: user.name, email: user.email, code }],
+        queue: 'default', // or specify another queue
+        at: new Date(Date.now()) // 2 minutes delay
+      });
+    
+      await client.close();
     }
 
     const response = NextResponse.json({
       message: "User verified successfully",
-      data: user,
+      data: user
     });
     response.cookies.set("userId", user.id, {
-      maxAge: 365 * 24 * 60 * 60, // 1 day
+      maxAge: 365 * 24 * 60 * 60, // 1 year
       path: "/",
       httpOnly: true, // Make the cookie inaccessible to JavaScript
     });
 
     response.cookies.set("organizationId", user.organization_id, {
-      maxAge: 365 * 24 * 60 * 60, // 1 day
+      maxAge: 365 * 24 * 60 * 60, // 1 year
       path: "/",
       httpOnly: true, // Make the cookie inaccessible to JavaScript
     });
+
+    if(code > 0){
+      response.cookies.set("code", code, {
+        maxAge: 15 * 60, // 15 minutes
+        path: "/",
+        httpOnly: true, // Make the cookie inaccessible to JavaScript
+      });
+    }
 
     return response;
   } catch (error) {

@@ -5,7 +5,9 @@ import faktory from "faktory-worker";
 
 export async function POST(req) {
   try {
-    const organizationId = Number(req.cookies.get("organizationId").value) ?? 0;
+    const organizationId = Number(
+      req.cookies.get("organizationId")?.value ?? 0
+    );
 
     const body = await req.json();
     const { id } = body;
@@ -25,7 +27,14 @@ export async function POST(req) {
 
     await client.push({
       jobtype: "RunContactSentiment",
-      args: [{ type: "conversation", id, contactId: conv.contact_id, orgId: organizationId }],
+      args: [
+        {
+          type: "conversation",
+          id,
+          contactId: conv.contact_id,
+          orgId: organizationId,
+        },
+      ],
       queue: "default", // or specify another queue
       at: new Date(Date.now() + 1000),
     });

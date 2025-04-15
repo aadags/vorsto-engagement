@@ -5,23 +5,24 @@ import nodemailer from "nodemailer";
 
 export async function POST(req) {
   try {
-    const organizationId = Number(req.cookies.get("organizationId").value) ?? 0;
-    const userId = Number(req.cookies.get("userId").value) ?? 0;
+    const organizationId = Number(
+      req.cookies.get("organizationId")?.value ?? 0
+    );
+    const userId = Number(req.cookies.get("userId")?.value ?? 0);
 
     const body = await req.json();
 
     const org = await prisma.organization.findFirst({
       where: {
-        id: organizationId
-      }
+        id: organizationId,
+      },
     });
 
     const user = await prisma.user.findFirst({
       where: {
-        id: userId
-      }
+        id: userId,
+      },
     });
-
 
     // Configure the email transport
     const transporter = nodemailer.createTransport({

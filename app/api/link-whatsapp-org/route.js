@@ -4,7 +4,9 @@ import prisma from "@/db/prisma";
 
 export async function POST(req) {
   try {
-    const organizationId = Number(req.cookies.get("organizationId").value) ?? 0;
+    const organizationId = Number(
+      req.cookies.get("organizationId")?.value ?? 0
+    );
 
     const body = await req.json();
     const { waba_id, wa_phone_id } = body;
@@ -12,13 +14,13 @@ export async function POST(req) {
     const bot = await prisma.organization.update({
       data: {
         wa_phone_id,
-        waba_id
+        waba_id,
       },
       where: {
         id: organizationId,
       },
     });
-    
+
     return NextResponse.json({ message: "org updated" });
   } catch (error) {
     console.error(error);

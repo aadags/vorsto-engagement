@@ -4,7 +4,9 @@ import prisma from "@/db/prisma";
 
 export async function POST(req) {
   try {
-    const organizationId = Number(req.cookies.get("organizationId").value) ?? 0;
+    const organizationId = Number(
+      req.cookies.get("organizationId")?.value ?? 0
+    );
 
     const body = await req.json();
     const { id } = body;
@@ -12,8 +14,8 @@ export async function POST(req) {
     const user = await prisma.role.delete({
       where: {
         id: id,
-        organization_id: organizationId
-      }
+        organization_id: organizationId,
+      },
     });
     return NextResponse.json({ message: "Role Deleted" });
   } catch (error) {

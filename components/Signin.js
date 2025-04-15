@@ -33,7 +33,12 @@ export default function Signin() {
         
               if (response.ok) {
                 const res = await response.json();
-                router.push('/launch')
+                if(!res.is_validated)
+                {
+                  router.push('/validate')
+                } else {
+                  router.push('/launch')
+                }
                 
               } 
             } catch (error) {
@@ -77,7 +82,7 @@ export default function Signin() {
     setError("");
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      router.push('/launch');
+      router.push('/login');
     } catch (err) {
       setError(err.message);
     }
@@ -92,7 +97,7 @@ export default function Signin() {
         height: "100vh",
       }}>
         <div className="sign__content" style={{ textAlign: "center" }}>
-          <img src="/white_logo.png" className="logo2" alt="logo" style={{ width: "30% !important" }} />
+          <img src="/vorsto-logo.png" className="logo2" alt="logo" style={{ width: "30% !important" }} />
           {/* <h1>Sign In</h1> */}
           <form className="login" onSubmit={handleSubmit}>
             <div className="form__content">
@@ -131,12 +136,10 @@ export default function Signin() {
                   {/* Loader can be added here if needed */}
                   <div id="loader">Loading...</div>
                 </div>
+                <p>Don't have an account yet? <Link href="/signup" style={{ color: "#7c5fe3" }}>Sign Up</Link></p>
               </div>
             </div>
           </form>
-          <div className="sign__desc">
-            <p>Don't have an account yet? <Link href="/signup">Sign Up</Link></p>
-          </div>
         </div>
       </div>
     </>

@@ -2,16 +2,17 @@
 import { NextResponse } from "next/server";
 import prisma from "@/db/prisma";
 import twilio from "twilio";
-import Stripe from 'stripe';
+import Stripe from "stripe";
 
 export async function POST(req) {
   try {
-
     const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY, {
-      apiVersion: '2024-12-18.acacia', // Use the correct API version
+      apiVersion: "2024-12-18.acacia", // Use the correct API version
     });
 
-    const organizationId = Number(req.cookies.get("organizationId").value) ?? 0;
+    const organizationId = Number(
+      req.cookies.get("organizationId")?.value ?? 0
+    );
 
     const body = await req.json();
     const { numberData } = body;
@@ -28,17 +29,14 @@ export async function POST(req) {
       org.number_plan_id
     );
 
-    await stripe.subscriptions.update(
-      org.number_plan_id,
-      {
-        items: [
-          {
-            id: subscription.items.data[0].id,
-            quantity: subscription.items.data[0].quantity + 1
-          }
-        ]
-      }
-    );
+    await stripe.subscriptions.update(org.number_plan_id, {
+      items: [
+        {
+          id: subscription.items.data[0].id,
+          quantity: subscription.items.data[0].quantity + 1,
+        },
+      ],
+    });
 
     const incomingPhoneNumber = await client.incomingPhoneNumbers.create({
       phoneNumber: numberData.phoneNumber,

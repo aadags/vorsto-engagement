@@ -23,6 +23,7 @@ model Organization {
   ig_user_id       String?     @unique()
   ig_token       String?     @db.LongText
   template_exist       Boolean     @default(false)
+  onboarding       Boolean     @default(false)
   users          User[]
   roles          Role[]
   conversations  Conversation[]
@@ -38,6 +39,7 @@ model Organization {
   payment_processors  PaymentProcessor[]
   orders  Order[]
   stripe_id    String?     @unique()
+  stripe_account_id    String?     @unique()
   plan         String      @default("free")
   plan_id  String?
   number_plan_id  String?
@@ -45,6 +47,7 @@ model Organization {
   support_email_connection  String?    @db.LongText
   call_center_number    String?    @unique()
   allow_speech        Boolean         @default(false)
+  country  String?
   created_at                           DateTime?                      @default(now())
   updated_at                           DateTime?                      @updatedAt
 
@@ -58,6 +61,7 @@ model User {
   password          String?
   role              Role?          @relation(fields: [role_id], references: [id])
   role_id           Int?           
+  is_validated        Boolean         @default(false)
   is_deleted        Boolean         @default(false)
   organizations     Organization   @relation(fields: [organization_id], references: [id])
   organization_id   Int

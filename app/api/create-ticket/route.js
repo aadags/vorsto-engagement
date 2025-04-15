@@ -4,11 +4,14 @@ import prisma from "@/db/prisma";
 
 export async function POST(req) {
   try {
-    const organizationId = Number(req.cookies.get("organizationId").value) ?? 0;
-    const userId = Number(req.cookies.get("userId").value) ?? 0;
+    const organizationId = Number(
+      req.cookies.get("organizationId")?.value ?? 0
+    );
+    const userId = Number(req.cookies.get("userId")?.value ?? 0);
 
     const body = await req.json();
-    const { title, category, priority, description, callId, conversationId } = body;
+    const { title, category, priority, description, callId, conversationId } =
+      body;
 
     const ticket = await prisma.ticket.create({
       data: {
@@ -19,7 +22,7 @@ export async function POST(req) {
         call_id: callId || null,
         conversation_id: conversationId || null,
         organization_id: organizationId,
-        user_id: userId
+        user_id: userId,
       },
     });
     return NextResponse.json({ message: "Ticket Saved" });

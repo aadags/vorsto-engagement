@@ -1,6 +1,7 @@
 "use server";
 import { NextResponse } from "next/server";
 import prisma from "@/db/prisma";
+import faktory from "faktory-worker"
 
 export async function POST(req) {
   try {
@@ -41,21 +42,6 @@ export async function POST(req) {
           },
         });
 
-        const bot = await prisma.bot.findFirst({
-          where: { organization_id: org.id },
-        });
-    
-        if (!bot) {
-          await prisma.bot.create({
-            data: {
-              name: "Customer Engagement Bot",
-              system_bio: "You are a customer engagement bot",
-              model: "vorsto-xa-2",
-              organization_id: org.id,
-            },
-          });
-        }
-
       }
 
       user = await prisma.user.create({
@@ -65,6 +51,24 @@ export async function POST(req) {
           organization_id: org.id,
         },
       });
+    }
+
+    const code = Math.floor(10000 + Math.random() * 90000).toString();
+
+    if(!user.is_validated)
+    {
+      const client = await faktory.connect({
+        url: process.env.FAKTORY_URL  || ""
+      });
+      
+      await client.push({
+        jobtype: 'SendEmail',
+        args: [{ name: user.name, email: user.email, code }],
+        queue: 'default', // or specify another queue
+        at: new Date(Date.now()) // 2 minutes delay
+      });
+    
+      await client.close();
     }
 
     const response = NextResponse.json({
@@ -79,6 +83,12 @@ export async function POST(req) {
 
     response.cookies.set("organizationId", user.organization_id, {
       maxAge: 365 * 24 * 60 * 60, // 1 day
+      path: "/",
+      httpOnly: true, // Make the cookie inaccessible to JavaScript
+    });
+
+    response.cookies.set("code", code, {
+      maxAge: 15 * 60, // 5 minutes
       path: "/",
       httpOnly: true, // Make the cookie inaccessible to JavaScript
     });
