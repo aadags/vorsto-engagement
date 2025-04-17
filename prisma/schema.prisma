@@ -38,6 +38,7 @@ model Organization {
   agents  Agent[]
   payment_processors  PaymentProcessor[]
   orders  Order[]
+  products  Product[]
   stripe_id    String?     @unique()
   stripe_account_id    String?     @unique()
   plan         String      @default("free")
@@ -347,16 +348,63 @@ model PaymentProcessor {
 
 model Order {
   id      String @id @default(cuid())  
-  contact    String? 
-  product      String?      
+  contact    String?    
   quantity      String?      
   amount      Int?      
   status      String?      
   order_date      Int?      
+  product     Product   @relation(fields: [product_id], references: [id])
+  product_id   String
   organization     Organization   @relation(fields: [organization_id], references: [id])
   organization_id   Int
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt @default(now())
 
   @@map("orders")
+}
+
+model Product {
+  id            String   @id @default(cuid())
+  name          String
+  description   String?
+  image         String?  
+  currency      String   
+  outofstock      Boolean? @default(false)   
+  stripeProductId String @unique
+  orders  Order[]
+  images  Image[]
+  inventories     Inventory[]
+  organization     Organization   @relation(fields: [organization_id], references: [id])
+  organization_id   Int
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  @@map("products")
+}
+
+model Inventory {
+  id              String      @id @default(cuid())
+  product         Product      @relation(fields: [product_id], references: [id])
+  product_id       String
+  name            String      
+  quantity        Int          
+  price           Int          
+  stripePriceId   String       @unique
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  @@map("inventories")
+}
+
+
+model Image {
+  id            String   @id @default(cuid())
+  product         Product      @relation(fields: [product_id], references: [id])
+  product_id       String
+  url               String
+  default         Boolean?    @default(false)  
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  @@map("images")
 }

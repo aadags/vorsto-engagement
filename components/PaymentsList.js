@@ -4,6 +4,11 @@ import axios from "axios";
 import Link from 'next/link'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
+import { useStripeConnect } from "../hooks/useStripeConnect";
+import {
+  ConnectPayments,
+  ConnectComponentsProvider,
+} from "@stripe/react-connect-js";
 
 export default function PaymentsList({ handlePayment }) {
   const [data, setData] = useState([]);
@@ -22,12 +27,21 @@ export default function PaymentsList({ handlePayment }) {
     return localDate.toISOString().split('T')[0];
   };
 
+  const fetchOrg = async () => {
+      
+    const response = await axios.get(`/api/get-org-details`);
+    const org = response.data;
+    setConnectedAccountId(org.stripe_account_id);
+  };
+
   const end = new Date(); // today
     const start = new Date();
     start.setMonth(start.getMonth() - 1); // one month ago
 
   const [startDate, setStartDate] = useState(formatLocalDate(start));
   const [endDate, setEndDate] = useState(formatLocalDate(end));
+  const [connectedAccountId, setConnectedAccountId] = useState();
+  const stripeConnectInstance = useStripeConnect(connectedAccountId);
 
   const columns = [
     {
@@ -125,13 +139,19 @@ export default function PaymentsList({ handlePayment }) {
 
   useEffect(() => {
 
-    fetchPayments(); // fetch page 1 of users
+    // fetchPayments(); // fetch page 1 of users
+    fetchOrg();
   }, []);
 
 
   return (
             <div style={{ width: "100%", margin: "0 auto" }}>
-              <div className="container">
+              {stripeConnectInstance && (
+                  <ConnectComponentsProvider connectInstance={stripeConnectInstance}>
+                    <ConnectPayments />
+                  </ConnectComponentsProvider>
+                )}
+              {/* <div className="container">
                         <div className="models__filter">
                             <div className="filter__left">
                                 <div className="filter__search">
@@ -141,16 +161,16 @@ export default function PaymentsList({ handlePayment }) {
                                 </div>
                             </div>
                         </div>
-                    </div>
-              <DataTable
+                    </div> */}
+              {/* <DataTable
                 title="Payments"
                 columns={columns}
                 data={data}
                 progressPending={loading}
                 
                 theme="light"
-              />
-              <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+              /> */}
+              {/* <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
                 {prevCursor && (
                   <button 
                     type="button" 
@@ -170,7 +190,7 @@ export default function PaymentsList({ handlePayment }) {
                     Next Page
                   </button>
                 )}
-              </div>
+              </div> */}
 
             </div>
   );

@@ -11,7 +11,7 @@ export async function POST(req) {
     const body = await req.json();
     const { code } = body;
     
-    if(oscode != code)
+    if(oscode != Number(code))
     {
       return NextResponse.json( { status: false, error: "Failed to verify code" }
       );

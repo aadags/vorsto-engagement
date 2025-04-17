@@ -15,12 +15,12 @@ export default function Home2() {
 
   const router = useRouter();
   const [organization, setOrganization] = useState('');
+  const [country, setCountry] = useState('');
   const [accountCreatePending, setAccountCreatePending] = useState(false);
   const [onboardingExited, setOnboardingExited] = useState(false);
   const [error, setError] = useState(false);
   const [connectedAccountId, setConnectedAccountId] = useState();
   const stripeConnectInstance = useStripeConnect(connectedAccountId);
-
 
   useEffect(() => {
 
@@ -37,7 +37,7 @@ export default function Home2() {
     };
     fetchOrg();
     animationText()
-  }, [])
+  }, [onboardingExited])
 
   return (
     <>
@@ -46,19 +46,37 @@ export default function Home2() {
           {/* Generation Header */}
           <div className="generation_header">
             <div className="header_bottom">
-              {!connectedAccountId && <h2>Getting ready for take off</h2>}
+              {!connectedAccountId && <h2>Get ready for take off</h2>}
               {connectedAccountId && !stripeConnectInstance && <h2>Add information to start accepting money</h2>}
-              {!connectedAccountId && <p>PallyTech Co is the world's leading air travel platform: join our team of pilots to help people travel faster.</p>}
+              {!connectedAccountId && <p>Let's setup your business.</p>}
               
 
               {!accountCreatePending && !connectedAccountId && (
                 <div>
-                  <button
+                  <select
+                  style={{ width: "20%" }}
+                    value={country}
+                    onChange={(e) =>
+                                setCountry(e.target.value)
+                              }>
+                    <option value="">Select your country</option>
+                    <option value="CA">Canada</option>
+                    <option value="US">United States of America</option>
+                  </select>
+                  <br/>
+                  {country != "" && <button
+                    className="techwave_fn_button"
                     onClick={async () => {
                       setAccountCreatePending(true);
                       setError(false);
-                      fetch("/api/account", {
+                      fetch("/api/stripe/create-account", {
                         method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          country
+                        }),
                       })
                         .then((response) => response.json())
                         .then((json) => {
@@ -75,8 +93,8 @@ export default function Home2() {
                         });
                     }}
                   >
-                    Sign up
-                  </button>
+                    Get Started
+                  </button>}
                 </div>
               )}
               {stripeConnectInstance && (
@@ -89,9 +107,7 @@ export default function Home2() {
               {error && <p className="error">Something went wrong!</p>}
               {(connectedAccountId || accountCreatePending || onboardingExited) && (
                 <div className="dev-callout">
-                  {connectedAccountId && <p>Your connected account ID is: <code className="bold">{connectedAccountId}</code></p>}
                   {accountCreatePending && <p>Setting up your account...</p>}
-                  {onboardingExited && <p>The Account Onboarding component has exited</p>}
                 </div>
               )}
 

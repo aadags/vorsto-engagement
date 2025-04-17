@@ -19,6 +19,12 @@ ChartJS.register(
   Tooltip,
   Legend
 );
+import { useStripeConnect } from "../hooks/useStripeConnect";
+import {
+  ConnectBalances,
+  ConnectNotificationBanner,
+  ConnectComponentsProvider,
+} from "@stripe/react-connect-js";
 
 export default function Index() {
 
@@ -26,6 +32,8 @@ export default function Index() {
   const [leads, setLeads] = useState([]);
   const [closed, setClosed] = useState([]);
   const [ongoing, setOngoing] = useState([]);
+  const [connectedAccountId, setConnectedAccountId] = useState();
+  const stripeConnectInstance = useStripeConnect(connectedAccountId);
 
   const fetchData = async (page) => {
   
@@ -37,6 +45,13 @@ export default function Index() {
     setLeads(response.data.leads);
     setClosed(response.data.closed);
     setOngoing(response.data.ongoing);
+  };
+
+  const fetchOrg = async () => {
+      
+    const response = await axios.get(`/api/get-org-details`);
+    const org = response.data;
+    setConnectedAccountId(org.stripe_account_id);
   };
 
   function getLastNDays(n) {
@@ -132,6 +147,7 @@ export default function Index() {
 
   useEffect(() => {
     fetchData(); // fetch page 1 of users
+    fetchOrg();
   }, []);
 
   return (
@@ -140,6 +156,22 @@ export default function Index() {
         {/* !Page Title */}
         <div className="container">
           <div className="techwave_fn_user_profile">
+
+          {stripeConnectInstance && (
+                  <ConnectComponentsProvider connectInstance={stripeConnectInstance}>
+                    <ConnectNotificationBanner />
+                  </ConnectComponentsProvider>
+                )}
+          
+            <div className="user__profile">
+              <div className="user_details" style={{ width: "100%" }}>
+                {stripeConnectInstance && (
+                  <ConnectComponentsProvider connectInstance={stripeConnectInstance}>
+                    <ConnectBalances />
+                  </ConnectComponentsProvider>
+                )}
+              </div>
+            </div>
             <div className="user__profile">
               <div
                 className="user_details"

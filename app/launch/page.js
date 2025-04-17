@@ -1,6 +1,6 @@
 import React from 'react'
 import Home2 from '@/components/Home2'
-import Layout from '@/layouts/layout'
+import Layout from '@/layouts/layout3'
 
 
 export const metadata = {

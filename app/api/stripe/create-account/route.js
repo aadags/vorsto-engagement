@@ -14,29 +14,58 @@ async function getCookieData() {
   return cookieData ? cookieData.value : null;
 }
 
-export async function GET(req) {
+export async function POST(req) {
   try {
     const cookieData = await getCookieData();
     const organizationId = Number(cookieData) ?? 0;
 
-    const account = await stripe.accounts.create({
-      controller: {
-        stripe_dashboard: {
-          type: "none",
-        },
-        fees: {
-          payer: "application"
-        },
-      },
-      capabilities: {
-        card_payments: {requested: true},
-        transfers: {requested: true}
-      },
-      country: "CA",
+    const body = await req.json();
+    const { country } = body;
+
+    let org = await prisma.organization.findFirst({
+      where: { id: organizationId },
     });
 
+    if(!org.stripe_account_id)
+    {
+      const account = await stripe.accounts.create({
+        controller: {
+          stripe_dashboard: {
+            type: "none",
+          },
+          fees: {
+            payer: "application"
+          },
+        },
+        capabilities: {
+          card_payments: {requested: true},
+          transfers: {requested: true},
+          affirm_payments: { requested: true },
+          klarna_payments: { requested: true },
+          afterpay_clearpay_payments: { requested: true },
+        },
+        settings: {
+          payouts: {
+            schedule: {
+              interval: "daily",
+              delay_days: 2
+            }
+          }
+        },
+        country,
+      });
 
-    return NextResponse.json({ account: account.id });
+      org = await prisma.organization.update({
+        where: {
+          id: organizationId
+        },
+        data: {
+          stripe_account_id: account.id
+        }
+      });
+    }
+
+    return NextResponse.json({ account: org.stripe_account_id });
   } catch (error) {
     console.error(error);
     return NextResponse.json(

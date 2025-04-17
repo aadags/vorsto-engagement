@@ -7,7 +7,7 @@ export const useStripeConnect = (connectedAccountId) => {
   useEffect(() => {
     if (connectedAccountId) {
       const fetchClientSecret = async () => {
-        const response = await fetch("/api/account_session", {
+        const response = await fetch("/api/stripe/account-session", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -32,7 +32,7 @@ export const useStripeConnect = (connectedAccountId) => {
           publishableKey: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
           fetchClientSecret,
           appearance: {
-            overlays: "dialog",
+            overlays: "drawer",
             variables: {
               colorPrimary: "#635BFF",
             },

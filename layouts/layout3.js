@@ -16,18 +16,6 @@ export default function Layout({ children, leftMenu }) {
 
     const router = useRouter();
     const [user, setUser] = useState();
-    
-    useEffect(() => {
-
-        setTimeout(() => {
-            imageToSvg()
-
-        }, 2000);
-        
-        if (user && leftMenu) {
-            document.querySelector('.techwave_fn_wrapper').classList.add("fn__has_sidebar")
-        }
-    }, [user])
       
   useEffect(() => {
     auth.onAuthStateChanged(async (currentUser) => {
@@ -50,8 +38,6 @@ export default function Layout({ children, leftMenu }) {
               if(!res.data.is_validated)
               {
                 router.push('/validate'); 
-              } else if(!res.data.organizations.onboarding) {
-                router.push('/launch'); 
               } else {
                 setUser(res.data);
               }
@@ -65,21 +51,28 @@ export default function Layout({ children, leftMenu }) {
   }, [router])
 
 
-    const [leftmenu, setLeftmenu] = useState(false)
-    const [mobileMenu, setMobiletmenu] = useState(false)
+    const [leftmenu, setLeftmenu] = useState(true)
+    const [mobileMenu, setMobiletmenu] = useState(true)
     const activeTrueFalse = () => {
-        setLeftmenu(!leftmenu)
-        document.querySelector('.toggleMenu').classList.toggle("panel-opened")
+        document.querySelector('.toggleMenu').classList.add("panel-opened")
     }
     const activeMobileMenu = () => {
-        setMobiletmenu(mobileMenu)
-        document.querySelector('.toggleMenu').classList.toggle("mobile-panel-opened")
+        document.querySelector('.toggleMenu').classList.add("mobile-panel-opened")
     }
 
     const [OpenSearch, setOpenSearch] = useState(false)
     const searchToggle = () => {
         setOpenSearch(!OpenSearch)
     }
+
+    useEffect(() => {
+
+
+      activeMobileMenu()
+      activeTrueFalse()
+
+  }, [mobileMenu])
+
     return (
         <>
             {/* Moving Submenu */}
@@ -100,7 +93,7 @@ export default function Layout({ children, leftMenu }) {
                     <Header searchToggle={searchToggle} user={user} />
                     {/* !HEADER */}
                     {/* LEFT PANEL */}
-                    <Left activeTrueFalse={activeTrueFalse} activeMobileMenu={activeMobileMenu} user={user}  />
+                    <Left activeTrueFalse={activeTrueFalse} activeMobileMenu={activeMobileMenu} user={user} hide={true} />
                     {/* !LEFT PANEL */}
                     {/* CONTENT */}
                     <div className="techwave_fn_content">

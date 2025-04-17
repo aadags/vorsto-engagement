@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { socket } from '@/app/socket'
 import axios from 'axios';
 
-export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
+export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=false }) {
 
     const [newLead, setNewLead] = useState(0);
     const [chats, setChats] = useState([]);
@@ -261,12 +261,6 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
 
     const sales = [
         {
-            title: "Catalog",
-            pathname: "/sales/payments",
-            img: "/svg/phone-volume.svg",
-            key: user.role_id > 0 ? "payments" : "allow",
-        },
-        {
             title: "Payments",
             pathname: "/sales/payments",
             img: "/svg/phone-volume.svg",
@@ -274,9 +268,15 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
         },
         {
             title: "Orders",
-            pathname: "/payments",
+            pathname: "/sales/orders",
             img: "/svg/phone-volume.svg",
             key: user.role_id > 0 ? "orders" : "allow",
+        },
+        {
+            title: "Catalog",
+            pathname: "/sales/catalog",
+            img: "/svg/phone-volume.svg",
+            key: user.role_id > 0 ? "payments" : "allow",
         }
     ];
 
@@ -376,7 +376,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                 </div>
                 {/* !logo (left panel) */}
                 {/* content (left panel) */}
-                <div className="leftpanel_content">
+                {!hide && <div className="leftpanel_content">
                     {/* #1 navigation group */}
                     <div className="nav_group">
                         <ul className="group__list">
@@ -390,6 +390,22 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                                     </Link>
                                 </li>
                             ))}
+                            <li className={`menu-item-has-children ${isSalesToggle ? "closed" : ""}`} >
+                                <a className="fn__tooltip menu__item" title="Sales" onClick={toggleSalesHandle} >
+                                    <span className="icon"><img src="/svg/sales.svg" alt="" className="fn__svg" /></span>
+                                    <span className="text">Sales</span>
+                                    <span className="trigger"><img src="/svg/arrow.svg" alt="" className="fn__svg" /></span>
+                                </a>
+                                <ul className="sub-menu" style={{ display: `${isSalesToggle ? "block" : "none"}` }}>
+                                    {sales.map((item, i) => (
+                                        item.key && perms.includes(item.key) && <li key={i}>
+                                            <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
+                                                <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </li>
                             <li className={`menu-item-has-children ${isChatToggle ? "closed" : ""}`} >
                                 <a className="fn__tooltip menu__item" title="Chat" onClick={toggleChatHandle} >
                                     <span className="icon"><img src="/svg/chat.svg" alt="" className="fn__svg" /></span>
@@ -451,22 +467,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                                     ))}
                                 </ul>
                             </li>
-                            <li className={`menu-item-has-children ${isSalesToggle ? "closed" : ""}`} >
-                                <a className="fn__tooltip menu__item" title="Sales" onClick={toggleSalesHandle} >
-                                    <span className="icon"><img src="/svg/sales.svg" alt="" className="fn__svg" /></span>
-                                    <span className="text">Sales</span>
-                                    <span className="trigger"><img src="/svg/arrow.svg" alt="" className="fn__svg" /></span>
-                                </a>
-                                <ul className="sub-menu" style={{ display: `${isSalesToggle ? "block" : "none"}` }}>
-                                    {sales.map((item, i) => (
-                                        item.key && perms.includes(item.key) && <li key={i}>
-                                            <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
-                                                <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
-                                            </Link>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </li>
+                            
                             {main.slice(1, 2).map((item, i) => (
                                 item.key && perms.includes(item.key) && <li key={i}>
                                     <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
@@ -562,7 +563,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user }) {
                     {/* !#3 navigation group */}
                     
         
-                </div>
+                </div>}
                 {/* !content (left panel) */}
             </div>
         </>
