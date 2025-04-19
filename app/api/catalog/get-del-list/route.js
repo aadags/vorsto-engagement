@@ -18,14 +18,14 @@ export async function GET(req) {
     const pageSize = parseInt(req.nextUrl.searchParams.get("per_page"));
 
     const products = await prisma.product.findMany({
-      where: { organization_id: organizationId, active: true },
+      where: { organization_id: organizationId, active: false },
       orderBy: { created_at: 'desc' },
       skip: (page - 1) * pageSize,
       take: pageSize,
     });
 
     const total = await prisma.product.count({
-      where: { organization_id: organizationId, active: true },
+      where: { organization_id: organizationId, active: false },
     });
 
     return NextResponse.json({ data: products, count: total });

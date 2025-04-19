@@ -162,16 +162,6 @@ export default function Index() {
                     <ConnectNotificationBanner />
                   </ConnectComponentsProvider>
                 )}
-          
-            <div className="user__profile">
-              <div className="user_details" style={{ width: "100%" }}>
-                {stripeConnectInstance && (
-                  <ConnectComponentsProvider connectInstance={stripeConnectInstance}>
-                    <ConnectBalances />
-                  </ConnectComponentsProvider>
-                )}
-              </div>
-            </div>
             <div className="user__profile">
               <div
                 className="user_details"

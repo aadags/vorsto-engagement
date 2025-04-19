@@ -1,11 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
-export default function UploadImageForm({ setImages }) {
+export default function UploadImageForm({ setImages, existingImagesFromServer }) {
   const [files, setFiles] = useState();
   const [message, setMessage] = useState('');
   const [uploaded, setUploaded] = useState([]);
+  const [existingImages, setExistingImages] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const fileInputRef = useRef(null);
 
   const handleImageSubmit = async (e) => {
     e.preventDefault();
@@ -13,6 +16,8 @@ export default function UploadImageForm({ setImages }) {
       setMessage('Please select at least one file.');
       return;
     }
+
+    setIsSubmitting(true);
 
     const formData = new FormData();
     for (const file of Array.from(files)) {
@@ -27,12 +32,49 @@ export default function UploadImageForm({ setImages }) {
     const result = await res.json();
     if (res.ok) {
       setMessage(`Uploaded ${result.files.length} file(s) successfully`);
-      setUploaded(result.files.map((f) => f.url));
-      setImages(result.files.map((f) => f.url));
+      setUploaded((prev) => [...prev, ...result.files]);
+      setImages((prev) => [...prev, ...result.files]);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = null;
+      }
     } else {
       setMessage(result.error || 'Upload failed');
+    } 
+    setIsSubmitting(false);
+  };
+
+  const handleDelete = async (id, cloud_id, type) => {
+    if (!window.confirm('Are you sure you want to delete this image?')) {
+      return
+    }
+    const res = await fetch('/api/catalog/delete-image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, cloud_id }),
+    });
+
+    const result = await res.json();
+    if (res.ok) {
+      setMessage('Image deleted.');
+
+      if (type === 'uploaded') {
+        setUploaded((prev) => prev.filter((img) => img.public_id !== cloud_id));
+      } else {
+        setExistingImages((prev) => prev.filter((img) => img.cloud_id !== cloud_id));
+      }
+    } else {
+      setMessage(result.error || 'Failed to delete image.');
     }
   };
+
+  useEffect(() => {
+    setExistingImages([])
+
+    if(existingImagesFromServer && existingImagesFromServer.length > 0){
+      setExistingImages([ ...existingImagesFromServer ]);
+    }
+
+  }, [existingImagesFromServer]);
 
   return (
     <div className="p-6">
@@ -42,28 +84,49 @@ export default function UploadImageForm({ setImages }) {
         <input
           type="file"
           multiple
+          accept="image/*"
           onChange={(e) => setFiles(e.target.files)}
+          ref={fileInputRef}
           className="block mb-4"
         />
         </div>
         <button
           type="button"
           onClick={handleImageSubmit}
+          disabled={isSubmitting}
           className="techwave_fn_button"
         >
-          Upload Images
+          {isSubmitting? "Uploading" : "Upload Images"}
         </button>
       </form>
 
-      {message && <p className="mt-4">{message}</p>}
-
+      {message && <p style={{ color: "red" }}>{message}</p>}
+      <br/>
       {uploaded.length > 0 && (
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", paddingBottom: "0.5em" }}>
-          {uploaded.map((url, idx) => (
-            <img key={idx} src={url} alt={`Uploaded ${idx}`} className="w-full" />
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", paddingBottom: "0.5em", width: "100%" }}>
+          {uploaded.map((img, idx) => (
+            <div>
+            <img key={idx} src={img.url} alt={`Uploaded ${idx}`} className="w-full" width="200px" />
+            <br/>
+            <a onClick={() => handleDelete("0", img.public_id, 'uploaded')}>Delete</a>
+            </div>
           ))}
         </div>
       )}
+      <br/>
+
+      {existingImages && existingImages.length > 0 && (
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", paddingBottom: "0.5em", width: "100%" }}>
+          {existingImages.map((img, idx) => (
+            <div>
+              <img key={idx} src={img.url} alt={`Current Image ${idx}`} className="w-full" width="200px" />
+              <br/>
+              <a onClick={() => handleDelete(img.id, img.cloud_id, 'existing')}>Delete</a>
+            </div>
+          ))}
+        </div>
+        )
+      }
     </div>
   );
 }

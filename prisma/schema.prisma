@@ -376,11 +376,12 @@ model Product {
   inventories     Inventory[]
   organization     Organization   @relation(fields: [organization_id], references: [id])
   organization_id   Int
+  active      Boolean?  @default(true)   
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
 
   @@map("products")
-}
+}                               
 
 model Inventory {
   id              String      @id @default(cuid())
@@ -401,6 +402,7 @@ model Image {
   id            String   @id @default(cuid())
   product         Product      @relation(fields: [product_id], references: [id])
   product_id       String
+  cloud_id          String?
   url               String
   default         Boolean?    @default(false)  
   created_at     DateTime @default(now())

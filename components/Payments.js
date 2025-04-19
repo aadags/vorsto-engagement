@@ -6,11 +6,19 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit, faEye, faChartSimple } from '@fortawesome/free-solid-svg-icons'
 import PaymentsList from './PaymentsList';
 import Payment from './Payment';
+import { useStripeConnect } from "../hooks/useStripeConnect";
+import {
+  ConnectBalances,
+  ConnectNotificationBanner,
+  ConnectComponentsProvider,
+} from "@stripe/react-connect-js";
 
 
 export default function Payments() {
 
-    const [activeIndex, setActiveIndex] = useState(2);
+    const [connectedAccountId, setConnectedAccountId] = useState();
+    const stripeConnectInstance = useStripeConnect(connectedAccountId);
+    const [activeIndex, setActiveIndex] = useState(1);
     const [viewPayment, setViewPayment] = useState();
 
     
@@ -31,6 +39,18 @@ export default function Payments() {
         setActiveIndex(3)
     };
 
+    const fetchOrg = async () => {
+      
+        const response = await axios.get(`/api/get-org-details`);
+        const org = response.data;
+        setConnectedAccountId(org.stripe_account_id);
+      };
+    
+
+      useEffect(() => {
+        fetchOrg();
+      }, []);
+
 
     return (
         <>
@@ -43,10 +63,12 @@ export default function Payments() {
                 {/* Models */}
                 <div className="techwave_fn_models">
                     <div className="fn__tabs">
+                        
                         <div className="container">
                             <div className="tab_in">
                                 {/* <a className={activeIndex === 1 ? "active" : ""} onClick={() => handleOnClick(1)}>Summary</a> */}
-                                <a className={activeIndex === 2 ? "active" : ""} onClick={() => handleOnClick(2)}>History</a>
+                                <a className={activeIndex === 1 ? "active" : ""} onClick={() => handleOnClick(1)}>Account</a>
+                                <a className={activeIndex === 2 ? "active" : ""} onClick={() => handleOnClick(2)}>Transactions</a>
                                 {viewPayment && <a className={activeIndex === 3 ? "active" : ""} onClick={() => handleOnClick(3)}>Payment Details - {viewPayment.id}</a>}
                             </div>
                         </div>
@@ -61,9 +83,20 @@ export default function Payments() {
                                     <div className="text">Loading</div>
                                 </div>
                                 <div className="fn__tabs_content">
-                                    {/* <div id="tab1" className={activeIndex === 1 ? "tab__item active" : "tab__item"}>
-                                        
-                                    </div> */}
+                                    <div id="tab1" className={activeIndex === 1 ? "tab__item active" : "tab__item"}>
+                 
+                                        {stripeConnectInstance && (
+                                            <ConnectComponentsProvider connectInstance={stripeConnectInstance}>
+                                                <ConnectNotificationBanner />
+                                            </ConnectComponentsProvider>
+                                            )}
+
+                                        {stripeConnectInstance && (
+                                        <ConnectComponentsProvider connectInstance={stripeConnectInstance}>
+                                            <ConnectBalances />
+                                        </ConnectComponentsProvider>
+                                        )}
+                                    </div>
                                     <div id="tab2" className={activeIndex === 2 ? "tab__item active" : "tab__item"}>
                                        <PaymentsList handlePayment={handlePayment} />
                                     </div>

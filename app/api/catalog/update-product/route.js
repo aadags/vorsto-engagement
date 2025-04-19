@@ -20,10 +20,10 @@ export async function POST(req) {
 
     const body = await req.json();
     
-    const { name, description, image, currency, outofstock, varieties } = body;
+    const { id, name, description, image, stripeProductId, currency, outofstock, varieties } = body;
 
     // 1. Create the product
-    const stripeProduct = await stripe.products.create({
+    const stripeProduct = await stripe.products.update(stripeProductId, {
       name,
       description
     },
@@ -31,38 +31,68 @@ export async function POST(req) {
       stripeAccount: org.stripe_account_id,
     });
 
-    const product = await prisma.product.create({
+    const product = await prisma.product.update({
+      where: {
+        id, organization_id: org.id
+      },
       data: {
         name,
         description,
         currency,
-        outofstock,
-        stripeProductId: stripeProduct.id,
-        organization_id: org.id
+        outofstock
       }
     });
 
     for (const variety of varieties) {
-      const stripePrice = await stripe.prices.create(
-        {
-          product: stripeProduct.id,
-          unit_amount: variety.price * 100,
-          currency,
+
+      const existing = await prisma.inventory.findFirst({
+        where: {
+          id: variety.id, product_id: id
+        }
+      })
+
+      if(existing.price !==  variety.price * 100) {
+
+        await stripe.prices.update(variety.stripePriceId, {
+          active: false,
         },
         {
           stripeAccount: org.stripe_account_id,
-        }
-      );
+        });
 
-      await prisma.inventory.create({
-        data: {
-          product_id: product.id,
-          name: variety.name,
-          quantity: variety.quantity,
-          price: variety.price * 100,
-          stripePriceId: stripePrice.id,
-        },
-      });
+        const stripePrice = await stripe.prices.create(
+          {
+            product: stripeProduct.id,
+            unit_amount: variety.price * 100,
+            currency,
+          },
+          {
+            stripeAccount: org.stripe_account_id,
+          }
+        );
+
+        await prisma.inventory.update({
+          where: {
+            id: variety.id
+          },
+          data: {
+            name: variety.name,
+            quantity: variety.quantity,
+            price: variety.price * 100,
+            stripePriceId: stripePrice.id
+          },
+        });
+      } else {
+        await prisma.inventory.update({
+          where: {
+            id: variety.id
+          },
+          data: {
+            name: variety.name,
+            quantity: variety.quantity,
+          },
+        });
+      }
     }
 
     for (const [index, img] of image.entries()) {
@@ -82,7 +112,7 @@ export async function POST(req) {
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: "Failed to save comment" },
+      { error: "Failed to save product" },
       { status: 500 }
     );
   }
