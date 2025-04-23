@@ -22,10 +22,21 @@ const addVariety = () => {
   setVarieties([...varieties, { name: '', price: '', quantity: '' }]);
 };
 
-const removeVariety = (index) => {
+const removeVariety = async (v, index) => {
+  if(v.id) {
+    if (!window.confirm('Are you sure you want to permanently remove this variety? This cannot be undone.')) {
+      return
+    }
+    await fetch('/api/catalog/delete-variety', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: v.id
+      }),
+    });
+  }
   setVarieties(varieties.filter((_, i) => i !== index));
 };
-
 
 const setImages = (urls) => {
   setImage(urls)
@@ -205,14 +216,14 @@ useEffect(() => {
               onChange={(e) => handleVarietyChange(idx, 'quantity', e.target.value)}
               required
             />
-            <button type="button" className="techwave_fn_button" onClick={addVariety}>
-              +
-            </button>
-            <button type="button" className="techwave_fn_button" onClick={() => removeVariety(idx)}>
+            <button type="button" className="techwave_fn_button" onClick={() => removeVariety(v, idx)}>
               -
             </button>
           </div>
         ))}
+        <button type="button" className="techwave_fn_button" onClick={addVariety}>
+              +
+            </button>
     
       <br />
       <br />

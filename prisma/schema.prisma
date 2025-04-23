@@ -39,6 +39,8 @@ model Organization {
   payment_processors  PaymentProcessor[]
   orders  Order[]
   products  Product[]
+  categories  Category[]
+  carts  Cart[]
   stripe_id    String?     @unique()
   stripe_account_id    String?     @unique()
   plan         String      @default("free")
@@ -49,6 +51,9 @@ model Organization {
   call_center_number    String?    @unique()
   allow_speech        Boolean         @default(false)
   country  String?
+  currency  String?
+  subdomain  String?    @unique()
+  shop_template  String?    @default("simple")
   created_at                           DateTime?                      @default(now())
   updated_at                           DateTime?                      @updatedAt
 
@@ -261,6 +266,7 @@ model Contact {
 
   conversations  Conversation[]
   calls  Call[]
+  carts  Cart[]
 
   @@map("contacts")
 
@@ -346,23 +352,6 @@ model PaymentProcessor {
   @@unique([organization_id, name])
 }
 
-model Order {
-  id      String @id @default(cuid())  
-  contact    String?    
-  quantity      String?      
-  amount      Int?      
-  status      String?      
-  order_date      Int?      
-  product     Product   @relation(fields: [product_id], references: [id])
-  product_id   String
-  organization     Organization   @relation(fields: [organization_id], references: [id])
-  organization_id   Int
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt @default(now())
-
-  @@map("orders")
-}
-
 model Product {
   id            String   @id @default(cuid())
   name          String
@@ -371,9 +360,10 @@ model Product {
   currency      String   
   outofstock      Boolean? @default(false)   
   stripeProductId String @unique
-  orders  Order[]
   images  Image[]
   inventories     Inventory[]
+  category         Category?      @relation(fields: [category_id], references: [id])
+  category_id       String?
   organization     Organization   @relation(fields: [organization_id], references: [id])
   organization_id   Int
   active      Boolean?  @default(true)   
@@ -381,7 +371,20 @@ model Product {
   updated_at     DateTime @updatedAt
 
   @@map("products")
-}                               
+}    
+
+model Category {
+  id            String   @id @default(cuid())
+  name          String
+  description   String?
+  products     Product[]
+  organization     Organization   @relation(fields: [organization_id], references: [id])
+  organization_id   Int
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  @@map("categories")
+}  
 
 model Inventory {
   id              String      @id @default(cuid())
@@ -391,6 +394,9 @@ model Inventory {
   quantity        Int          
   price           Int          
   stripePriceId   String       @unique
+  order_items  OrderItem[]
+  cart_items  CartItem[]
+  active      Boolean?  @default(true)
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
 
@@ -409,4 +415,61 @@ model Image {
   updated_at     DateTime @updatedAt
 
   @@map("images")
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  total_price           Int          
+  stripeTransactionId   String       @unique  
+  organization     Organization   @relation(fields: [organization_id], references: [id])
+  organization_id   Int     
+  order_items  OrderItem[]
+  status   String  @default("Pending")
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id              String      @id @default(cuid()) 
+  inventory         Inventory      @relation(fields: [inventory_id], references: [id])
+  inventory_id       String
+  status   String
+  quantity        Int 
+  price             Int? 
+  tax             Int 
+  order     Order   @relation(fields: [order_id], references: [id])
+  order_id   String 
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  @@map("order_items")
+}
+
+model Cart {
+  id         Int      @id @default(autoincrement())
+  contact         Contact?       @relation(fields: [contact_id], references: [id])
+  contact_id      String?
+  organization     Organization   @relation(fields: [organization_id], references: [id])
+  organization_id   Int  
+  uuid      String  @unique()
+  cart_items  CartItem[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("carts")
+}
+
+model CartItem {
+  id         Int      @id @default(autoincrement())
+  inventory         Inventory      @relation(fields: [inventory_id], references: [id])
+  inventory_id       String
+  quantity   Int
+  cart         Cart       @relation(fields: [cart_id], references: [id])
+  cart_id      Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("cart_items")
 }

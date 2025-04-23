@@ -17,30 +17,37 @@ export async function GET(req) {
 
     const id = req.nextUrl.searchParams.get("id");
 
-    const product = await prisma.product.findFirst({
+    const order = await prisma.order.findFirst({
       where: { id,
         organization_id: organizationId 
       },
       include: {
-        inventories: {
-          where: { active: true },
-        },
-        images: true,
-      },
+        order_items: {
+          include: {
+            inventory: {
+              include: {
+                product: {
+                  include:{
+                    images: true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     });
 
-    if (product) {
-      product.inventories = product.inventories.map(inventory => ({
-        ...inventory,
-        price: inventory.price / 100,
-      }));
-    }
+    const org = await prisma.organization.findFirst({
+      where: { id: organizationId },
+    });
 
-    return NextResponse.json({ ...product });
+
+    return NextResponse.json({ ...order, org });
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: "Failed to fetch product" },
+      { error: "Failed to fetch order" },
       { status: 500 }
     );
   }

@@ -45,21 +45,8 @@ export async function POST(req) {
 
     for (const variety of varieties) {
 
-      const existing = await prisma.inventory.findFirst({
-        where: {
-          id: variety.id, product_id: id
-        }
-      })
-
-      if(existing.price !==  variety.price * 100) {
-
-        await stripe.prices.update(variety.stripePriceId, {
-          active: false,
-        },
-        {
-          stripeAccount: org.stripe_account_id,
-        });
-
+      if(!variety.id)
+      {
         const stripePrice = await stripe.prices.create(
           {
             product: stripeProduct.id,
@@ -71,27 +58,68 @@ export async function POST(req) {
           }
         );
 
-        await prisma.inventory.update({
-          where: {
-            id: variety.id
-          },
+        await prisma.inventory.create({
           data: {
             name: variety.name,
             quantity: variety.quantity,
             price: variety.price * 100,
-            stripePriceId: stripePrice.id
+            stripePriceId: stripePrice.id,
+            product_id: product.id
           },
         });
+
       } else {
-        await prisma.inventory.update({
+
+        const existing = await prisma.inventory.findFirst({
           where: {
-            id: variety.id
+            id: variety.id, product_id: id
+          }
+        })
+
+        if(existing.price !==  variety.price * 100) {
+
+          await stripe.prices.update(variety.stripePriceId, {
+            active: false,
           },
-          data: {
-            name: variety.name,
-            quantity: variety.quantity,
-          },
-        });
+          {
+            stripeAccount: org.stripe_account_id,
+          });
+
+          const stripePrice = await stripe.prices.create(
+            {
+              product: stripeProduct.id,
+              unit_amount: variety.price * 100,
+              currency,
+            },
+            {
+              stripeAccount: org.stripe_account_id,
+            }
+          );
+
+          await prisma.inventory.update({
+            where: {
+              id: variety.id
+            },
+            data: {
+              name: variety.name,
+              quantity: variety.quantity,
+              price: variety.price * 100,
+              stripePriceId: stripePrice.id
+            },
+          });
+
+        } else {
+
+          await prisma.inventory.update({
+            where: {
+              id: variety.id
+            },
+            data: {
+              name: variety.name,
+              quantity: variety.quantity,
+            },
+          });
+        }
       }
     }
 

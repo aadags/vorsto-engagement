@@ -37,6 +37,15 @@ export async function POST(req) {
             external_account_collection: true,
           },
         },
+        payment_details: {
+          enabled: true,
+          features: {
+            refund_management: true,
+            dispute_management: true,
+            capture_payments: true,
+            destination_on_behalf_of_charge_management: false,
+          },
+        },
       },
     });
 
