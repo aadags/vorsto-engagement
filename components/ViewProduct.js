@@ -10,6 +10,8 @@ const ViewProduct = ({ productId }) => {
   const [description, setDescription] = useState("");
   const [outofstock, setOutofstock] = useState("");
   const [currency, setCurrency] = useState("");
+  const [tax, setTax] = useState(0);
+  const [taxType, setTaxType] = useState("");
   const [stripeProductId, setStripeProductId] = useState("");
   const [image, setImage] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -59,6 +61,8 @@ useEffect(() => {
         setVarieties(product.inventories);
         setStripeProductId(product.stripeProductId);
         setStockImages(product.images);
+        setTax(product.tax)
+        setTaxType(product.tax_type)
       } catch (error) {
         console.error("Failed to fetch product:", error);
       }
@@ -85,8 +89,9 @@ useEffect(() => {
 
         {/* Currency */}
         <div className="form_group">
-          <h6>Currency: {currency}</h6>
+          <h6>Tax: {tax} ({taxType})</h6>
         </div>
+
         <label className="fn__toggle">
             Selling When Out of Stock:
                   <span className="t_in">

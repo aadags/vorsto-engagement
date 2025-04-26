@@ -8,8 +8,10 @@ const EditProduct = ({ productId }) => {
 
   const [productName, setProductName] = useState("");
   const [description, setDescription] = useState("");
-  const [outofstock, setOutofstock] = useState("");
   const [currency, setCurrency] = useState("");
+  const [outofstock, setOutofstock] = useState("");
+  const [tax, setTax] = useState(0);
+  const [taxType, setTaxType] = useState("");
   const [stripeProductId, setStripeProductId] = useState("");
   const [image, setImage] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -65,8 +67,9 @@ const handleVarietyChange = (index, field, value) => {
           description,
           image,
           stripeProductId: stripeProductId,
-          currency,
           outofstock,
+          tax,
+          taxType,
           varieties: varieties.map((v) => ({
             ...v,
             price: Number(v.price),
@@ -106,7 +109,9 @@ useEffect(() => {
         setProductName(product.name);
         setDescription(product.description);
         setOutofstock(product.outofstock);
-        setCurrency(product.currency);
+        setTax(product.tax)
+        setCurrency(product.currency)
+        setTaxType(product.tax_type)
         setVarieties(product.inventories);
         setStripeProductId(product.stripeProductId);
         setStockImages(product.images);
@@ -156,19 +161,28 @@ useEffect(() => {
         {/* Currency */}
         <div className="form_group">
           <select
-            id="currency"
+            id="tax"
             className="full_width"
-            value={currency}
-            onChange={(e) => setCurrency(e.target.value)}
+            value={taxType}
+            onChange={(e) => setTaxType(e.target.value)}
             required
           >
-            <option value="">Select Currency</option>
-            <option value="usd">USD</option>
-            <option value="cad">CAD</option>
-            <option value="eur">EUR</option>
+            <option value="">Select Tax Type</option>
+            <option value="percentage">Percentage</option>
+            <option value="flatfee">Flat Fee</option>
+        
             {/* Add more currencies as needed */}
           </select>
         </div>
+        <br />
+        
+        <input
+              type="number"
+              placeholder="Tax Value"
+              value={tax}
+              onChange={(e) => setTax(e.target.value)}
+              required
+            />
         <br /><br />
 
         <label className="fn__toggle">

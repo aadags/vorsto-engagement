@@ -20,7 +20,7 @@ export async function POST(req) {
 
     const body = await req.json();
     
-    const { id, name, description, image, stripeProductId, currency, outofstock, varieties } = body;
+    const { id, name, description, image, tax, taxType, stripeProductId, outofstock, varieties } = body;
 
     // 1. Create the product
     const stripeProduct = await stripe.products.update(stripeProductId, {
@@ -38,7 +38,8 @@ export async function POST(req) {
       data: {
         name,
         description,
-        currency,
+        tax,
+        tax_type: taxType,
         outofstock
       }
     });
@@ -51,7 +52,7 @@ export async function POST(req) {
           {
             product: stripeProduct.id,
             unit_amount: variety.price * 100,
-            currency,
+            currency: org.currency,
           },
           {
             stripeAccount: org.stripe_account_id,
@@ -89,7 +90,7 @@ export async function POST(req) {
             {
               product: stripeProduct.id,
               unit_amount: variety.price * 100,
-              currency,
+              currency: org.currency,
             },
             {
               stripeAccount: org.stripe_account_id,

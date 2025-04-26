@@ -357,7 +357,6 @@ model Product {
   name          String
   description   String?
   image         String?  
-  currency      String   
   tax           Int?
   tax_type           String?
   outofstock      Boolean? @default(false)   

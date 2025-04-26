@@ -9,8 +9,9 @@ const NewProduct = () => {
   const [productName, setProductName] = useState('');
   const [description, setDescription] = useState('');
   const [outofstock, setOutofstock] = useState(false);
+  const [tax, setTax] = useState(0);
+  const [taxType, setTaxType] = useState("");
   const [price, setPrice] = useState(''); // Store as string for input, convert to number on submit
-  const [currency, setCurrency] = useState('');
   const [image, setImage] = useState([]);
   const [loading, setLoading] = useState(false);
 const [error, setError] = useState('');
@@ -53,7 +54,6 @@ const handleVarietyChange = (index, field, value) => {
           name: productName,
           description,
           image,
-          currency,
           outofstock,
           varieties: varieties.map((v) => ({
             ...v,
@@ -72,7 +72,6 @@ const handleVarietyChange = (index, field, value) => {
       setProductName('');
       setDescription('');
       setPrice('');
-      setCurrency('');
       router.refresh();
     } catch (err) {
       setError(err.message);
@@ -115,22 +114,30 @@ const handleVarietyChange = (index, field, value) => {
         </div>
         <br />
 
-        {/* Currency */}
         <div className="form_group">
           <select
-            id="currency"
+            id="tax"
             className="full_width"
-            value={currency}
-            onChange={(e) => setCurrency(e.target.value)}
+            value={taxType}
+            onChange={(e) => setTaxType(e.target.value)}
             required
           >
-            <option value="">Select Currency</option>
-            <option value="usd">USD</option>
-            <option value="cad">CAD</option>
-            <option value="eur">EUR</option>
+            <option value="">Select Tax Type</option>
+            <option value="percentage">Percentage</option>
+            <option value="flatfee">Flat Fee</option>
+        
             {/* Add more currencies as needed */}
           </select>
         </div>
+        <br />
+        
+        <input
+              type="number"
+              placeholder="Tax Value"
+              value={tax}
+              onChange={(e) => setTax(e.target.value)}
+              required
+            />
         <br /><br />
 
         <label className="fn__toggle">
