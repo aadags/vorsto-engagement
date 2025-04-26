@@ -9,11 +9,13 @@ export async function POST(req) {
   try {
 
     const body = await req.json();
-    const { id } = body;
-
-    await prisma.cartItem.delete({
+    const { id, quantity } = body;
+    await prisma.cartItem.update({
       where: {
-        id: id
+        id
+      },
+      data: {
+        quantity
       }
     });
 
@@ -22,7 +24,7 @@ export async function POST(req) {
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: "Failed to delete cart" },
+      { error: "Failed to fetch org" },
       { status: 500 }
     );
   }

@@ -9,10 +9,12 @@ export async function POST(req) {
   try {
 
     const body = await req.json();
-    const { inventory_id, quantity, email, phone, subdomain, uuid } = body;
+    const { inventory_id, quantity, email, phone, id, uuid } = body;
+
+    console.log({ inventory_id, quantity, email, phone, id, uuid })
 
     const org = await prisma.organization.findFirst({
-      where: { subdomain },
+      where: { id },
     });
     
     const whereClause = {

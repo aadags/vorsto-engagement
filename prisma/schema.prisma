@@ -358,6 +358,8 @@ model Product {
   description   String?
   image         String?  
   currency      String   
+  tax           Int?
+  tax_type           String?
   outofstock      Boolean? @default(false)   
   stripeProductId String @unique
   images  Image[]
@@ -420,11 +422,15 @@ model Image {
 model Order {
   id              String      @id @default(cuid())
   total_price           Int          
-  stripeTransactionId   String       @unique  
+  shipping_price           Int?          
+  transactionId   String?       @unique  
   organization     Organization   @relation(fields: [organization_id], references: [id])
   organization_id   Int     
   order_items  OrderItem[]
   status   String  @default("Pending")
+  tracking_id   String?       @unique  
+  driver_info   String? @db.LongText
+  driver_location   String? @db.LongText
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
 
@@ -448,13 +454,14 @@ model OrderItem {
 }
 
 model Cart {
-  id         Int      @id @default(autoincrement())
+  id         String      @id @default(cuid()) 
   contact         Contact?       @relation(fields: [contact_id], references: [id])
   contact_id      String?
   organization     Organization   @relation(fields: [organization_id], references: [id])
   organization_id   Int  
   uuid      String  @unique()
   cart_items  CartItem[]
+  shipping_price     Int? 
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
@@ -462,12 +469,12 @@ model Cart {
 }
 
 model CartItem {
-  id         Int      @id @default(autoincrement())
+  id         String      @id @default(cuid()) 
   inventory         Inventory      @relation(fields: [inventory_id], references: [id])
   inventory_id       String
   quantity   Int
   cart         Cart       @relation(fields: [cart_id], references: [id])
-  cart_id      Int
+  cart_id      String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 

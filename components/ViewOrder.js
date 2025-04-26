@@ -120,10 +120,10 @@ useEffect(() => {
               })}</b>
             </h6>
             <br/>
-            <h6>Transaction ID: <a href onClick={onOpen} style={{ color: "blue" }}>{order.stripeTransactionId}</a></h6>
+            <h6>Transaction ID: <a href onClick={onOpen} style={{ color: "blue" }}>{order.transactionId}</a></h6>
             {stripeConnectInstance && (<ConnectComponentsProvider connectInstance={stripeConnectInstance}>
               {visible && <ConnectPaymentDetails
-                payment={order.stripeTransactionId}
+                payment={order.transactionId}
                 onClose={onClose}
               />}
             </ConnectComponentsProvider>)}

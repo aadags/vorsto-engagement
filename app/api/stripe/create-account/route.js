@@ -29,6 +29,7 @@ export async function POST(req) {
     if(!org.stripe_account_id)
     {
       const account = await stripe.accounts.create({
+        type: "custom",
         controller: {
           stripe_dashboard: {
             type: "none",
@@ -44,12 +45,14 @@ export async function POST(req) {
           klarna_payments: { requested: true },
           afterpay_clearpay_payments: { requested: true },
         },
+
         settings: {
           payouts: {
             schedule: {
               interval: "daily",
               delay_days: 2
-            }
+            },
+            debit_negative_balances: true
           }
         },
         country,
@@ -69,7 +72,7 @@ export async function POST(req) {
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: "Failed to fetch forms" },
+      { error: "Failed to create accounts" },
       { status: 500 }
     );
   }

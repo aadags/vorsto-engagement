@@ -20,7 +20,7 @@ export default function OrderList({ viewOrder }) {
     },
     {
       name: "Payment Id",
-      selector: (row) => row.stripeTransactionId,
+      selector: (row) => row.transactionId,
       sortable: true,
     },
     {

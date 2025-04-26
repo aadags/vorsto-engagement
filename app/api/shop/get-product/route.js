@@ -20,7 +20,20 @@ export async function GET(req) {
       }
     });
 
-    return NextResponse.json({ product });
+    const otherProducts = await prisma.product.findMany({
+      where: {
+        id: { not: id }, // exclude the current product
+      },
+      take: 10,
+      include: {
+        inventories: {
+          where: { active: true },
+        },
+        images: true, 
+      }
+    });
+
+    return NextResponse.json({ product: { ...product, otherProducts } });
   } catch (error) {
     console.error(error);
     return NextResponse.json(

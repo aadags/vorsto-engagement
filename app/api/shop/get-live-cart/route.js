@@ -15,7 +15,19 @@ export async function GET(req) {
         uuid
       },
       include: {
-        cart_items: true
+        cart_items: {
+          include: {
+            inventory: {
+              include: {
+                product: {
+                  include: {
+                    images: true
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     })
 
