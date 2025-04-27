@@ -3,13 +3,13 @@ import { useRouter } from 'next/navigation';
 import UploadImageForm from "./UploadImageForm";
 import axios from 'axios';
 
-const ViewProduct = ({ productId }) => {
+const ViewProduct = ({ productId, org }) => {
   const router = useRouter();
 
   const [productName, setProductName] = useState("");
   const [description, setDescription] = useState("");
   const [outofstock, setOutofstock] = useState("");
-  const [currency, setCurrency] = useState("");
+  const [currency] = useState(org.currency);
   const [tax, setTax] = useState(0);
   const [taxType, setTaxType] = useState("");
   const [stripeProductId, setStripeProductId] = useState("");
@@ -57,7 +57,6 @@ useEffect(() => {
         setProductName(product.name);
         setDescription(product.description);
         setOutofstock(product.outofstock);
-        setCurrency(product.currency);
         setVarieties(product.inventories);
         setStripeProductId(product.stripeProductId);
         setStockImages(product.images);

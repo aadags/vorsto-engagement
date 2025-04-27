@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/db/prisma";
-import { cookies } from "next/headers";
+import { SquareClient } from "square";
 
 export const dynamic = "force-dynamic";
 
@@ -8,15 +8,31 @@ export const dynamic = "force-dynamic";
 export async function POST(req) {
   try {
 
-    const { uuid, paymentIntent, shipping_price, customer, organization_id } = await req.json();
+    const { uuid, token, shipping, customer, idempotencyKey, mid } = await req.json();
 
-    // await prisma.cartItem.create({
-    //   data: {
-    //     inventory_id,
-    //     cart_id: cart.id,
-    //     quantity
-    //   }
-    // });
+    const org = await prisma.organization.findFirst({
+      where: { id: mid }
+    });
+
+    let contact = await prisma.contact.findUnique({
+      where: {
+        organization_id_email: {
+          organization_id: org.id,
+          email: customer.email,
+        },
+      },
+    });
+    
+    if (!contact) {
+      contact = await prisma.contact.create({
+        data: {
+          name: customer.firstname + " " + customer.lastname,
+          email: customer.email,
+          phone: customer.phone,
+          organization_id: org.id,
+        },
+      });
+    }
 
     const cart = await prisma.cart.findFirst({
       where: {
@@ -36,31 +52,78 @@ export async function POST(req) {
     });
 
     const orderItems = cart.cart_items
-  
-    const order = await prisma.order.create({
-      data: {
-        total_price: paymentIntent.amount - shipping_price,
-        shipping_price,
-        status: "Pending",
-        transactionId: paymentIntent.id,
-        organization_id: organization_id,
-        order_items: {
-          create: orderItems.map(item => ({
-            inventory_id: item.inventory_id,
-            status: "Pending",
-            quantity: item.quantity,
-            price: item.inventory.price * item.quantity,
-            tax: item.inventory.product.tax_type==="flatfee"? item.inventory.product.tax : ((item.inventory.price * item.quantity) * item.inventory.product.tax) / 100,
-          })),
-        },
-      },
-      include: {
-        order_items: true,
-      },
+
+    const total =
+    shipping.total +
+    orderItems.reduce((sum, item) => sum + item.inventory.price * item.quantity, 0);
+
+    
+    const pp = await prisma.paymentProcessor.findFirstOrThrow({
+      where: { name: "Square", organization_id: org.id },
     });
 
+    const client = new SquareClient({
+      token: pp.access_token,
+      environment: process.env.NEXT_PUBLIC_SQUARE_BASE,
+    });
 
-    return NextResponse.json(order);
+    const payload = {
+      idempotencyKey: idempotencyKey,
+      locationId: pp.location,
+      sourceId: token,
+      amountMoney: {
+        amount: `${total}`,
+        currency: org.currency.toUpperCase(),
+      },
+    };
+
+    const payment = await client.paymentsApi.createPayment(payload);
+
+    if(payment.status === "COMPLETED" && payment.approved_money.amount === total)
+    {
+      const order = await prisma.order.create({
+        data: {
+          contact_id: contact.id,
+          total_price: total,
+          shipping_price: shipping.total,
+          status: "Pending",
+          transactionId: payment.id,
+          organization_id: mid,
+          order_items: {
+            create: orderItems.map(item => ({
+              inventory_id: item.inventory_id,
+              status: "Pending",
+              quantity: item.quantity,
+              price: item.inventory.price * item.quantity,
+              tax: item.inventory.product.tax_type==="flatfee"? item.inventory.product.tax : ((item.inventory.price * item.quantity) * item.inventory.product.tax) / 100,
+            })),
+          },
+        },
+        include: {
+          order_items: true,
+        },
+      });
+
+      return NextResponse.json(order);
+
+    } else {
+
+      await prisma.cart.update({
+        where: {
+          id: cart.id
+        },
+        data: {
+          contact_id: contact.id
+        }
+      })
+
+      return NextResponse.json(
+        { error: "Payment error, try again" },
+        { status: 422 }
+      );
+    }
+
+
   } catch (error) {
     console.error(error);
     return NextResponse.json(

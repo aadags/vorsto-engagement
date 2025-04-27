@@ -6,19 +6,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit, faEye, faChartSimple } from '@fortawesome/free-solid-svg-icons'
 import PaymentsList from './PaymentsList';
 import Payment from './Payment';
-import { useStripeConnect } from "../hooks/useStripeConnect";
-import {
-  ConnectBalances,
-  ConnectNotificationBanner,
-  ConnectComponentsProvider,
-} from "@stripe/react-connect-js";
 
 
-export default function Payments() {
-
-    const [connectedAccountId, setConnectedAccountId] = useState();
-    const stripeConnectInstance = useStripeConnect(connectedAccountId);
-    const [activeIndex, setActiveIndex] = useState(1);
+export default function Payments({ org }) {
+    const [paymentProcessors] = useState(org?.payment_processors);
+    const [activeIndex, setActiveIndex] = useState(2);
     const [viewPayment, setViewPayment] = useState();
 
     
@@ -39,19 +31,6 @@ export default function Payments() {
         setActiveIndex(3)
     };
 
-    const fetchOrg = async () => {
-      
-        const response = await axios.get(`/api/get-org-details`);
-        const org = response.data;
-        setConnectedAccountId(org.stripe_account_id);
-      };
-    
-
-      useEffect(() => {
-        fetchOrg();
-      }, []);
-
-
     return (
         <>
             <div className="techwave_fn_models_page">
@@ -67,7 +46,7 @@ export default function Payments() {
                         <div className="container">
                             <div className="tab_in">
                                 {/* <a className={activeIndex === 1 ? "active" : ""} onClick={() => handleOnClick(1)}>Summary</a> */}
-                                <a className={activeIndex === 1 ? "active" : ""} onClick={() => handleOnClick(1)}>Account</a>
+                                {/* <a className={activeIndex === 1 ? "active" : ""} onClick={() => handleOnClick(1)}>Account</a> */}
                                 <a className={activeIndex === 2 ? "active" : ""} onClick={() => handleOnClick(2)}>Transactions</a>
                                 {viewPayment && <a className={activeIndex === 3 ? "active" : ""} onClick={() => handleOnClick(3)}>Payment Details - {viewPayment.id}</a>}
                             </div>
@@ -83,7 +62,7 @@ export default function Payments() {
                                     <div className="text">Loading</div>
                                 </div>
                                 <div className="fn__tabs_content">
-                                    <div id="tab1" className={activeIndex === 1 ? "tab__item active" : "tab__item"}>
+                                    {/* <div id="tab1" className={activeIndex === 1 ? "tab__item active" : "tab__item"}>
                  
                                         {stripeConnectInstance && (
                                             <ConnectComponentsProvider connectInstance={stripeConnectInstance}>
@@ -96,12 +75,13 @@ export default function Payments() {
                                             <ConnectBalances />
                                         </ConnectComponentsProvider>
                                         )}
-                                    </div>
+                                    </div> */}
                                     <div id="tab2" className={activeIndex === 2 ? "tab__item active" : "tab__item"}>
-                                       <PaymentsList handlePayment={handlePayment} />
+                                       {paymentProcessors && <PaymentsList handlePayment={handlePayment} />}
+                                       {!paymentProcessors && <p>Payments is not setup for your business. <br/><br/><a href="/integration/payments" className="techwave_fn_button" type="submit">Activate Payments</a></p>}
                                     </div>
                                     <div id="tab3" className={activeIndex === 3 ? "tab__item active" : "tab__item"}>
-                                    {viewPayment && <Payment viewPayment={viewPayment}  />}
+                                    {paymentProcessors &&  viewPayment && <Payment viewPayment={viewPayment}  />}
                                     </div>
                                    
                                    

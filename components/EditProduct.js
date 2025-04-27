@@ -3,12 +3,12 @@ import { useRouter } from 'next/navigation';
 import UploadImageForm from "./UploadImageForm";
 import axios from 'axios';
 
-const EditProduct = ({ productId }) => {
+const EditProduct = ({ productId, org }) => {
   const router = useRouter();
 
   const [productName, setProductName] = useState("");
   const [description, setDescription] = useState("");
-  const [currency, setCurrency] = useState("");
+  const [currency] = useState(org.currency);
   const [outofstock, setOutofstock] = useState("");
   const [tax, setTax] = useState(0);
   const [taxType, setTaxType] = useState("");
@@ -110,7 +110,6 @@ useEffect(() => {
         setDescription(product.description);
         setOutofstock(product.outofstock);
         setTax(product.tax)
-        setCurrency(product.currency)
         setTaxType(product.tax_type)
         setVarieties(product.inventories);
         setStripeProductId(product.stripeProductId);
@@ -176,7 +175,7 @@ useEffect(() => {
         </div>
         <br />
         
-        <input
+        Tax Value <input
               type="number"
               placeholder="Tax Value"
               value={tax}
@@ -202,11 +201,6 @@ useEffect(() => {
                 <br /><br />
 
         <h6>Varieties</h6>
-        <div style={{ display: "flex", alignItems: "center", gap: "12.0rem", paddingLeft: "3em", paddingBottom: "0.5em" }}>
-            <span>Variety</span>
-            <span>{`Price (${currency})`}</span>
-            <span>Quantity</span>
-        </div>
         {varieties.map((v, idx) => (
           <div key={idx} style={{ display: "flex", alignItems: "center", gap: "0.5rem", paddingBottom: "0.5em" }}>
             <input
@@ -218,7 +212,7 @@ useEffect(() => {
             />
             <input
               type="number"
-              placeholder="Price"
+              placeholder={`Price (${currency})`}
               value={v.price}
               onChange={(e) => handleVarietyChange(idx, 'price', e.target.value)}
               required

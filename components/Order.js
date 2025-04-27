@@ -7,11 +7,11 @@ import { faEdit, faEye, faChartSimple } from '@fortawesome/free-solid-svg-icons'
 import OrderList from './OrderList';
 import ViewOrder from './ViewOrder';
 
-
-export default function Order() {
+export default function Order({org}) {
 
     const [activeIndex, setActiveIndex] = useState(1);
     const [viewOrder, setViewOrder] = useState();
+    const [paymentProcessors, setPaymentprocessors] = useState(org?.payment_processors);
 
     const handleOnClick = (index) => {
         setActiveIndex(index);
@@ -21,8 +21,6 @@ export default function Order() {
         setViewOrder({id});
         setActiveIndex(2)
     };
-
-
 
     return (
         <>
@@ -56,7 +54,8 @@ export default function Order() {
                                         
                                     </div> */}
                                     <div id="tab1" className={activeIndex === 1 ? "tab__item active" : "tab__item"}>
-                                        {activeIndex === 1 && <OrderList viewOrder={handleViewOrder} />}
+                                        {!paymentProcessors && <p>Payments is not setup for your business. <br/><br/><a href="/integration/payments" className="techwave_fn_button" type="submit">Activate Payments</a></p>}
+                                        {paymentProcessors && activeIndex === 1 && <OrderList viewOrder={handleViewOrder} />}
                                     </div>
                                     <div id="tab2" className={activeIndex === 2 ? "tab__item active" : "tab__item"}>
                                         {viewOrder && <ViewOrder orderId={viewOrder.id} />}

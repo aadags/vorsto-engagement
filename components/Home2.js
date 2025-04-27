@@ -5,22 +5,20 @@ import axios from 'axios';
 import { animationText } from '@/components/Utilities'
 import { useRouter } from 'next/navigation';
 
-import { useStripeConnect } from "../hooks/useStripeConnect";
-import {
-  ConnectAccountOnboarding,
-  ConnectComponentsProvider,
-} from "@stripe/react-connect-js";
+// import { useStripeConnect } from "../hooks/useStripeConnect";
+// import {
+//   ConnectAccountOnboarding,
+//   ConnectComponentsProvider,
+// } from "@stripe/react-connect-js";
 
 export default function Home2() {
 
   const router = useRouter();
   const [organization, setOrganization] = useState('');
+  const [name, setName] = useState('');
   const [country, setCountry] = useState('');
-  const [accountCreatePending, setAccountCreatePending] = useState(false);
-  const [onboardingExited, setOnboardingExited] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-  const [connectedAccountId, setConnectedAccountId] = useState();
-  const stripeConnectInstance = useStripeConnect(connectedAccountId);
 
   useEffect(() => {
 
@@ -37,7 +35,35 @@ export default function Home2() {
     };
     fetchOrg();
     animationText()
-  }, [onboardingExited])
+  }, [])
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+  
+  
+    try {
+      const res = await fetch('/api/update-business', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          country,
+        }),
+      });
+  
+      const data = await res.json();
+  
+      if (!res.ok) throw new Error(data.error || 'Failed to update business');
+  
+      router.push("/");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -46,71 +72,37 @@ export default function Home2() {
           {/* Generation Header */}
           <div className="generation_header">
             <div className="header_bottom">
-              {!connectedAccountId && <h2>Get ready for take off</h2>}
-              {connectedAccountId && !stripeConnectInstance && <h2>Add information to start accepting money</h2>}
-              {!connectedAccountId && <p>Let's setup your business.</p>}
-              
-
-              {!accountCreatePending && !connectedAccountId && (
-                <div>
-                  <select
-                  style={{ width: "20%" }}
-                    value={country}
-                    onChange={(e) =>
-                                setCountry(e.target.value)
-                              }>
-                    <option value="">Select your country</option>
-                    <option value="CA">Canada</option>
-                    <option value="US">United States of America</option>
-                  </select>
+              <form onSubmit={handleSubmit}>
+                  <h2>Get ready for take off</h2>
+                  <p>Setup your business.</p>
+                  <div className="form_group"  style={{ width: "30%" }}>
+                    <input
+                      type="text"
+                      id="b_name"
+                      className="full_width"
+                      placeholder="Business Name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <br />
+                  <div className="form_group" style={{ width: "30%" }}>
+                      <select
+                          value={country}
+                          onChange={(e) =>
+                                      setCountry(e.target.value)
+                                    }>
+                          <option value="">Select your country</option>
+                          <option value="CA">Canada</option>
+                          <option value="US">United States of America</option>
+                      </select>
+                  </div>
                   <br/>
-                  {country != "" && <button
-                    className="techwave_fn_button"
-                    onClick={async () => {
-                      setAccountCreatePending(true);
-                      setError(false);
-                      fetch("/api/stripe/create-account", {
-                        method: "POST",
-                        headers: {
-                          "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                          country
-                        }),
-                      })
-                        .then((response) => response.json())
-                        .then((json) => {
-                          setAccountCreatePending(false);
-                          const { account, error } = json;
+                  {loading && <span>updating...</span>} 
+                  {!loading && <button className="techwave_fn_button" type="submit">Proceed</button>} 
 
-                          if (account) {
-                            setConnectedAccountId(account);
-                          }
-
-                          if (error) {
-                            setError(true);
-                          }
-                        });
-                    }}
-                  >
-                    Get Started
-                  </button>}
-                </div>
-              )}
-              {stripeConnectInstance && (
-                <ConnectComponentsProvider connectInstance={stripeConnectInstance}>
-                  <ConnectAccountOnboarding
-                    onExit={() => setOnboardingExited(true)}
-                  />
-                </ConnectComponentsProvider>
-              )}
-              {error && <p className="error">Something went wrong!</p>}
-              {(connectedAccountId || accountCreatePending || onboardingExited) && (
-                <div className="dev-callout">
-                  {accountCreatePending && <p>Setting up your account...</p>}
-                </div>
-              )}
-
+              </form>
             </div>
           </div>
         </div>

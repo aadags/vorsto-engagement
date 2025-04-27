@@ -2,14 +2,15 @@ import { useState } from "react";;
 import { useRouter } from 'next/navigation';
 import UploadImageForm from "./UploadImageForm";
 
-const NewProduct = () => {
+const NewProduct = ({ org }) => {
   const router = useRouter();
 
 
   const [productName, setProductName] = useState('');
   const [description, setDescription] = useState('');
+  const [currency] = useState(org.currency);
   const [outofstock, setOutofstock] = useState(false);
-  const [tax, setTax] = useState(0);
+  const [tax, setTax] = useState();
   const [taxType, setTaxType] = useState("");
   const [price, setPrice] = useState(''); // Store as string for input, convert to number on submit
   const [image, setImage] = useState([]);
@@ -168,7 +169,7 @@ const handleVarietyChange = (index, field, value) => {
             />
             <input
               type="number"
-              placeholder="Price"
+              placeholder={`Price (${currency})`}
               value={v.price}
               onChange={(e) => handleVarietyChange(idx, 'price', e.target.value)}
               required

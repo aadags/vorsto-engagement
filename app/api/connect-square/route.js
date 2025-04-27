@@ -24,7 +24,11 @@ export async function POST(req) {
       grantType: "authorization_code",
     });
 
-    console.log({ response });
+    const nclient = new SquareClient({
+      token: response.accessToken,
+      environment: process.env.NEXT_PUBLIC_SQUARE_BASE,
+    });
+    const { locations } = await nclient.locations.list();
 
     await prisma.paymentProcessor.deleteMany({
       where: {
@@ -39,6 +43,7 @@ export async function POST(req) {
         refresh_token: response.refreshToken,
         accountId: response.merchantId,
         ttl: response.expiresAt,
+        location: locations[0].id,
         organization_id: organizationId,
       },
     });

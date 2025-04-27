@@ -58,7 +58,7 @@
     "screenfull": "^6.0.2",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
-    "square": "^42.0.0",
+    "square": "^42.1.0",
     "stripe": "^13.4.0",
     "styled-components": "^6.1.13",
     "twilio": "^5.4.2",

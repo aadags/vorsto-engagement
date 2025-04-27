@@ -267,6 +267,7 @@ model Contact {
   conversations  Conversation[]
   calls  Call[]
   carts  Cart[]
+  orders  Order[]
 
   @@map("contacts")
 
@@ -336,12 +337,13 @@ model DeletedNumber {
 model PaymentProcessor {
   id      String @id @default(cuid())  
   name    String 
-  accountId    String @unique()
+  accountId    String
   access_token      String?      
   refresh_token      String?      
   public_token      String?      
   ttl      String?      
   hook_secret      String?      
+  location      String?      
   organization     Organization   @relation(fields: [organization_id], references: [id])
   organization_id   Int
   created_at  DateTime @default(now())
@@ -350,6 +352,7 @@ model PaymentProcessor {
   @@map("payment_processors")
 
   @@unique([organization_id, name])
+  @@unique([organization_id, accountId])
 }
 
 model Product {
@@ -424,7 +427,9 @@ model Order {
   shipping_price           Int?          
   transactionId   String?       @unique  
   organization     Organization   @relation(fields: [organization_id], references: [id])
-  organization_id   Int     
+  organization_id   Int    
+  contact         Contact?       @relation(fields: [contact_id], references: [id])
+  contact_id      String? 
   order_items  OrderItem[]
   status   String  @default("Pending")
   tracking_id   String?       @unique  

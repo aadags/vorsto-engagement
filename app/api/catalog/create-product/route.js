@@ -35,7 +35,6 @@ export async function POST(req) {
       data: {
         name,
         description,
-        currency: org.currency,
         tax,
         tax_type: taxType,
         outofstock,

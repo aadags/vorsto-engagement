@@ -11,11 +11,12 @@ import EditProduct from './EditProduct';
 import ViewProduct from './ViewProduct';
 
 
-export default function Catalog() {
+export default function Catalog({ org }) {
 
     const [activeIndex, setActiveIndex] = useState(1);
     const [viewProduct, setViewProduct] = useState();
     const [editProduct, setEditProduct] = useState();
+    const [paymentProcessors, setPaymentprocessors] = useState(org?.payment_processors);
 
     const handleOnClick = (index) => {
         setActiveIndex(index);
@@ -32,18 +33,24 @@ export default function Catalog() {
     };
 
 
-
     return (
         <>
             <div className="techwave_fn_models_page">
                 <div className="fn__title_holder">
                     <div className="container">
                         <h1 className="title">Catalog</h1>
-                        <button className="techwave_fn_button" onClick={() => handleOnClick(5)} style={{ float: "right" }}>Deactivated Items</button>
+                        {paymentProcessors &&<button className="techwave_fn_button" onClick={() => handleOnClick(5)} style={{ float: "right" }}>Deactivated Items</button>}
                     </div>
                 </div>
                 {/* Models */}
-                <div className="techwave_fn_models">
+                {!paymentProcessors && 
+                    <div className="techwave_fn_models">
+                        <div className="container">
+                            <p>Payments is not setup for your business. <br/><br/><a href="/integration/payments" className="techwave_fn_button" type="submit">Activate Payments</a></p>
+                        </div>
+                    </div>
+                }
+                {paymentProcessors && <div className="techwave_fn_models">
                     <div className="fn__tabs">
                         <div className="container">
                             <div className="tab_in">
@@ -72,13 +79,13 @@ export default function Catalog() {
                                         {activeIndex === 1 && <Products viewProduct={handleViewProduct} handleProduct={handleProduct} />}
                                     </div>
                                     <div id="tab2" className={activeIndex === 2 ? "tab__item active" : "tab__item"}>
-                                        <NewProduct />
+                                        <NewProduct org={org} />
                                     </div>
                                     <div id="tab3" className={activeIndex === 3 ? "tab__item active" : "tab__item"}>
-                                        {viewProduct && <ViewProduct productId={viewProduct.id}  />}
+                                        {viewProduct && <ViewProduct productId={viewProduct.id}  org={org} />}
                                     </div>
                                     <div id="tab4" className={activeIndex === 4 ? "tab__item active" : "tab__item"}>
-                                        {editProduct && <EditProduct productId={editProduct.id}  />}
+                                        {editProduct && <EditProduct productId={editProduct.id} org={org} />}
                                     </div>
                                     <div id="tab5" className={activeIndex === 5 ? "tab__item active" : "tab__item"}>
                                         {activeIndex === 5 && <ProductsInactive />}
@@ -90,7 +97,7 @@ export default function Catalog() {
                         </div>
                         {/* !models content */}
                     </div>
-                </div>
+                </div>}
                 {/* !Models */}
             </div>
 

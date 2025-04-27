@@ -12,13 +12,20 @@ export async function GET(req) {
 
     const org = await prisma.organization.findFirst({
       where: { subdomain },
+      include: {
+        payment_processors: true
+      }
+    });
+
+    const paymentProcessor = await prisma.paymentProcessor.findFirstOrThrow({
+      where: { name: "Square", organization_id: org.id },
     });
 
     const categories = await prisma.category.findMany({
       where: { organization_id: org.id },
     });
 
-    return NextResponse.json({ org, categories });
+    return NextResponse.json({ org, categories, paymentProcessor });
   } catch (error) {
     console.error(error);
     return NextResponse.json(

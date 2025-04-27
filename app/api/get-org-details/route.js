@@ -16,6 +16,9 @@ export async function GET(req) {
 
     const org = await prisma.organization.findFirst({
       where: { id: orgId },
+      include: {
+        payment_processors: true
+      }
     });
 
     return NextResponse.json(org);
