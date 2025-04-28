@@ -53,9 +53,9 @@ export async function POST(req) {
 
     const orderItems = cart.cart_items
 
-    const total =
-    shipping.total +
-    orderItems.reduce((sum, item) => sum + item.inventory.price * item.quantity, 0);
+    const subtotal = orderItems.reduce((sum, item) => sum + item.inventory.price * item.quantity, 0);
+
+    const total = subtotal + shipping.total
 
     
     const pp = await prisma.paymentProcessor.findFirstOrThrow({
@@ -67,19 +67,31 @@ export async function POST(req) {
       environment: process.env.NEXT_PUBLIC_SQUARE_BASE,
     });
 
+    let channelFee = 0.02;
+
+    //check org plan n set channel fees apprppriately.
+
+    const appFee = (channelFee * subtotal) + shipping.total
+
     const payload = {
       idempotencyKey: idempotencyKey,
       locationId: pp.location,
       sourceId: token,
       amountMoney: {
-        amount: `${total}`,
+        amount: BigInt(total),
+        currency: org.currency.toUpperCase(),
+      },
+      appFeeMoney: {
+        amount: BigInt(appFee),
         currency: org.currency.toUpperCase(),
       },
     };
+    
+    const { payment } = await client.payments.create(payload);
 
-    const payment = await client.paymentsApi.createPayment(payload);
+    console.log({payment})
 
-    if(payment.status === "COMPLETED" && payment.approved_money.amount === total)
+    if(payment.status === "COMPLETED")
     {
       const order = await prisma.order.create({
         data: {
@@ -102,6 +114,17 @@ export async function POST(req) {
         include: {
           order_items: true,
         },
+      });
+
+      await prisma.$transaction(async (tx) => {
+        
+        await tx.cartItem.deleteMany({
+          where: { cartId: cart.id }
+        });
+      
+        await tx.cart.delete({
+          where: { id: cart.id }
+        });
       });
 
       return NextResponse.json(order);
