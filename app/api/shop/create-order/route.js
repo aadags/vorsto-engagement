@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export async function POST(req) {
   try {
 
-    const { uuid, token, shipping, customer, idempotencyKey, mid } = await req.json();
+    const { uuid, token, customer, idempotencyKey, mid } = await req.json();
 
     const org = await prisma.organization.findFirst({
       where: { id: mid }
@@ -52,10 +52,28 @@ export async function POST(req) {
     });
 
     const orderItems = cart.cart_items
+    const shipping = JSON.parse(cart.shipping_info);
+    
+    const { subtotal, taxTotal } = orderItems.reduce(
+      (acc, item) => {
+        const base = item.inventory.price * item.quantity;
+        const tax = item.inventory.product.tax_type === "flatfee"
+          ? item.inventory.product.tax
+          : (base * item.inventory.product.tax) / 100;
+    
+        acc.subtotal += base;
+        acc.taxTotal += tax;
+    
+        return acc;
+      },
+      { subtotal: 0, taxTotal: 0 }
+    );
+    
+    
+    const total = subtotal + taxTotal + shipping.total
 
-    const subtotal = orderItems.reduce((sum, item) => sum + item.inventory.price * item.quantity, 0);
-
-    const total = subtotal + shipping.total
+    let channelFee = 0.02;
+    const appFee = (channelFee * subtotal) + shipping.total
 
     
     const pp = await prisma.paymentProcessor.findFirstOrThrow({
@@ -66,12 +84,6 @@ export async function POST(req) {
       token: pp.access_token,
       environment: process.env.NEXT_PUBLIC_SQUARE_BASE,
     });
-
-    let channelFee = 0.02;
-
-    //check org plan n set channel fees apprppriately.
-
-    const appFee = (channelFee * subtotal) + shipping.total
 
     const payload = {
       idempotencyKey: idempotencyKey,

@@ -465,7 +465,7 @@ model Cart {
   organization_id   Int  
   uuid      String  @unique()
   cart_items  CartItem[]
-  shipping_price     Int? 
+  shipping_info     String?   @db.LongText
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
