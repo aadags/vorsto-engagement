@@ -429,6 +429,7 @@ model Order {
   sub_total_price           Int?          
   shipping_commission           Int?          
   shipping_price           Int?          
+  shipping_tip           Int?          
   tax_total           Int?          
   transactionId   String?       @unique  
   organization     Organization   @relation(fields: [organization_id], references: [id])
@@ -437,12 +438,12 @@ model Order {
   contact_id      String? 
   channel      String? 
   order_items  OrderItem[]
-  status   String  @default("Pending")
+  status        String        @default("Pending")
   tracking_id   String?       @unique  
-  driver_info   String? @db.LongText
-  driver_location   String? @db.LongText
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updatedAt
+  driver_info   String?       @db.LongText
+  driver_location   String?     @db.LongText
+  created_at     DateTime       @default(now())
+  updated_at     DateTime       @updatedAt
 
   @@map("orders")
 }

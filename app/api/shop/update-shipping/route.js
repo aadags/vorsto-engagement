@@ -17,12 +17,18 @@ export async function POST(req) {
       }
     })
 
+    const org = await prisma.organization.findFirst({
+      where: {
+        id: cart.organization_id
+      }
+    })
+
     const si = JSON.parse(cart.shipping_info);
 
     const response = await fetch(`${process.env.SHIPPING_API}/api/update-tip`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ companyId: "ywy3HAHDHW32", deliveryId: si.id, tip }),
+      body: JSON.stringify({ companyId: org.ship_org_id, deliveryId: si.id, tip }),
     });
     const data = await response.json();
 

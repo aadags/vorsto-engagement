@@ -10,12 +10,28 @@ export async function POST(req) {
 
     const body = await req.json();
     const { customer, cartId } = body;
+
+    const cart = await prisma.cart.findFirst({
+      where: {
+        uuid: cartId
+      }
+    })
+
+    const org = await prisma.organization.findFirst({
+      where: {
+        id: cart.organization_id
+      }
+    })
+
+    console.log({
+      org
+    })
     
 
     const response = await fetch(`${process.env.SHIPPING_API}/api/get-shipping-rate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ companyId: "ywy3HAHDHW32", pickupUid: cartId,  customer }),
+      body: JSON.stringify({ companyId: org.ship_org_id, pickupUid: cartId,  customer }),
     });
     const data = await response.json();
     
