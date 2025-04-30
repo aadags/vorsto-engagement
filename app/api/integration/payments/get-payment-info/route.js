@@ -13,7 +13,7 @@ const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY, {
 });
 
 async function getCookieData() {
-  const cookieData = cookies().get("organizationId");
+  const cookieData = cookies().get("organizationId"); 
   return cookieData ? cookieData.value : null;
 }
 

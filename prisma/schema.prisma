@@ -430,6 +430,7 @@ model Order {
   organization_id   Int    
   contact         Contact?       @relation(fields: [contact_id], references: [id])
   contact_id      String? 
+  channel      String? 
   order_items  OrderItem[]
   status   String  @default("Pending")
   tracking_id   String?       @unique  

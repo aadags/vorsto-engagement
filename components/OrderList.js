@@ -19,6 +19,11 @@ export default function OrderList({ viewOrder }) {
       sortable: true,
     },
     {
+      name: "Channel",
+      selector: (row) => row.channel,
+      sortable: true,
+    },
+    {
       name: "Payment Id",
       selector: (row) => row.transactionId,
       sortable: true,

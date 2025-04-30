@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export async function POST(req) {
   try {
 
-    const { uuid, token, customer, idempotencyKey, mid } = await req.json();
+    const { uuid, token, customer, idempotencyKey, mid, channel } = await req.json();
 
     const org = await prisma.organization.findFirst({
       where: { id: mid }
@@ -111,6 +111,7 @@ export async function POST(req) {
           total_price: total,
           shipping_price: shipping.total,
           status: "Pending",
+          channel,
           transactionId: payment.id,
           organization_id: mid,
           order_items: {
@@ -131,7 +132,7 @@ export async function POST(req) {
       await prisma.$transaction(async (tx) => {
         
         await tx.cartItem.deleteMany({
-          where: { cartId: cart.id }
+          where: { cart_id: cart.id }
         });
       
         await tx.cart.delete({
