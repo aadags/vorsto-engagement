@@ -115,6 +115,7 @@ export async function POST(req) {
         data: {
           contact_id: contact.id,
           total_price: total,
+          sub_total_price: subtotal,
           tax_total: taxTotal,
           shipping_commission: shippingCommission,
           shipping_price: shipping.total,
