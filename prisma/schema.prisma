@@ -52,7 +52,9 @@ model Organization {
   allow_speech        Boolean         @default(false)
   country  String?
   currency  String?
+  ship_org_id  String?
   subdomain  String?    @unique()
+  channel_fee  Int    @default(2)
   shop_template  String?    @default("simple")
   created_at                           DateTime?                      @default(now())
   updated_at                           DateTime?                      @updatedAt
@@ -424,7 +426,9 @@ model Image {
 model Order {
   id              String      @id @default(cuid())
   total_price           Int          
+  shipping_commission           Int?          
   shipping_price           Int?          
+  tax_total           Int?          
   transactionId   String?       @unique  
   organization     Organization   @relation(fields: [organization_id], references: [id])
   organization_id   Int    

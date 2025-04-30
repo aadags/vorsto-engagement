@@ -72,8 +72,9 @@ export async function POST(req) {
     
     const total = subtotal + taxTotal + shipping.total
 
-    let channelFee = 0.02;
-    const appFee = (channelFee * subtotal) + shipping.total
+    const channelFee = org.channel_fee / 100;
+    const shippingCommission = shipping.merchant_commission_rate > 0? subtotal * (shipping.merchant_commission_rate / 100) : 0;
+    const appFee = (channelFee * subtotal) + shipping.total + shippingCommission;
 
     
     const pp = await prisma.paymentProcessor.findFirstOrThrow({
@@ -98,10 +99,15 @@ export async function POST(req) {
         currency: org.currency.toUpperCase(),
       },
     };
+
+    const response = await fetch(`${process.env.SHIPPING_API}/api/update-commission`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ companyId: org.ship_org_id, deliveryId: shipping.id, shippingCommission }),
+    });
+    const data = await response.json();
     
     const { payment } = await client.payments.create(payload);
-
-    console.log({payment})
 
     if(payment.status === "COMPLETED")
     {
@@ -109,6 +115,8 @@ export async function POST(req) {
         data: {
           contact_id: contact.id,
           total_price: total,
+          tax_total: taxTotal,
+          shipping_commission: shippingCommission,
           shipping_price: shipping.total,
           status: "Pending",
           channel,
