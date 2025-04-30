@@ -426,6 +426,7 @@ model Image {
 model Order {
   id              String      @id @default(cuid())
   total_price           Int          
+  sub_total_price           Int?          
   shipping_commission           Int?          
   shipping_price           Int?          
   tax_total           Int?          
