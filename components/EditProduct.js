@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import UploadImageForm from "./UploadImageForm";
 import axios from 'axios';
 
-const EditProduct = ({ productId, org }) => {
+const EditProduct = ({ productId, org, cat }) => {
   const router = useRouter();
 
   const [productName, setProductName] = useState("");
@@ -19,36 +19,51 @@ const EditProduct = ({ productId, org }) => {
   const [successMessage, setSuccessMessage] = useState('');
   const [varieties, setVarieties] = useState([]);
   const [stockImages, setStockImages] = useState([]);
+  const [categories, setCategories] = useState(cat);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [isNewCategory, setIsNewCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
 
-const addVariety = () => {
-  setVarieties([...varieties, { name: '', price: '', quantity: '' }]);
-};
-
-const removeVariety = async (v, index) => {
-  if(v.id) {
-    if (!window.confirm('Are you sure you want to permanently remove this variety? This cannot be undone.')) {
-      return
+  const handleCategoryChange = (e) => {
+    const value = e.target.value;
+    if (value === "__new__") {
+      setIsNewCategory(true);
+      setSelectedCategory("");
+    } else {
+      setIsNewCategory(false);
+      setSelectedCategory(value);
     }
-    await fetch('/api/catalog/delete-variety', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        id: v.id
-      }),
-    });
-  }
-  setVarieties(varieties.filter((_, i) => i !== index));
-};
+  };
 
-const setImages = (urls) => {
-  setImage(urls)
-};
+  const addVariety = () => {
+    setVarieties([...varieties, { name: '', price: '', quantity: '' }]);
+  };
 
-const handleVarietyChange = (index, field, value) => {
-  const updated = [...varieties];
-  updated[index][field] = value;
-  setVarieties(updated);
-};
+  const removeVariety = async (v, index) => {
+    if(v.id) {
+      if (!window.confirm('Are you sure you want to permanently remove this variety? This cannot be undone.')) {
+        return
+      }
+      await fetch('/api/catalog/delete-variety', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: v.id
+        }),
+      });
+    }
+    setVarieties(varieties.filter((_, i) => i !== index));
+  };
+
+  const setImages = (urls) => {
+    setImage(urls)
+  };
+
+  const handleVarietyChange = (index, field, value) => {
+    const updated = [...varieties];
+    updated[index][field] = value;
+    setVarieties(updated);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -113,6 +128,7 @@ useEffect(() => {
         setTaxType(product.tax_type)
         setVarieties(product.inventories);
         setStripeProductId(product.stripeProductId);
+        setSelectedCategory(product.category_id);
         setStockImages(product.images);
       } catch (error) {
         console.error("Failed to fetch product:", error);
@@ -154,6 +170,37 @@ useEffect(() => {
             placeholder="Product Description"
             required
           />
+        </div>
+        <br />
+
+        <div className="form_group">
+          <select
+            id="category"
+            className="full_width"
+            value={isNewCategory ? "__new__" : selectedCategory}
+            onChange={handleCategoryChange}
+            required
+          >
+            <option value="">Select Category</option>
+            {categories.map((cat, idx) => (
+              <option key={idx} value={cat.id}>
+                {cat.name}
+              </option>
+            ))}
+            <option value="__new__">+ Create New Category</option>
+          </select>
+
+          {isNewCategory && <br />}
+          {isNewCategory && (
+            <input
+              type="text"
+              placeholder="Enter new category name"
+              className="full_width"
+              value={newCategoryName}
+              onChange={(e) => setNewCategoryName(e.target.value)}
+              required
+            />
+          )}
         </div>
         <br />
 
@@ -224,9 +271,9 @@ useEffect(() => {
               onChange={(e) => handleVarietyChange(idx, 'quantity', e.target.value)}
               required
             />
-            <button type="button" className="techwave_fn_button" onClick={() => removeVariety(v, idx)}>
+            {idx > 0 && <button type="button" className="techwave_fn_button" onClick={() => removeVariety(v, idx)}>
               -
-            </button>
+            </button>}
           </div>
         ))}
         <button type="button" className="techwave_fn_button" onClick={addVariety}>

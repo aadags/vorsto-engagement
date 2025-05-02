@@ -22,6 +22,11 @@ export default function Products({ viewProduct, handleProduct }) {
       sortable: true,
     },
     {
+      name: "Category",
+      selector: (row) => row.category.name,
+      sortable: true,
+    },
+    {
       name: "Last Updated",
       selector: (row) =>
         new Date(row.updated_at).toLocaleString("en-US", {

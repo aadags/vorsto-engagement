@@ -11,7 +11,7 @@ import EditProduct from './EditProduct';
 import ViewProduct from './ViewProduct';
 
 
-export default function Catalog({ org }) {
+export default function Catalog({ org, cat }) {
 
     const [activeIndex, setActiveIndex] = useState(1);
     const [viewProduct, setViewProduct] = useState();
@@ -79,13 +79,13 @@ export default function Catalog({ org }) {
                                         {activeIndex === 1 && <Products viewProduct={handleViewProduct} handleProduct={handleProduct} />}
                                     </div>
                                     <div id="tab2" className={activeIndex === 2 ? "tab__item active" : "tab__item"}>
-                                        <NewProduct org={org} />
+                                        <NewProduct org={org} cat={cat} />
                                     </div>
                                     <div id="tab3" className={activeIndex === 3 ? "tab__item active" : "tab__item"}>
                                         {viewProduct && <ViewProduct productId={viewProduct.id}  org={org} />}
                                     </div>
                                     <div id="tab4" className={activeIndex === 4 ? "tab__item active" : "tab__item"}>
-                                        {editProduct && <EditProduct productId={editProduct.id} org={org} />}
+                                        {editProduct && <EditProduct productId={editProduct.id} org={org} cat={cat} />}
                                     </div>
                                     <div id="tab5" className={activeIndex === 5 ? "tab__item active" : "tab__item"}>
                                         {activeIndex === 5 && <ProductsInactive />}

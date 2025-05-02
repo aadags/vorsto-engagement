@@ -365,7 +365,6 @@ model Product {
   tax           Int?
   tax_type           String?
   outofstock      Boolean? @default(false)   
-  stripeProductId String @unique
   images  Image[]
   inventories     Inventory[]
   category         Category?      @relation(fields: [category_id], references: [id])
@@ -399,7 +398,6 @@ model Inventory {
   name            String      
   quantity        Int          
   price           Int          
-  stripePriceId   String       @unique
   order_items  OrderItem[]
   cart_items  CartItem[]
   active      Boolean?  @default(true)

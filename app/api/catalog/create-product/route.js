@@ -20,40 +20,34 @@ export async function POST(req) {
 
     const body = await req.json();
     
-    const { name, description, tax, taxType, image, outofstock, varieties } = body;
+    const { name, description, category, isNewCategory, tax, taxType, image, outofstock, varieties } = body;
 
-    // 1. Create the product
-    const stripeProduct = await stripe.products.create({
-      name,
-      description
-    },
-    {
-      stripeAccount: org.stripe_account_id,
-    });
+    let cat = { id: category };
+
+    if(isNewCategory) {
+
+      cat = await prisma.category.create({
+        data: {
+          name: category,
+          organization_id: org.id
+        }
+      });
+
+    }
 
     const product = await prisma.product.create({
       data: {
         name,
         description,
+        category_id: cat.id,
         tax,
         tax_type: taxType,
         outofstock,
-        stripeProductId: stripeProduct.id,
         organization_id: org.id
       }
     });
 
     for (const variety of varieties) {
-      const stripePrice = await stripe.prices.create(
-        {
-          product: stripeProduct.id,
-          unit_amount: variety.price * 100,
-          currency: org.currency,
-        },
-        {
-          stripeAccount: org.stripe_account_id,
-        }
-      );
 
       await prisma.inventory.create({
         data: {
@@ -61,7 +55,6 @@ export async function POST(req) {
           name: variety.name,
           quantity: variety.quantity,
           price: variety.price * 100,
-          stripePriceId: stripePrice.id,
         },
       });
     }
@@ -72,7 +65,6 @@ export async function POST(req) {
           product_id: product.id,
           url: img.secure_url,
           cloud_id: img.public_id,
-          default: index === 0, // Set first image as default
         },
       });
     }

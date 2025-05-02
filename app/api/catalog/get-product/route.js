@@ -26,6 +26,7 @@ export async function GET(req) {
           where: { active: true },
         },
         images: true,
+        category: true,
       },
     });
 

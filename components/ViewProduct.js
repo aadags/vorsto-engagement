@@ -8,6 +8,7 @@ const ViewProduct = ({ productId, org }) => {
 
   const [productName, setProductName] = useState("");
   const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
   const [outofstock, setOutofstock] = useState("");
   const [currency] = useState(org.currency);
   const [tax, setTax] = useState(0);
@@ -56,6 +57,7 @@ useEffect(() => {
         console.log({ product });
         setProductName(product.name);
         setDescription(product.description);
+        setCategory(product.category.name);
         setOutofstock(product.outofstock);
         setVarieties(product.inventories);
         setStripeProductId(product.stripeProductId);
@@ -84,6 +86,10 @@ useEffect(() => {
         {/* Product Description */}
         <div className="form_group">
           <h6>Description: {description}</h6>
+        </div>
+
+        <div className="form_group">
+          <h6>Category: {category}</h6>
         </div>
 
         {/* Currency */}

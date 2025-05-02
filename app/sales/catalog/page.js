@@ -7,6 +7,7 @@ import axios from 'axios';
 export default function page() {
 
   const [org, setOrg] = useState();
+  const [cat, setCat] = useState();
 
   const fetchOrg = async () => {
       
@@ -15,13 +16,21 @@ export default function page() {
     setOrg(org)
   };
 
+  const fetchCat = async () => {
+      
+    const response = await axios.get(`/api/get-categories`);
+    const cat = response.data;
+    setCat(cat)
+  };
+
   useEffect(() => {
     fetchOrg();
+    fetchCat();
   }, []);
 
   return (
     <Layout>
-      {org && <Catalog org={org} />}
+      {org && cat && <Catalog org={org} cat={cat} />}
     </Layout>
   )
 }

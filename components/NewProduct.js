@@ -2,9 +2,8 @@ import { useState } from "react";;
 import { useRouter } from 'next/navigation';
 import UploadImageForm from "./UploadImageForm";
 
-const NewProduct = ({ org }) => {
+const NewProduct = ({ org, cat }) => {
   const router = useRouter();
-
 
   const [productName, setProductName] = useState('');
   const [description, setDescription] = useState('');
@@ -20,6 +19,21 @@ const [successMessage, setSuccessMessage] = useState('');
 const [varieties, setVarieties] = useState([
   { name: '', price: '', quantity: '' },
 ]);
+const [categories, setCategories] = useState(cat);
+const [selectedCategory, setSelectedCategory] = useState("");
+const [isNewCategory, setIsNewCategory] = useState(false);
+const [newCategoryName, setNewCategoryName] = useState("");
+
+const handleCategoryChange = (e) => {
+  const value = e.target.value;
+  if (value === "__new__") {
+    setIsNewCategory(true);
+    setSelectedCategory("");
+  } else {
+    setIsNewCategory(false);
+    setSelectedCategory(value);
+  }
+};
 
 const addVariety = () => {
   setVarieties([...varieties, { name: '', price: '', quantity: '' }]);
@@ -55,6 +69,10 @@ const handleVarietyChange = (index, field, value) => {
           name: productName,
           description,
           image,
+          tax,
+          taxType,
+          category: isNewCategory? newCategoryName : selectedCategory,
+          isNewCategory,
           outofstock,
           varieties: varieties.map((v) => ({
             ...v,
@@ -112,6 +130,37 @@ const handleVarietyChange = (index, field, value) => {
             placeholder="Product Description"
             required
           />
+        </div>
+        <br />
+
+        <div className="form_group">
+          <select
+            id="category"
+            className="full_width"
+            value={isNewCategory ? "__new__" : selectedCategory}
+            onChange={handleCategoryChange}
+            required
+          >
+            <option value="">Select Category</option>
+            {categories.map((cat, idx) => (
+              <option key={idx} value={cat.id}>
+                {cat.name}
+              </option>
+            ))}
+            <option value="__new__">+ Create New Category</option>
+          </select>
+
+          {isNewCategory && <br />}
+          {isNewCategory && (
+            <input
+              type="text"
+              placeholder="Enter new category name"
+              className="full_width"
+              value={newCategoryName}
+              onChange={(e) => setNewCategoryName(e.target.value)}
+              required
+            />
+          )}
         </div>
         <br />
 
@@ -181,14 +230,14 @@ const handleVarietyChange = (index, field, value) => {
               onChange={(e) => handleVarietyChange(idx, 'quantity', e.target.value)}
               required
             />
-            <button type="button" className="techwave_fn_button" onClick={addVariety}>
-              +
-            </button>
-            <button type="button" className="techwave_fn_button" onClick={() => removeVariety(idx)}>
+            {idx > 0 && <button type="button" className="techwave_fn_button" onClick={() => removeVariety(idx)}>
               -
-            </button>
+            </button>}
           </div>
         ))}
+        <button type="button" className="techwave_fn_button" onClick={addVariety}>
+              +
+            </button>
     
       <br />
       <br />

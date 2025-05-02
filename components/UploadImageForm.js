@@ -10,6 +10,8 @@ export default function UploadImageForm({ setImages, existingImagesFromServer })
   const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = useRef(null);
 
+  const handleSetDefault = async (e) => {
+  }
   const handleImageSubmit = async (e) => {
     e.preventDefault();
     if (!files?.length) {
@@ -118,13 +120,20 @@ export default function UploadImageForm({ setImages, existingImagesFromServer })
       {existingImages && existingImages.length > 0 && (
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", paddingBottom: "0.5em", width: "100%" }}>
           {existingImages.map((img, idx) => (
-            <div>
-              <img key={idx} src={img.url} alt={`Current Image ${idx}`} className="w-full" width="200px" />
-              <br/>
+            <div key={img.id || idx}>
+              <img src={img.url} alt={`Current Image ${idx}`} className="w-full" width="200px" />
+              <br />
               <a onClick={() => handleDelete(img.id, img.cloud_id, 'existing')}>Delete</a>
+              <br />
+              {img.default ? (
+                <span style={{ color: "green", fontWeight: "bold" }}>Default</span>
+              ) : (
+                <button onClick={() => handleSetDefault(img.id)}>Set as Default</button>
+              )}
             </div>
           ))}
         </div>
+        
         )
       }
     </div>

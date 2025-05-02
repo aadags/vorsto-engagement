@@ -19,6 +19,9 @@ export async function GET(req) {
 
     const products = await prisma.product.findMany({
       where: { organization_id: organizationId, active: true },
+      include: {
+        category: true
+      },
       orderBy: { created_at: 'desc' },
       skip: (page - 1) * pageSize,
       take: pageSize,

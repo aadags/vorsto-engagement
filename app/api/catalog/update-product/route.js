@@ -20,16 +20,20 @@ export async function POST(req) {
 
     const body = await req.json();
     
-    const { id, name, description, image, tax, taxType, stripeProductId, outofstock, varieties } = body;
+    const { id, name, description, category, isNewCategory, image, tax, taxType, stripeProductId, outofstock, varieties } = body;
 
-    // 1. Create the product
-    const stripeProduct = await stripe.products.update(stripeProductId, {
-      name,
-      description
-    },
-    {
-      stripeAccount: org.stripe_account_id,
-    });
+    let cat = { id: category };
+
+    if(isNewCategory) {
+
+      cat = await prisma.category.create({
+        data: {
+          name: category,
+          organization_id: org.id
+        }
+      });
+
+    }
 
     const product = await prisma.product.update({
       where: {
@@ -38,6 +42,7 @@ export async function POST(req) {
       data: {
         name,
         description,
+        category_id: cat.id,
         tax,
         tax_type: taxType,
         outofstock
@@ -48,23 +53,11 @@ export async function POST(req) {
 
       if(!variety.id)
       {
-        const stripePrice = await stripe.prices.create(
-          {
-            product: stripeProduct.id,
-            unit_amount: variety.price * 100,
-            currency: org.currency,
-          },
-          {
-            stripeAccount: org.stripe_account_id,
-          }
-        );
-
         await prisma.inventory.create({
           data: {
             name: variety.name,
             quantity: variety.quantity,
             price: variety.price * 100,
-            stripePriceId: stripePrice.id,
             product_id: product.id
           },
         });
@@ -79,24 +72,6 @@ export async function POST(req) {
 
         if(existing.price !==  variety.price * 100) {
 
-          await stripe.prices.update(variety.stripePriceId, {
-            active: false,
-          },
-          {
-            stripeAccount: org.stripe_account_id,
-          });
-
-          const stripePrice = await stripe.prices.create(
-            {
-              product: stripeProduct.id,
-              unit_amount: variety.price * 100,
-              currency: org.currency,
-            },
-            {
-              stripeAccount: org.stripe_account_id,
-            }
-          );
-
           await prisma.inventory.update({
             where: {
               id: variety.id
@@ -104,8 +79,7 @@ export async function POST(req) {
             data: {
               name: variety.name,
               quantity: variety.quantity,
-              price: variety.price * 100,
-              stripePriceId: stripePrice.id
+              price: variety.price * 100
             },
           });
 
@@ -130,7 +104,6 @@ export async function POST(req) {
           product_id: product.id,
           url: img.secure_url,
           cloud_id: img.public_id,
-          default: index === 0, // Set first image as default
         },
       });
     }
