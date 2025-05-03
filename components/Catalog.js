@@ -9,6 +9,8 @@ import ProductsInactive from './ProductsInactive';
 import NewProduct from './NewProduct';
 import EditProduct from './EditProduct';
 import ViewProduct from './ViewProduct';
+import Categories from './Categories';
+import EditCategory from './EditCategory';
 
 
 export default function Catalog({ org, cat }) {
@@ -16,6 +18,7 @@ export default function Catalog({ org, cat }) {
     const [activeIndex, setActiveIndex] = useState(1);
     const [viewProduct, setViewProduct] = useState();
     const [editProduct, setEditProduct] = useState();
+    const [editCategory, setEditCategory] = useState();
     const [paymentProcessors, setPaymentprocessors] = useState(org?.payment_processors);
 
     const handleOnClick = (index) => {
@@ -25,7 +28,12 @@ export default function Catalog({ org, cat }) {
     const handleProduct = async (name, id) => {
         setEditProduct({ name, id});
         setActiveIndex(4)
-    };    
+    }; 
+    
+    const handleCat = async (name, id) => {
+        setEditCategory({ name, id});
+        setActiveIndex(7)
+    }; 
     
     const handleViewProduct = async (name, id) => {
         setViewProduct({ name, id});
@@ -40,6 +48,7 @@ export default function Catalog({ org, cat }) {
                     <div className="container">
                         <h1 className="title">Catalog</h1>
                         {paymentProcessors &&<button className="techwave_fn_button" onClick={() => handleOnClick(5)} style={{ float: "right" }}>Deactivated Items</button>}
+                        {paymentProcessors &&<button className="techwave_fn_button" onClick={() => handleOnClick(6)} style={{ float: "right", marginRight: "5px" }}>Categories</button>}
                     </div>
                 </div>
                 {/* Models */}
@@ -58,7 +67,9 @@ export default function Catalog({ org, cat }) {
                                 {viewProduct && <a className={activeIndex === 3 ? "active" : ""} onClick={() => handleOnClick(3)}>Details - {viewProduct.name}</a>}
                                 {editProduct && <a className={activeIndex === 4 ? "active" : ""} onClick={() => handleOnClick(4)}>Edit - {editProduct.name}</a>}
                                 <a className={activeIndex === 2 ? "active" : ""} onClick={() => handleOnClick(2)}>New Item</a>
-                                {activeIndex === 5 && <a className={activeIndex === 2 ? "active" : ""} onClick={() => handleOnClick(2)}>Deactivated Items</a>}
+                                {activeIndex === 5 && <a className={activeIndex === 5 ? "active" : ""} onClick={() => handleOnClick(5)}>Deactivated Items</a>}
+                                {activeIndex === 6 && <a className={activeIndex === 6 ? "active" : ""} onClick={() => handleOnClick(6)}>Categories</a>}
+                                {editCategory && <a className={activeIndex === 7 ? "active" : ""} onClick={() => handleOnClick(7)}>Edit - {editCategory.name}</a>}
                             </div>
                         </div>
                     </div>
@@ -90,6 +101,13 @@ export default function Catalog({ org, cat }) {
                                     <div id="tab5" className={activeIndex === 5 ? "tab__item active" : "tab__item"}>
                                         {activeIndex === 5 && <ProductsInactive />}
                                     </div>
+                                    <div id="tab6" className={activeIndex === 6 ? "tab__item active" : "tab__item"}>
+                                        {activeIndex === 6 && <Categories handleCat={handleCat} />}
+                                    </div>
+                                    <div id="tab7" className={activeIndex === 7 ? "tab__item active" : "tab__item"}>
+                                        {editCategory && <EditCategory catId={editCategory.id} org={org} />}
+                                    </div>
+
                                    
                                    
                                 </div>

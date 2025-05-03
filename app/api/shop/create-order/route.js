@@ -70,11 +70,11 @@ export async function POST(req) {
     );
     
     
-    const total = subtotal + taxTotal + shipping.total + shipping.tip
+    const total = Math.ceil(subtotal + taxTotal + shipping.total + shipping.tip)
 
     const channelFee = org.channel_fee / 100;
     const shippingCommission = shipping.merchant_commission_rate > 0? subtotal * (shipping.merchant_commission_rate / 100) : 0;
-    const appFee = (channelFee * subtotal) + shipping.total + shippingCommission + shipping.tip;
+    const appFee = Math.ceil((channelFee * subtotal) + shipping.total + shippingCommission + shipping.tip);
 
     
     const pp = await prisma.paymentProcessor.findFirstOrThrow({
