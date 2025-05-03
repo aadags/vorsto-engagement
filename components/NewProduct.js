@@ -23,6 +23,7 @@ const [categories, setCategories] = useState(cat);
 const [selectedCategory, setSelectedCategory] = useState("");
 const [isNewCategory, setIsNewCategory] = useState(false);
 const [newCategoryName, setNewCategoryName] = useState("");
+const [newCategoryDescription, setNewCategoryDescription] = useState("");
 
 const handleCategoryChange = (e) => {
   const value = e.target.value;
@@ -72,6 +73,7 @@ const handleVarietyChange = (index, field, value) => {
           tax,
           taxType,
           category: isNewCategory? newCategoryName : selectedCategory,
+          newCategoryDescription,
           isNewCategory,
           outofstock,
           varieties: varieties.map((v) => ({
@@ -151,15 +153,25 @@ const handleVarietyChange = (index, field, value) => {
           </select>
 
           {isNewCategory && <br />}
-          {isNewCategory && (
+          {isNewCategory && (<>
             <input
               type="text"
-              placeholder="Enter new category name"
+              placeholder="New Category Name"
               className="full_width"
               value={newCategoryName}
               onChange={(e) => setNewCategoryName(e.target.value)}
               required
             />
+            <br/><br/>
+            <input
+              type="text"
+              placeholder="New Category Description"
+              className="full_width"
+              value={newCategoryDescription}
+              onChange={(e) => setNewCategoryDescription(e.target.value)}
+              required
+            />
+            </>
           )}
         </div>
         <br />
@@ -225,7 +237,7 @@ const handleVarietyChange = (index, field, value) => {
             />
             <input
               type="number"
-              placeholder="Quantity"
+              placeholder="Inventory Quantity"
               value={v.quantity}
               onChange={(e) => handleVarietyChange(idx, 'quantity', e.target.value)}
               required

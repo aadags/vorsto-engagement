@@ -20,7 +20,7 @@ export async function POST(req) {
 
     const body = await req.json();
     
-    const { name, description, category, isNewCategory, tax, taxType, image, outofstock, varieties } = body;
+    const { name, description, category, isNewCategory, newCategoryDescription, tax, taxType, image, outofstock, varieties } = body;
 
     let cat = { id: category };
 
@@ -29,6 +29,7 @@ export async function POST(req) {
       cat = await prisma.category.create({
         data: {
           name: category,
+          description: newCategoryDescription,
           organization_id: org.id
         }
       });
@@ -40,7 +41,7 @@ export async function POST(req) {
         name,
         description,
         category_id: cat.id,
-        tax,
+        tax: Number(tax),
         tax_type: taxType,
         outofstock,
         organization_id: org.id
