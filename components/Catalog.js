@@ -47,19 +47,19 @@ export default function Catalog({ org, cat }) {
                 <div className="fn__title_holder">
                     <div className="container">
                         <h1 className="title">Catalog</h1>
-                        {paymentProcessors &&<button className="techwave_fn_button" onClick={() => handleOnClick(5)} style={{ float: "right" }}>Deactivated Items</button>}
-                        {paymentProcessors &&<button className="techwave_fn_button" onClick={() => handleOnClick(6)} style={{ float: "right", marginRight: "5px" }}>Categories</button>}
+                        {paymentProcessors  && paymentProcessors.length > 0 &&<button className="techwave_fn_button" onClick={() => handleOnClick(5)} style={{ float: "right" }}>Deactivated Items</button>}
+                        {paymentProcessors && paymentProcessors.length > 0 &&<button className="techwave_fn_button" onClick={() => handleOnClick(6)} style={{ float: "right", marginRight: "5px" }}>Categories</button>}
                     </div>
                 </div>
                 {/* Models */}
-                {!paymentProcessors && 
+                {paymentProcessors && paymentProcessors.length < 1 &&
                     <div className="techwave_fn_models">
                         <div className="container">
                             <p>Payments is not setup for your business. <br/><br/><a href="/integration/payments" className="techwave_fn_button" type="submit">Activate Payments</a></p>
                         </div>
                     </div>
                 }
-                {paymentProcessors && <div className="techwave_fn_models">
+                {paymentProcessors && paymentProcessors.length < 1 && <div className="techwave_fn_models">
                     <div className="fn__tabs">
                         <div className="container">
                             <div className="tab_in">

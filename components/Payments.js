@@ -77,11 +77,11 @@ export default function Payments({ org }) {
                                         )}
                                     </div> */}
                                     <div id="tab2" className={activeIndex === 2 ? "tab__item active" : "tab__item"}>
-                                       {paymentProcessors && <PaymentsList handlePayment={handlePayment} />}
-                                       {!paymentProcessors && <p>Payments is not setup for your business. <br/><br/><a href="/integration/payments" className="techwave_fn_button" type="submit">Activate Payments</a></p>}
+                                       {paymentProcessors && paymentProcessors.length < 1 && <PaymentsList handlePayment={handlePayment} />}
+                                       {paymentProcessors && paymentProcessors.length < 1 && <p>Payments is not setup for your business. <br/><br/><a href="/integration/payments" className="techwave_fn_button" type="submit">Activate Payments</a></p>}
                                     </div>
                                     <div id="tab3" className={activeIndex === 3 ? "tab__item active" : "tab__item"}>
-                                    {paymentProcessors &&  viewPayment && <Payment viewPayment={viewPayment}  />}
+                                    {paymentProcessors && paymentProcessors.length > 0 &&  viewPayment && <Payment viewPayment={viewPayment}  />}
                                     </div>
                                    
                                    
