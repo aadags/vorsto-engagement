@@ -34,7 +34,8 @@ export async function GET(req) {
               }
             }
           }
-        }
+        },
+        contact: true
       }
     });
 

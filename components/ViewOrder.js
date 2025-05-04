@@ -2,19 +2,12 @@ import { useState, useEffect } from "react";
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import formatCurrency from "@/utils/formatCurrency";
-import { useStripeConnect } from "../hooks/useStripeConnect";
-import {
-  ConnectPaymentDetails,
-  ConnectComponentsProvider,
-} from "@stripe/react-connect-js";
 
 const ViewOrder = ({ orderId }) => {
   const router = useRouter();
 
   const [org, setOrg] = useState();
   const [order, setOrder] = useState();
-  const [connectedAccountId, setConnectedAccountId] = useState();
-  const stripeConnectInstance = useStripeConnect(connectedAccountId);
   const [visible, setVisible] = useState(false);
   const onOpen = () => { 
     setVisible(true);
@@ -27,7 +20,7 @@ const fetchOrg = async () => {
       
     const response = await axios.get(`/api/get-org-details`);
     const org = response.data;
-    setConnectedAccountId(org.stripe_account_id);
+    setOrg(org)
 };
 
 const fetchOrder = async (id) => {
@@ -71,8 +64,23 @@ const shipOrder = async (id) => {
   };
 };
 
+const cancelRefundOrder = async (id) => {
+
+  if (!window.confirm('Do you want to proceed with canceling and refunding this order?')) {
+    return
+  }
+    
+  const response = await axios.get(
+  `/api/order/cancel-refund-order?id=${id}`
+  );
+
+  if(response.data.status){
+      const order = await fetchOrder(orderId);
+      setOrder(order);
+  };
+};
+
 useEffect(() => {
-  fetchOrg();
   if (orderId) {
     const fetchData = async () => {
       try {
@@ -121,12 +129,8 @@ useEffect(() => {
             </h6>
             <br/>
             <h6>Transaction ID: <a href onClick={onOpen} style={{ color: "blue" }}>{order.transactionId}</a></h6>
-            {stripeConnectInstance && (<ConnectComponentsProvider connectInstance={stripeConnectInstance}>
-              {visible && <ConnectPaymentDetails
-                payment={order.transactionId}
-                onClose={onClose}
-              />}
-            </ConnectComponentsProvider>)}
+            <h6>Channel: {order.channel.toUpperCase()}</h6>
+            
           </div>
 
           {/* Right Column */}
@@ -135,16 +139,16 @@ useEffect(() => {
               <code>Customer Information</code>
             </h6>
             <h6>
-              Name: <b>Ayoola Adagunodo</b>
+              Name: <b>{order.contact.name}</b>
             </h6>
             <h6>
-              Email: <b>aadags@yahoo.com</b>
+              Email: <b>{order.contact.email}</b>
             </h6>
             <h6>
-              Phone: <b>6049064701</b>
+              Phone: <b>{order.contact.phone}</b>
             </h6>
             <h6>
-              Delivery Address: <b>15082 60 Avenue, Surrey, BC</b>
+              Delivery Address: <b>{order.address}</b>
             </h6>
           </div>
         </div>
@@ -175,7 +179,7 @@ useEffect(() => {
                     ? 'teal'
                     : order.status === 'Delivered'
                     ? 'green'
-                    : 'black',
+                    : 'red',
               }}
             >
               {order.status}
@@ -192,6 +196,19 @@ useEffect(() => {
 
           </div>
           <div style={{ flex: "1 1 200px" }}>
+          <h6>
+              Order Total:{" "}
+              <b>{formatCurrency(order.sub_total_price, order.org.currency)} {" "}
+            </b>
+            </h6>
+            <h6>
+              Order Tax Total:{" "}
+              <b>{formatCurrency(order.tax_total, order.org.currency)}</b>
+            </h6>
+            <h6>
+              Shipping Total:{" "}
+              <b>{formatCurrency((order.shipping_price + order.shipping_tip), order.org.currency)}</b>
+            </h6>
             <h6>
               Total Paid:{" "}
               <b>{formatCurrency(order.total_price, order.org.currency)}</b>
@@ -256,6 +273,7 @@ useEffect(() => {
             fontWeight: '600',
             cursor: 'pointer'
           }}
+          onClick={() => cancelRefundOrder(order.id)}
         >
           Cancel & Refund Order
         </button>
