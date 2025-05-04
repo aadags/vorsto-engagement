@@ -59,7 +59,7 @@ export default function Catalog({ org, cat }) {
                         </div>
                     </div>
                 }
-                {paymentProcessors && paymentProcessors.length < 1 && <div className="techwave_fn_models">
+                {paymentProcessors && paymentProcessors.length > 0 && <div className="techwave_fn_models">
                     <div className="fn__tabs">
                         <div className="container">
                             <div className="tab_in">
