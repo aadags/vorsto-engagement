@@ -261,7 +261,7 @@ useEffect(() => {
 
     
       <br />
-      {order.status == "Pending" && (
+      {(order.status == "Pending" || order.status == "Preparing") && (
         <button
           type="button"
           style={{
@@ -278,7 +278,6 @@ useEffect(() => {
           Cancel & Refund Order
         </button>
       )}
-
       <br />
 
       </form>}

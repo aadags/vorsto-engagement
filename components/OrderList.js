@@ -49,7 +49,7 @@ export default function OrderList({ viewOrder }) {
                 ? 'teal'
                 : row.status === 'Delivered'
                 ? 'green'
-                : 'black',
+                : 'red',
           }}
         >
           {row.status}

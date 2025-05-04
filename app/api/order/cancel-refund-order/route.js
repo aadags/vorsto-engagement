@@ -48,6 +48,13 @@ export async function GET(req) {
         }
       });
 
+      await prisma.inventory.update({
+        where: { id: item.inventory_id },
+        data: {
+          quantity: { increment: item.quantity }
+        }
+      });
+
     })
 
     const total = order.sub_total_price + order.tax_total + order.shipping_price + order.shipping_tip
