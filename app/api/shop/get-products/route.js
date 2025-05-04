@@ -8,13 +8,13 @@ export const dynamic = "force-dynamic";
 export async function GET(req) {
   try {
 
-    const subdomain = req.nextUrl.searchParams.get("subdomain");
+    const hostname = req.nextUrl.searchParams.get("hostname");
     const limitParam = req.nextUrl.searchParams.get("limit");
     const categoryId = req.nextUrl.searchParams.get("categoryId");
     const getAll = req.nextUrl.searchParams.get("all") === "true";
 
     const org = await prisma.organization.findFirst({
-      where: { subdomain },
+      where: { subdomain: hostname },
     });
 
     const where = {

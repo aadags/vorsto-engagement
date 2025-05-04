@@ -8,10 +8,10 @@ export const dynamic = "force-dynamic";
 export async function GET(req) {
   try {
 
-    const subdomain = req.nextUrl.searchParams.get("subdomain");
+    const hostname = req.nextUrl.searchParams.get("hostname");
 
     const org = await prisma.organization.findFirst({
-      where: { subdomain },
+      where: { subdomain: hostname },
       include: {
         payment_processors: true
       }
