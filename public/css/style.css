@@ -791,18 +791,6 @@ frenify_typing span{
 		width: 36px;
 		padding: 0;
 	}
-	.panel-opened .techwave_fn_leftpanel .group__list .menu-item-has-children > a:after{
-		content: '';
-		position: absolute;
-		width: 10px;
-		height: 10px;
-		background-color: #f1416c;
-		left: 50%;
-		bottom: 50%;
-		margin-left: 2px;
-		margin-bottom: 2px;
-		border-radius: 100%;
-	}
 	.panel-opened .techwave_fn_leftpanel .leftpanel_logo{
 		padding: 0;
 		justify-content: center;

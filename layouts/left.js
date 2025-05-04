@@ -286,13 +286,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
             pathname: "/integration/payments",
             img: "/svg/phone-volume.svg",
             key: user.role_id > 0 ? "paymentProviders" : "allow",
-        },
-        {
-            title: "Ordering & Delivery",
-            pathname: "/integration/orrder-delivery",
-            img: "/svg/phone-volume.svg",
-            key: user.role_id > 0 ? "orderingDelivery" : "allow",
-        },
+        }
     ];
 
     const pathname = usePathname()
