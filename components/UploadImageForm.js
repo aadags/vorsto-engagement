@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 
-export default function UploadImageForm({ setImages, existingImagesFromServer }) {
+export default function UploadImageForm({ setImages, existingImagesFromServer, productId=null }) {
   const [files, setFiles] = useState();
   const [message, setMessage] = useState('');
   const [uploaded, setUploaded] = useState([]);
@@ -10,7 +10,28 @@ export default function UploadImageForm({ setImages, existingImagesFromServer })
   const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = useRef(null);
 
-  const handleSetDefault = async (e) => {
+  const handleSetDefault = async (id) => {
+
+    const res = await fetch('/api/catalog/default-image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, productId }),
+    });
+
+    const result = await res.json();
+    if (res.ok) {
+
+      setExistingImages((prev) =>
+        prev.map((img) => ({
+          ...img,
+          default: img.id === id,
+        }))
+      );
+
+    } else {
+      alert("Unable to set as default");
+    }
+
   }
   const handleImageSubmit = async (e) => {
     e.preventDefault();
@@ -125,11 +146,11 @@ export default function UploadImageForm({ setImages, existingImagesFromServer })
               <br />
               <a onClick={() => handleDelete(img.id, img.cloud_id, 'existing')}>Delete</a>
               <br />
-              {img.default ? (
+              {productId && ( img.default ? (
                 <span style={{ color: "green", fontWeight: "bold" }}>Default</span>
               ) : (
-                <button onClick={() => handleSetDefault(img.id)}>Set as Default</button>
-              )}
+                <button type="button" style={{ padding: "5px", backgroundColor: "#f5f5f5", border: "" }} onClick={() => handleSetDefault(img.id)}>Set as Default</button>
+              ))}
             </div>
           ))}
         </div>

@@ -12,6 +12,11 @@ export default function Products({ viewProduct, handleProduct }) {
 
   const columns = [
     {
+      name: "Image",
+      selector: (row) => <img height="36px" src={row.image} alt="img" />,
+      sortable: true,
+    },
+    {
       name: "Name",
       selector: (row) => row.name,
       sortable: true,

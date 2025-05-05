@@ -294,7 +294,7 @@ useEffect(() => {
       <br />
       <br />
 
-        <UploadImageForm setImages={setImages} existingImagesFromServer={stockImages} />
+        <UploadImageForm setImages={setImages} existingImagesFromServer={stockImages} productId={productId} />
         <br /><br />
 
         {loading && <span>updating...</span>} 
