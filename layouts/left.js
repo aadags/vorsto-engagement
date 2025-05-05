@@ -261,12 +261,6 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
 
     const sales = [
         {
-            title: "Payments",
-            pathname: "/sales/payments",
-            img: "/svg/phone-volume.svg",
-            key: user.role_id > 0 ? "payments" : "allow",
-        },
-        {
             title: "Orders",
             pathname: "/sales/orders",
             img: "/svg/phone-volume.svg",
