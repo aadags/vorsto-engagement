@@ -66,6 +66,9 @@ export default function UploadImageForm({ setImages, existingImagesFromServer, p
     setIsSubmitting(false);
   };
 
+  const handleNotDelete = async () => {
+    alert("You cannot delete a default image, set a new default and try again");
+  }
   const handleDelete = async (id, cloud_id, type) => {
     if (!window.confirm('Are you sure you want to delete this image?')) {
       return
@@ -144,12 +147,18 @@ export default function UploadImageForm({ setImages, existingImagesFromServer, p
             <div key={img.id || idx}>
               <img src={img.url} alt={`Current Image ${idx}`} className="w-full" width="200px" />
               <br />
-              <a onClick={() => handleDelete(img.id, img.cloud_id, 'existing')}>Delete</a>
-              <br />
               {productId && ( img.default ? (
+                <>
+                <a onClick={() => handleNotDelete()}>Delete</a>
+                <br/>
                 <span style={{ color: "green", fontWeight: "bold" }}>Default</span>
+                </>
               ) : (
+                <>
+                <a onClick={() => handleDelete(img.id, img.cloud_id, 'existing')}>Delete</a>
+                <br />
                 <button type="button" style={{ padding: "5px", backgroundColor: "#f5f5f5", border: "" }} onClick={() => handleSetDefault(img.id)}>Set as Default</button>
+                </>
               ))}
             </div>
           ))}

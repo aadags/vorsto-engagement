@@ -44,6 +44,7 @@ export async function POST(req) {
         tax: Number(tax),
         tax_type: taxType,
         outofstock,
+        image: (image.length > 0)? image[0].secure_url : null,
         organization_id: org.id
       }
     });
