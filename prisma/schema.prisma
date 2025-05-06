@@ -397,6 +397,7 @@ model Inventory {
   product         Product      @relation(fields: [product_id], references: [id])
   product_id       String
   name            String      
+  parent_id            String?      
   quantity        Int          
   price           Int          
   order_items  OrderItem[]

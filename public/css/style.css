@@ -7347,3 +7347,50 @@ a.fn__like.no_border .fn__svg{
     width: 5px;
     height: 5px;
 }
+
+.currency-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.currency-input {
+  padding-right: 40px; /* Make room for the currency symbol */
+}
+
+.currency-suffix {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d; /* Bootstrap's secondary text color */
+  pointer-events: none;
+}
+
+.variety-row {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding-bottom: 1em;
+	flex-wrap: wrap; /* allow wrapping on small screens */
+  }
+  
+  /* Stack elements vertically on narrow screens */
+  @media (max-width: 600px) {
+	.variety-row {
+	  flex-direction: column;
+	  align-items: stretch;
+	}
+  }
+  
+
+@media (max-width: 480px) {
+	.currency-input {
+	  padding-right: 2.5em;
+	}
+  
+	.currency-suffix {
+	  font-size: 0.8em;
+	  right: 0.8em;
+	}
+  }
+

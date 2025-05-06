@@ -218,30 +218,40 @@ const handleVarietyChange = (index, field, value) => {
                 </label>
                 <br /><br />
 
-        <h6>Varieties</h6>
+        <h6>Varieties & Sub Varieties</h6>
         {varieties.map((v, idx) => (
-          <div key={idx} style={{ display: "flex", alignItems: "center", gap: "0.5rem", paddingBottom: "0.5em" }}>
+          <div key={idx} className="variety-row">
             <input
+              type="text"
               type="text"
               placeholder="Variety"
               value={v.name}
               onChange={(e) => handleVarietyChange(idx, 'name', e.target.value)}
               required
             />
-            <input
-              type="number"
-              placeholder={`Price (${currency})`}
-              value={v.price}
-              onChange={(e) => handleVarietyChange(idx, 'price', e.target.value)}
-              required
-            />
-            <input
-              type="number"
-              placeholder="Inventory Quantity"
-              value={v.quantity}
-              onChange={(e) => handleVarietyChange(idx, 'quantity', e.target.value)}
-              required
-            />
+            <div className="currency-wrapper">
+              <input
+                type="number"
+                className="currency-input"
+                placeholder="Price"
+                value={v.price}
+                onChange={(e) => handleVarietyChange(idx, 'price', e.target.value)}
+                required
+              />
+              <span className="currency-suffix">{currency}</span>
+            </div>
+
+            <div className="currency-wrapper">
+              <input
+                type="number"
+                className="currency-input"
+                placeholder="Stock Quantity"
+                value={v.quantity}
+                onChange={(e) => handleVarietyChange(idx, 'quantity', e.target.value)}
+                required
+              />
+              <span className="currency-suffix">Units</span>
+            </div>
             {idx > 0 && <button type="button" className="techwave_fn_button" onClick={() => removeVariety(idx)}>
               -
             </button>}
