@@ -16,61 +16,64 @@ export default function Signin() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-
-      auth.onAuthStateChanged(async (currentUser) => {
-        console.log({ currentUser })
+      const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
+        console.log({ currentUser });
+  
         if (currentUser) {
-
-            try {
-
-              const response = await fetch('/api/verify-user', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ name: currentUser.displayName, email: currentUser.email, uid: currentUser.uid }),
-              });
-        
-              if (response.ok) {
-                const res = await response.json();
-                router.push('/validate')
-                
-              } 
-            } catch (error) {
-             
+          try {
+            const response = await fetch('/api/verify-user', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                name: currentUser.displayName,
+                email: currentUser.email,
+                uid: currentUser.uid,
+              }),
+            });
+  
+            if (response.ok) {
+              const res = await response.json();
+              router.push('/validate');
             }
-            
+          } catch (error) {
+            console.error('Verification failed:', error);
+          }
         } else {
-
-          let firebaseui = require('firebaseui');
-
-          const ui = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(auth);
-          
+          const firebaseui = require('firebaseui');
+          const ui =
+            firebaseui.auth.AuthUI.getInstance() ||
+            new firebaseui.auth.AuthUI(auth);
+  
           const uiConfig = {
             callbacks: {
-              signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+              signInSuccessWithAuthResult: function (authResult, redirectUrl) {
                 console.log(authResult);
                 return true;
               },
-              uiShown: function() {
-                document.getElementById('loader').style.display = 'none';
-              }
+              uiShown: function () {
+                const loader = document.getElementById('loader');
+                if (loader) loader.style.display = 'none';
+              },
             },
             signInFlow: 'popup',
             signInSuccessUrl: 'https://engage.vorsto.io/login',
-            signInOptions: [
-              googleProvider.providerId
-            ],
+            signInOptions: [googleProvider.providerId],
             tosUrl: 'https://vorsto.io/terms-policy',
-            privacyPolicyUrl: 'https://vorsto.io/privacy-policy'
+            privacyPolicyUrl: 'https://vorsto.io/privacy-policy',
           };
-
+  
           ui.start('#firebaseui-auth-container', uiConfig);
           ui.disableAutoSignIn();
         }
       });
+  
+      // 🧹 Clean up the listener
+      return () => unsubscribe();
     }
   }, [router]);
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();

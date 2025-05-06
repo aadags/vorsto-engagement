@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/db/prisma";
 import { SquareClient } from "square";
+import faktory from "faktory-worker"
 
 export const dynamic = "force-dynamic";
 
@@ -150,6 +151,19 @@ export async function POST(req) {
           where: { id: cart.id }
         });
       });
+
+      const client = await faktory.connect({
+        url: process.env.FAKTORY_URL  || ""
+      });
+      
+      await client.push({
+        jobtype: 'SendOrderNotification',
+        args: [{ order, contact, org }],
+        queue: 'default', // or specify another queue
+        at: new Date(Date.now())
+      });
+    
+      await client.close();
 
       return NextResponse.json(order);
 
