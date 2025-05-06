@@ -41,12 +41,10 @@ export async function POST(req) {
 
     const oscode = Number(req.cookies.get("code")?.value ?? 0);
 
-    console.log({ oscode });
-
     let code = 0;
 
 
-    if(!user.is_validated && oscode == 0)
+    if(oscode == 0)
     {
       code = Math.floor(10000 + Math.random() * 90000).toString();
       const client = await faktory.connect({
@@ -57,7 +55,7 @@ export async function POST(req) {
         jobtype: 'SendEmail',
         args: [{ name: user.name, email: user.email, code }],
         queue: 'default', // or specify another queue
-        at: new Date(Date.now()) // 2 minutes delay
+        at: new Date(Date.now())
       });
     
       await client.close();

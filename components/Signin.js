@@ -33,12 +33,7 @@ export default function Signin() {
         
               if (response.ok) {
                 const res = await response.json();
-                if(!res.is_validated)
-                {
-                  router.push('/validate')
-                } else {
-                  router.push('/launch')
-                }
+                router.push('/validate')
                 
               } 
             } catch (error) {

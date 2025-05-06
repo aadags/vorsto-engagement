@@ -41,7 +41,7 @@ const handleSubmit = async (e) => {
         <div className="sign__content" style={{ textAlign: "center" }}>
           <br/><br/>
           
-          <h1>Email Verification</h1>
+          <h1>Login Verification</h1>
           <form className="login" onSubmit={handleSubmit}>
             <div className="form__content">
               <div className="form__title"></div>

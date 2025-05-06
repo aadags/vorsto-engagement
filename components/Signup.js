@@ -55,12 +55,7 @@ function SignupPage() {
             });
 
             const res = await response.json();
-                if(!res.is_validated)
-                {
-                  router.push('/validate')
-                } else {
-                  router.push('/launch')
-                }
+            router.push('/validate')
 
           } catch (err) {
             console.error('Error verifying user:', err);

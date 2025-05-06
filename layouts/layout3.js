@@ -35,12 +35,7 @@ export default function Layout({ children, leftMenu }) {
       
             if (response.ok) {
               const res = await response.json();
-              if(!res.data.is_validated)
-              {
-                router.push('/validate'); 
-              } else {
-                setUser(res.data);
-              }
+              setUser(res.data);
             } 
           } catch (error) {
             console.log(error)
