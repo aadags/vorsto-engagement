@@ -193,6 +193,13 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
             key: user.role_id > 0 ? "manageBilling" : "allow"
     
         },
+        {
+            title: "Notification",
+            pathname: "/notification",
+            img: "/svg/dollar.svg",
+            key: user.role_id > 0 ? "manageNotification" : "allow"
+    
+        },
     ];
 
     const access = [

@@ -54,6 +54,7 @@
     "react-data-table-component": "^7.6.2",
     "react-dom": "^18.3.1",
     "react-google-recaptcha-v3": "^1.10.1",
+    "react-phone-number-input": "^3.4.12",
     "redis": "^4.7.0",
     "screenfull": "^6.0.2",
     "socket.io": "^4.8.1",
