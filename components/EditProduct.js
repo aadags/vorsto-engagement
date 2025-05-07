@@ -292,7 +292,7 @@ useEffect(() => {
               />
               <span className="currency-suffix">Units</span>
             </div>
-            {idx > 0 && <button type="button" className="techwave_fn_button" onClick={() => removeVariety(idx)}>
+            {idx > 0 && <button type="button" className="techwave_fn_button" onClick={() => removeVariety(v, idx)}>
               -
             </button>}
           </div>
