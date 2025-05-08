@@ -387,6 +387,7 @@ model Category {
   arrangement  Int?
   organization     Organization   @relation(fields: [organization_id], references: [id])
   organization_id   Int
+  active      Boolean?  @default(true) 
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
 

@@ -1,12 +1,6 @@
 "use server";
 import { NextResponse } from "next/server";
 import prisma from "@/db/prisma";
-import Stripe from 'stripe';
-
-const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY, {
-  apiVersion: '2024-12-18.acacia', // Use the correct API version
-});
-
 
 export async function POST(req) {
   try {
@@ -21,19 +15,6 @@ export async function POST(req) {
     const body = await req.json();
     
     const { id } = body;
-
-    const existing = await prisma.inventory.findFirst({
-      where: {
-        id: id
-      }
-    });
-
-    await stripe.prices.update(existing.stripePriceId, {
-      active: false,
-    },
-    {
-      stripeAccount: org.stripe_account_id,
-    });
 
     await prisma.inventory.update({
       where: {

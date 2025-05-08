@@ -18,7 +18,7 @@ export async function GET(req) {
     const pageSize = parseInt(req.nextUrl.searchParams.get("per_page"));
 
     const cats = await prisma.category.findMany({
-      where: { organization_id: organizationId },
+      where: { organization_id: organizationId, active: true },
       orderBy: { created_at: 'desc' },
       skip: (page - 1) * pageSize,
       take: pageSize,

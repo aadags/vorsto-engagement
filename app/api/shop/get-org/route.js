@@ -22,7 +22,7 @@ export async function GET(req) {
     });
 
     const categories = await prisma.category.findMany({
-      where: { organization_id: org.id },
+      where: { organization_id: org.id, active: true },
       orderBy: {
         arrangement: 'asc',
       },

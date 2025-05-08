@@ -28,9 +28,12 @@ export async function GET(req) {
       );
     }
 
-    await prisma.category.delete({
+    await prisma.category.update({
       where: { id,
         organization_id: organizationId 
+      },
+      data: {
+        active: false
       }
     });
 
