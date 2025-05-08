@@ -26,6 +26,11 @@ export async function GET(req) {
       orderBy: {
         arrangement: 'asc',
       },
+      include: {
+        products: {
+          take: 1, // limit to 1 product
+        },
+      },
     });
 
     return NextResponse.json({ org, categories, paymentProcessor });
