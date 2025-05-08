@@ -23,6 +23,9 @@ export async function GET(req) {
 
     const categories = await prisma.category.findMany({
       where: { organization_id: org.id },
+      orderBy: {
+        arrangement: 'asc',
+      },
     });
 
     return NextResponse.json({ org, categories, paymentProcessor });
