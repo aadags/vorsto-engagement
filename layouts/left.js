@@ -194,10 +194,10 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
     
         },
         {
-            title: "Notification",
-            pathname: "/notification",
-            img: "/svg/dollar.svg",
-            key: user.role_id > 0 ? "manageNotification" : "allow"
+            title: "Business Information", 
+            pathname: "/information",
+            img: "/svg/info2.svg",
+            key: user.role_id > 0 ? "manageBusinessInformation" : "allow"
     
         },
     ];
