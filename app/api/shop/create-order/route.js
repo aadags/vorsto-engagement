@@ -119,6 +119,7 @@ export async function POST(req) {
           sub_total_price: subtotal,
           tax_total: taxTotal,
           address: customer.address,
+          note: customer.note,
           shipping_commission: shippingCommission,
           shipping_price: shipping.total,
           shipping_tip: shipping.tip,

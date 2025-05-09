@@ -440,6 +440,7 @@ model Order {
   contact_id      String? 
   channel      String? 
   address      String? 
+  note      String? 
   order_items  OrderItem[]
   status        String        @default("Pending")
   tracking_id   String?       @unique  

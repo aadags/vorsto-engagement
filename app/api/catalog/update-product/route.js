@@ -1,11 +1,6 @@
 "use server";
 import { NextResponse } from "next/server";
 import prisma from "@/db/prisma";
-import Stripe from 'stripe';
-
-const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY, {
-  apiVersion: '2024-12-18.acacia', // Use the correct API version
-});
 
 
 export async function POST(req) {
