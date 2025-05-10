@@ -200,6 +200,13 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
             key: user.role_id > 0 ? "manageBusinessInformation" : "allow"
     
         },
+        {
+            title: "Business Hours", 
+            pathname: "/hours",
+            img: "/svg/clock.svg",
+            key: user.role_id > 0 ? "manageBusinessHours" : "allow"
+    
+        },
     ];
 
     const access = [
