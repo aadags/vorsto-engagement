@@ -12,7 +12,7 @@ export async function POST(req) {
       return NextResponse.json({ error: 'No files uploaded' }, { status: 400 });
     }
 
-    const MAX_SIZE = 800 * 1024; // 800KB
+    const MAX_SIZE = 1000 * 1024; // 800KB
 
     // 🔍 Step 1: Validate all file sizes
     for (const file of files) {

@@ -13,18 +13,8 @@ export async function POST(req) {
     });
 
     const body = await req.json();
-
-    const countryToCurrency= {
-      US: 'USD',
-      CA: 'CAD',
-      GB: 'GBP',
-      EU: 'EUR',
-      NG: 'NGN',
-      KE: 'KES',
-      // Add more as needed
-    };
     
-    const { name, country } = body;
+    const { name, tagline, phone } = body;
 
     await prisma.organization.update({
       where:{
@@ -32,9 +22,8 @@ export async function POST(req) {
       }, 
       data: {
         name,
-        country,
-        currency: countryToCurrency[country],
-        onboarding: true
+        tagline,
+        contact_number: phone
       }
     })
     
@@ -44,7 +33,7 @@ export async function POST(req) {
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: "Failed to save product" },
+      { error: "Failed to save business" },
       { status: 500 }
     );
   }

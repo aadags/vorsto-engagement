@@ -54,6 +54,9 @@ model Organization {
   country  String?
   currency  String?
   ship_org_id  String?
+  logo  String?
+  logo_id  String?
+  contact_number  String?
   subdomain  String?    @unique()
   channel_fee  Int    @default(2)
   shop_template  String?    @default("simple")
