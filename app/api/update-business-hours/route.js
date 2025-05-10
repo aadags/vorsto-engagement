@@ -14,13 +14,14 @@ export async function POST(req) {
 
     const body = await req.json();
     
-    const { businessHours } = body;
+    const { timezone, businessHours } = body;
 
     await prisma.organization.update({
       where:{
         id: org.id
       }, 
       data: {
+        timezone,
         hours: businessHours
       }
     })
