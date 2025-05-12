@@ -13,7 +13,7 @@ export default function Products({ viewProduct, handleProduct }) {
   const columns = [
     {
       name: "Image",
-      selector: (row) => <img height="36px" src={row.image} alt="img" />,
+      selector: (row) => <img height="36px" src={row.image || "/no-image.jpg"} alt="img" />,
       sortable: true,
     },
     {
