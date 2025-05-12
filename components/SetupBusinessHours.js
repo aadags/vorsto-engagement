@@ -82,7 +82,11 @@ const BusinessHoursForm = () => {
       
     const response = await axios.get(`/api/get-org-details`);
     const org = response.data;
-    setBusinessHours(org.hours)
+    setBusinessHours(org.hours || daysOfWeek.map(day => ({
+      day,
+      open: false,
+      blocks: [{ start: '', end: '' }],
+    })))
     const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     setTimezone(org.timezone || browserTimezone);
   };
