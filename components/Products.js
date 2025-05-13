@@ -44,9 +44,29 @@ export default function Products({ viewProduct, handleProduct }) {
       name: "Actions",
       cell: (row) => (
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", paddingBottom: "0.5em", width: "100%" }}>
-          <a href="#" onClick={() => viewProduct(row.name, row.id)}><FontAwesomeIcon icon={faEye} /></a>
-          <a href="#" onClick={() => handleProduct(row.name, row.id)}><FontAwesomeIcon icon={faEdit} /></a>
-          <a href="#" onClick={() => deactivateProduct(row.id)}><FontAwesomeIcon icon={faX} /></a>
+          <a href="#" onClick={() => viewProduct(row.name, row.id)}><FontAwesomeIcon icon={faEye} /> View</a>
+        </div>
+      ),
+      ignoreRowClick: true,
+      allowOverflow: true,
+      button: true,
+    },
+    {
+      name: "",
+      cell: (row) => (
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", paddingBottom: "0.5em", width: "100%" }}>
+          <a href="#" onClick={() => handleProduct(row.name, row.id)}><FontAwesomeIcon icon={faEdit} /> Edit</a>
+        </div>
+      ),
+      ignoreRowClick: true,
+      allowOverflow: true,
+      button: true,
+    },
+    {
+      name: "",
+      cell: (row) => (
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", paddingBottom: "0.5em", width: "100%" }}>
+          <a href="#" onClick={() => deactivateProduct(row.id)}><FontAwesomeIcon icon={faX} /> Deactivate</a>
         </div>
       ),
       ignoreRowClick: true,
