@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import prisma from "@/db/prisma";
 import { SquareClient } from "square";
-import faktory from "faktory-worker"
+import faktory from "faktory-worker";
+import { sendBusinessOrderReceivedNotification } from "@/services/whatsapp";
 
 export const dynamic = "force-dynamic";
 
@@ -152,6 +153,11 @@ export async function POST(req) {
           where: { id: cart.id }
         });
       });
+
+      //send whatsapp notification
+      if(org.contact_number && org.contact_number !== ""){
+        await sendBusinessOrderReceivedNotification(org.contact_number, org.name, order.id);
+      }
 
       const client = await faktory.connect({
         url: process.env.FAKTORY_URL  || ""

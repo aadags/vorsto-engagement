@@ -1,7 +1,50 @@
 import axios from 'axios';
 
+const PHONE_ID = `${process.env.WHATSAPP_PHONE_ID}`;
 const AUTH_TOKEN = `Bearer ${process.env.WHATSAPP_TOKEN}`;
 const SYS_TOKEN = `Bearer ${process.env.WHATSAPP_SYSTEM_USER_TOKEN}`;
+
+
+export const sendBusinessOrderReceivedNotification = async (
+  to,
+  businessName,
+  orderId
+) => {
+  try {
+    const response = await axios.post(
+      `https://graph.facebook.com/v21.0/${PHONE_ID}/messages`,
+      {
+        messaging_product: 'whatsapp',
+        recipient_type: 'individual',
+        to: to.replace(/\+/g, ''),
+        type: 'template',
+        template: {
+          name: 'seller_order_received',
+          language: { code: 'en' },
+          components: [
+            {
+              type: 'body',
+              parameters: [
+                { type: 'text', parameter_name: "name", text: businessName },
+                { type: 'text', parameter_name: "order_id", text: orderId }
+              ],
+            },
+          ],
+        },
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `${SYS_TOKEN}`,
+        },
+      }
+    );
+    return { status: 'success', data: response.data };
+  } catch (error) {
+    console.error(error);
+    return { status: 'error' };
+  }
+};
 
 export const sendTextMessage = async (to, body, phoneId, token) => {
   try {
