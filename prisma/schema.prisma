@@ -421,7 +421,7 @@ model Image {
   id            String   @id @default(cuid())
   product         Product      @relation(fields: [product_id], references: [id])
   product_id       String
-  cloud_id          String?
+  cloud_id          String? @unique()
   url               String
   default         Boolean?    @default(false)  
   created_at     DateTime @default(now())

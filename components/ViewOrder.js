@@ -150,6 +150,9 @@ useEffect(() => {
             <h6>
               Delivery Address: <b>{order.address}</b>
             </h6>
+            <h6>
+              Instruction: <b>{order.note}</b>
+            </h6>
           </div>
         </div>
 
@@ -237,7 +240,7 @@ useEffect(() => {
             }}
           >
             <img
-              src={o.inventory.product.images[0].url}
+              src={o.inventory.product.image || "/no-image.jpg"}
               alt={`Product ${idx}`}
               style={{
                 width: "50px",
