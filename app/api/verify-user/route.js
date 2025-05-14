@@ -12,11 +12,12 @@ export async function POST(req) {
       where: { email: email },
     });
 
-    if (!user) {
+    let org = await prisma.organization.findUnique({
+      where: { uid: uid },
+    });
 
-      let org = await prisma.organization.findUnique({
-        where: { uid: uid },
-      });
+
+    if (!user) {
 
       if(!org) {
 
@@ -53,7 +54,7 @@ export async function POST(req) {
       
       await client.push({
         jobtype: 'SendEmail',
-        args: [{ name: user.name, email: user.email, code }],
+        args: [{ email: user.email, code }],
         queue: 'default', // or specify another queue
         at: new Date(Date.now())
       });
