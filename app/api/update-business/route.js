@@ -16,6 +16,19 @@ export async function POST(req) {
     
     const { name, tagline, phone, email, country } = body;
 
+    const countryToCurrency = {
+      US: "USD",
+      CA: "CAD",
+      GB: "GBP",
+      NG: "NGN",
+      IN: "INR",
+      JP: "JPY",
+      DE: "EUR",
+      FR: "EUR",
+    };
+
+    const currency = countryToCurrency[country.toUpperCase()] || "USD";
+
     await prisma.organization.update({
       where:{
         id: org.id
@@ -26,6 +39,7 @@ export async function POST(req) {
         contact_number: phone,
         contact_email: email,
         country,
+        currency,
         onboarding: true,
       }
     })
