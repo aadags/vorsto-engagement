@@ -62,8 +62,6 @@ export default function Layout({ children, leftMenu }) {
 
     useEffect(() => {
 
-
-      activeMobileMenu()
       activeTrueFalse()
 
   }, [mobileMenu])

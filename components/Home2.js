@@ -80,10 +80,10 @@ export default function Home2() {
           {/* Generation Header */}
           <div className="generation_header">
             <div className="header_bottom">
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleSubmit} className="business-form">
                   <h2>Get ready for take off</h2>
                   <p>Setup your business.</p>
-                  <div className="form_group"  style={{ width: "30%" }}>
+                  <div className="form_group"  >
                     <input
                       type="text"
                       id="b_name"
@@ -95,7 +95,7 @@ export default function Home2() {
                     />
                   </div>
                   <br />
-                  <div className="form_group" style={{ width: "30%" }}>
+                  <div className="form_group" >
                       <select
                           value={country}
                           onChange={(e) =>
@@ -107,7 +107,7 @@ export default function Home2() {
                       </select>
                   </div>
                   <br/>
-                  <div className="form_group">
+                  <div className="form_group" >
                 <label>Phone Number</label>
                 <PhoneInput
                   id="phone"
@@ -119,7 +119,7 @@ export default function Home2() {
                 />
                 </div>
                 <br/>
-                <div className="form_group">
+                <div className="form_group" >
                   <label>Business Email</label>
                   <input
                     type="text"
@@ -132,7 +132,7 @@ export default function Home2() {
                   />
                 </div>
                 <br/>
-                <div className="form_group">
+                <div className="form_group" >
                   <label>Tagline</label>
                   <input
                     type="text"

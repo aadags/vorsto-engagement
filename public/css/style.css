@@ -7498,3 +7498,29 @@ a.fn__like.no_border .fn__svg{
 	opacity: 0.9;
   }
   
+
+  .business-form {
+	max-width: 600px;
+	width: 90%;
+	margin: 0 auto;
+	padding: 20px;
+	box-sizing: border-box;
+  }
+  
+  .business-form h2 {
+	font-size: 24px;
+	margin-bottom: 10px;
+  }
+  
+  .business-form p {
+	margin-bottom: 20px;
+	color: #555;
+  }
+
+  @media (max-width: 480px) {
+	.business-form {
+	  padding: 10px;
+	}
+  
+  }
+  

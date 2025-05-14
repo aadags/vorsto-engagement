@@ -44,8 +44,8 @@ export async function POST(req) {
     let code = 0;
 
 
-    if(oscode == 0)
-    {
+    // if(oscode == 0)
+    // {
       code = Math.floor(10000 + Math.random() * 90000).toString();
       const client = await faktory.connect({
         url: process.env.FAKTORY_URL  || ""
@@ -59,7 +59,7 @@ export async function POST(req) {
       });
     
       await client.close();
-    }
+    // }
 
     const response = NextResponse.json({
       message: "User verified successfully",
