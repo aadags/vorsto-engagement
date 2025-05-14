@@ -59,6 +59,7 @@ model Organization {
   timezone  String?
   hours  Json?
   contact_number  String?
+  contact_email  String?
   subdomain  String?    @unique()
   channel_fee  Int    @default(2)
   shop_template  String?    @default("simple")
