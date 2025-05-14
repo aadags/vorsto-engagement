@@ -94,6 +94,7 @@ export default function SetupBusiness() {
     setName(org.name);
     setTagline(org.tagline);
     setPhone(org.contact_number);
+    setEmail(org.contact_email);
     setCountry(org.country);
     setUploaded({ url: org.logo});
   };
@@ -129,7 +130,7 @@ export default function SetupBusiness() {
                 </div>
                 <br/>
                 <div className="form_group">
-                <label>Phone Number (push notifications will be sent here)</label>
+                <label>Phone Number</label>
                 <PhoneInput
                   id="phone"
                   placeholder="Enter phone number"
