@@ -4,6 +4,8 @@ import Link from 'next/link'
 import axios from 'axios';
 import { animationText } from '@/components/Utilities'
 import { useRouter } from 'next/navigation';
+import PhoneInput from 'react-phone-number-input'
+import 'react-phone-number-input/style.css'
 
 // import { useStripeConnect } from "../hooks/useStripeConnect";
 // import {
@@ -18,6 +20,9 @@ export default function Home2() {
   const [name, setName] = useState('');
   const [country, setCountry] = useState('');
   const [loading, setLoading] = useState(false);
+  const [tagline, setTagline] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
   const [error, setError] = useState(false);
 
   useEffect(() => {
@@ -50,6 +55,9 @@ export default function Home2() {
         body: JSON.stringify({
           name,
           country,
+          tagline,
+          phone,
+          email
         }),
       });
   
@@ -99,6 +107,44 @@ export default function Home2() {
                       </select>
                   </div>
                   <br/>
+                  <div className="form_group">
+                <label>Phone Number</label>
+                <PhoneInput
+                  id="phone"
+                  placeholder="Enter phone number"
+                  defaultCountry="US"
+                  value={phone}
+                  onChange={setPhone}
+                  international
+                />
+                </div>
+                <br/>
+                <div className="form_group">
+                  <label>Business Email</label>
+                  <input
+                    type="text"
+                    id="email"
+                    className="full_width"
+                    placeholder="Business Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
+                <br/>
+                <div className="form_group">
+                  <label>Tagline</label>
+                  <input
+                    type="text"
+                    id="tagline"
+                    className="full_width"
+                    placeholder="Tagline"
+                    value={tagline}
+                    onChange={(e) => setTagline(e.target.value)}
+                    required
+                  />
+                </div>
+                <br/>
                   {loading && <span>updating...</span>} 
                   {!loading && <button className="techwave_fn_button" type="submit">Proceed</button>} 
 

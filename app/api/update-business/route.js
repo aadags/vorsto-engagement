@@ -14,7 +14,7 @@ export async function POST(req) {
 
     const body = await req.json();
     
-    const { name, tagline, phone } = body;
+    const { name, tagline, phone, email, country } = body;
 
     await prisma.organization.update({
       where:{
@@ -23,7 +23,10 @@ export async function POST(req) {
       data: {
         name,
         tagline,
-        contact_number: phone
+        contact_number: phone,
+        contact_email: email,
+        country,
+        onboarding: true,
       }
     })
     

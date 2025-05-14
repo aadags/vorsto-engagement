@@ -12,6 +12,8 @@ export default function SetupBusiness() {
   const [name, setName] = useState('');
   const [tagline, setTagline] = useState('');
   const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [country, setCountry] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
@@ -26,7 +28,7 @@ export default function SetupBusiness() {
   const handleSubmit = async (e) => {
     setLoading(true);
     e.preventDefault();
-    const data = { name, tagline, phone };
+    const data = { name, tagline, phone, email, country };
 
     try {
       const response = await fetch('/api/update-business', {
@@ -92,6 +94,7 @@ export default function SetupBusiness() {
     setName(org.name);
     setTagline(org.tagline);
     setPhone(org.contact_number);
+    setCountry(org.country);
     setUploaded({ url: org.logo});
   };
 
@@ -135,6 +138,19 @@ export default function SetupBusiness() {
                   onChange={setPhone}
                   international
                 />
+                </div>
+                <br/>
+                <div className="form_group">
+                  <label>Business Email</label>
+                  <input
+                    type="text"
+                    id="email"
+                    className="full_width"
+                    placeholder="Business Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
                 </div>
                 <br/>
                 <div className="form_group">
