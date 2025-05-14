@@ -1,6 +1,7 @@
 "use server";
 import { NextResponse } from "next/server";
 import prisma from "@/db/prisma";
+import localeCurrency from 'locale-currency';
 
 export async function POST(req) {
   try {
@@ -16,18 +17,7 @@ export async function POST(req) {
     
     const { name, tagline, phone, email, country } = body;
 
-    const countryToCurrency = {
-      US: "USD",
-      CA: "CAD",
-      GB: "GBP",
-      NG: "NGN",
-      IN: "INR",
-      JP: "JPY",
-      DE: "EUR",
-      FR: "EUR",
-    };
-
-    const currency = countryToCurrency[country.toUpperCase()] || "USD";
+    const currency = localeCurrency.getCurrency(country.toUpperCase()) || 'USD';
 
     await prisma.organization.update({
       where:{
