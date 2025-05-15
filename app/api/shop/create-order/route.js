@@ -105,7 +105,7 @@ export async function POST(req) {
     const response = await fetch(`${process.env.SHIPPING_API}/api/update-commission`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ companyId: org.ship_org_id, deliveryId: shipping.id, shippingCommission }),
+      body: JSON.stringify({ companyId: org.ship_org_id, deliveryId: shipping.id, shippingCommission, customer }),
     });
     const data = await response.json();
     
@@ -124,6 +124,7 @@ export async function POST(req) {
           shipping_commission: shippingCommission,
           shipping_price: shipping.total,
           shipping_tip: shipping.tip,
+          shipping_id: shipping.id,
           status: "Pending",
           channel,
           transactionId: payment.id,

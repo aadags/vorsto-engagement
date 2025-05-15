@@ -44,6 +44,13 @@ export async function GET(req) {
 
     })
 
+    const response = await fetch(`${process.env.SHIPPING_API}/api/delivery-ready`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ deliveryId: order.shipping_id }),
+    });
+    const data = await response.json();
+
 
     return NextResponse.json({ status: true });
   } catch (error) {

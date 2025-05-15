@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/db/prisma";
 import { cookies } from "next/headers";
+import faktory from "faktory-worker";
 
 export const dynamic = "force-dynamic";
 
@@ -17,12 +18,19 @@ export async function GET(req) {
 
     const id = req.nextUrl.searchParams.get("id");
 
+    const org = await prisma.organization.findFirst({
+      where: {
+        id: organizationId
+      }
+    });
+
     const order = await prisma.order.findFirst({
       where: { id,
         organization_id: organizationId 
       },
       include: {
-        order_items: true
+        order_items: true,
+        contact: true,
       }
     });
 
@@ -43,6 +51,19 @@ export async function GET(req) {
       });
 
     })
+
+    const client = await faktory.connect({
+      url: process.env.FAKTORY_URL  || ""
+    });
+    
+    await client.push({
+      jobtype: 'SendAcceptOrderNotification',
+      args: [{ org, order }],
+      queue: 'default', // or specify another queue
+      at: new Date(Date.now())
+    });
+  
+    await client.close();
 
 
     return NextResponse.json({ status: true });

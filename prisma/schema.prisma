@@ -449,6 +449,7 @@ model Order {
   note      String? 
   order_items  OrderItem[]
   status        String        @default("Pending")
+  shipping_id   String?       @unique  
   tracking_id   String?       @unique  
   driver_info   String?       @db.LongText
   driver_location   String?     @db.LongText
