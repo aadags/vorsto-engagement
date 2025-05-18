@@ -31,6 +31,12 @@ export async function POST(req) {
       });
     }
 
+    await prisma.cartItem.deleteMany({
+      where: {
+        cart_id: existingCart.id
+      }
+    })
+
     await prisma.cartItem.createMany({
       data: cart.map(item => ({
         inventory_id: item.inventory_id,
