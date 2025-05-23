@@ -23,6 +23,7 @@ export async function GET(req) {
     const otherProducts = await prisma.product.findMany({
       where: {
         id: { not: id }, // exclude the current product
+        organization_id: product.organization_id
       },
       take: 10,
       include: {
