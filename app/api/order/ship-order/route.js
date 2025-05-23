@@ -51,7 +51,6 @@ export async function GET(req) {
     });
     const data = await response.json();
 
-
     return NextResponse.json({ status: true });
   } catch (error) {
     console.error(error);

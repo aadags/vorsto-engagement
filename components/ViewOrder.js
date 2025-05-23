@@ -195,7 +195,7 @@ useEffect(() => {
           {order.status == "Preparing" && <button type="button" onClick={() => shipOrder(order.id)} className="techwave_fn_button">
               Ready For Shipping
           </button>}
-          {order.status == "Ready For Shipping" && <h6><b>To be picked up by delivery personel</b></h6>}
+          {order.status == "Ready For Shipping" && <h6><b>To be picked up by delivery driver</b><br/><b>Pick up code is <b style={{ color: "red" }}>{order.shipping_id.slice(-5)}</b></b></h6>}
 
           </div>
           <div style={{ flex: "1 1 200px" }}>
