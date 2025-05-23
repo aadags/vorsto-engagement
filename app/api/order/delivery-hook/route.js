@@ -23,7 +23,6 @@ export async function POST(req) {
       orderStatus = "Delivered"
     }
 
-
     await prisma.order.update({
       where: {
         shipping_id: shippingId
