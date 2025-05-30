@@ -19,12 +19,7 @@ ChartJS.register(
   Tooltip,
   Legend
 );
-import { useStripeConnect } from "../hooks/useStripeConnect";
-import {
-  ConnectBalances,
-  ConnectNotificationBanner,
-  ConnectComponentsProvider,
-} from "@stripe/react-connect-js";
+
 
 export default function Index() {
 
@@ -32,8 +27,7 @@ export default function Index() {
   const [leads, setLeads] = useState([]);
   const [closed, setClosed] = useState([]);
   const [ongoing, setOngoing] = useState([]);
-  const [connectedAccountId, setConnectedAccountId] = useState();
-  const stripeConnectInstance = useStripeConnect(connectedAccountId);
+  const [iframeUrl, setIframeUrl] = useState();
 
   const fetchData = async (page) => {
   
@@ -51,7 +45,6 @@ export default function Index() {
       
     const response = await axios.get(`/api/get-org-details`);
     const org = response.data;
-    setConnectedAccountId(org.stripe_account_id);
   };
 
   function getLastNDays(n) {
@@ -147,22 +140,38 @@ export default function Index() {
 
   useEffect(() => {
     fetchData(); // fetch page 1 of users
-    fetchOrg();
+    const getMetric = async () => {
+        const response = await fetch('/api/get-dashboard-metric', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+
+        if (response.ok) {
+          const res = await response.json();
+          setIframeUrl(res.iframeUrl);
+        } 
+    };
+
+    getMetric();
+
   }, []);
 
   return (
     <>
       <div className="techwave_fn_user_profile_page">
         {/* !Page Title */}
+        {iframeUrl && <iframe
+              src={iframeUrl}
+              frameBorder="0"
+              allowTransparency="true"
+              style={{ border: 'none', width: "100%", height: "100vh" }}
+            />}
         <div className="container">
           <div className="techwave_fn_user_profile">
 
-          {stripeConnectInstance && (
-                  <ConnectComponentsProvider connectInstance={stripeConnectInstance}>
-                    <ConnectNotificationBanner />
-                  </ConnectComponentsProvider>
-                )}
-            <div className="user__profile">
+            {/* <div className="user__profile">
               <div
                 className="user_details"
                 style={{ display: "flex", justifyContent: "center", width: "100%" }}
@@ -174,9 +183,9 @@ export default function Index() {
                   <Line data={leadData} options={options} />
                 </div>
               </div>
-            </div>
+            </div> */}
 
-            <div className="user__profile">
+            {/* <div className="user__profile">
               <div
                 className="user_details"
                 style={{ display: "flex", justifyContent: "center", width: "100%" }}
@@ -188,7 +197,7 @@ export default function Index() {
                   <Line data={ongoingData} options={options} />
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
