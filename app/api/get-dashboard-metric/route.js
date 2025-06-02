@@ -20,7 +20,11 @@ export async function GET(req) {
 
     const payload = {
       resource: { dashboard: 1 },
-      params: {},
+      params: {
+        "organization": [
+          organizationId
+        ]
+      },
       exp: Math.round(Date.now() / 1000) + (10 * 60) // 10 minute expiration
     };
     

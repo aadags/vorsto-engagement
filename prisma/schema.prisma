@@ -63,6 +63,7 @@ model Organization {
   subdomain  String?    @unique()
   channel_fee  Int    @default(2)
   shop_template  String?    @default("simple")
+  quarterly_revenue_target             Int?    @default(2500000)
   created_at                           DateTime?                      @default(now())
   updated_at                           DateTime?                      @updatedAt
 
