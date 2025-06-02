@@ -19,7 +19,7 @@ export async function GET(req) {
     const METABASE_SECRET_KEY = "d36207cfb10f32288abef0eeee7aa47b73c715b7257330eb21fedd7c2cec8090";
 
     const payload = {
-      resource: { dashboard: 1 },
+      resource: { dashboard: 7 },
       params: {
         "organization": [
           organizationId
