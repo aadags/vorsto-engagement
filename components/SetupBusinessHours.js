@@ -170,7 +170,7 @@ const BusinessHoursForm = () => {
                 className="techwave_fn_button"
                 onClick={() => addBlock(dayIndex)}
               >
-                + Add Time Block
+                + Add Availability
               </button>
             </div>
           )}
