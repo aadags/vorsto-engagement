@@ -15,7 +15,7 @@ const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY, {
 export async function POST(req) {
   try {
 
-    const { uuid, customer, mid, channel, intentId } = await req.json();
+    const { uuid, token, customer, idempotencyKey, mid, channel } = await req.json();
 
     const org = await prisma.organization.findFirst({
       where: { id: mid }
@@ -83,77 +83,28 @@ export async function POST(req) {
     const shippingCommission = shipping.merchant_commission_rate > 0? subtotal * (shipping.merchant_commission_rate / 100) : 0;
     const appFee = Math.ceil((channelFee * subtotal) + shipping.total + shippingCommission + shipping.tip);
 
-    const response = await fetch(`${process.env.SHIPPING_API}/api/update-commission`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ companyId: org.ship_org_id, deliveryId: shipping.id, shippingCommission, customer }),
+    
+    const pp = await prisma.paymentProcessor.findFirstOrThrow({
+      where: { name: "VorstoPay", organization_id: org.id },
     });
-    const data = await response.json();
 
-      const order = await prisma.order.create({
-        data: {
-          contact_id: contact.id,
-          total_price: total,
-          sub_total_price: subtotal,
-          tax_total: taxTotal,
-          address: customer.address,
-          note: customer.note,
-          shipping_commission: shippingCommission,
-          shipping_price: shipping.total,
-          shipping_tip: shipping.tip,
-          shipping_id: shipping.id,
-          status: "Pending",
-          channel,
-          transactionId: intentId,
-          organization_id: mid,
-          order_items: {
-            create: orderItems.map(item => ({
-              inventory_id: item.inventory_id,
-              status: "Pending",
-              quantity: item.quantity,
-              price: item.inventory.price * item.quantity,
-              tax: item.inventory.product.tax_type==="flatfee"? item.inventory.product.tax : ((item.inventory.price * item.quantity) * item.inventory.product.tax) / 100,
-            })),
-          },
-        },
-        include: {
-          order_items: true,
-        },
-      });
-
-      await prisma.$transaction(async (tx) => {
-        
-        await tx.cartItem.deleteMany({
-          where: { cart_id: cart.id }
-        });
-      
-        await tx.cart.delete({
-          where: { id: cart.id }
-        });
-      });
-
-      //send whatsapp notification
-      if(org.contact_number && org.contact_number !== ""){
-        await sendBusinessOrderReceivedNotification(org.contact_number, org.name, order.id);
+    const payload = {
+      amount: total, // Amount in cents
+      currency: org.currency.toLowerCase(),
+      payment_method: token,
+      confirm: true,
+      confirmation_method: "automatic",
+      application_fee_amount: appFee, // Amount in cents
+      metadata: {
+        idempotencyKey: idempotencyKey
       }
+    };
 
-      const client = await faktory.connect({
-        url: process.env.FAKTORY_URL  || ""
-      });
-      
-      await client.push({
-        jobtype: 'SendOrderNotification',
-        args: [{ order, contact, org }],
-        queue: 'default', // or specify another queue
-        at: new Date(Date.now())
-      });
-    
-      await client.close();
+    const intent = await stripe.paymentIntents.create(payload, {
+      stripeAccount: pp.accountId 
+    });
 
-      return NextResponse.json(order);
-
-    
-
+    return NextResponse.json({ clientSecret: intent.client_secret, stripeAccountId: pp.accountId, intentId: intent.id });
 
   } catch (error) {
     console.error(error);
