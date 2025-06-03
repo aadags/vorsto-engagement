@@ -93,7 +93,6 @@ export async function POST(req) {
       currency: org.currency,
       payment_method: token,
       confirm: true,
-      confirmation_method: "automatic",
       application_fee_amount: appFee, // Amount in cents
       metadata: {
         idempotencyKey: idempotencyKey
