@@ -11,10 +11,7 @@ export async function GET(req) {
     const hostname = req.nextUrl.searchParams.get("hostname");
 
     const org = await prisma.organization.findFirst({
-      where: { subdomain: hostname },
-      include: {
-        payment_processors: true
-      }
+      where: { subdomain: hostname }
     });
 
     const paymentProcessor = await prisma.paymentProcessor.findFirstOrThrow({
