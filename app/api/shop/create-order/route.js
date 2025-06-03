@@ -2,9 +2,14 @@ import { NextResponse } from "next/server";
 import prisma from "@/db/prisma";
 import { SquareClient } from "square";
 import faktory from "faktory-worker";
+import Stripe from "stripe";
 import { sendBusinessOrderReceivedNotification } from "@/services/whatsapp";
 
 export const dynamic = "force-dynamic";
+
+const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY, {
+  apiVersion: '2024-12-18.acacia', // Use the correct API version
+});
 
 
 export async function POST(req) {
@@ -80,26 +85,19 @@ export async function POST(req) {
 
     
     const pp = await prisma.paymentProcessor.findFirstOrThrow({
-      where: { name: "Square", organization_id: org.id },
-    });
-
-    const client = new SquareClient({
-      token: pp.access_token,
-      environment: process.env.NEXT_PUBLIC_SQUARE_BASE,
+      where: { name: "VorstoPay", organization_id: org.id },
     });
 
     const payload = {
-      idempotencyKey: idempotencyKey,
-      locationId: pp.location,
-      sourceId: token,
-      amountMoney: {
-        amount: BigInt(total),
-        currency: org.currency.toUpperCase(),
-      },
-      appFeeMoney: {
-        amount: BigInt(appFee),
-        currency: org.currency.toUpperCase(),
-      },
+      amount: total, // Amount in cents
+      currency: org.currency.toLowerCase(),
+      payment_method: token,
+      confirm: true,
+      confirmation_method: "automatic",
+      application_fee_amount: appFee, // Amount in cents
+      metadata: {
+        idempotencyKey: idempotencyKey
+      }
     };
 
     const response = await fetch(`${process.env.SHIPPING_API}/api/update-commission`, {
@@ -109,9 +107,11 @@ export async function POST(req) {
     });
     const data = await response.json();
     
-    const { payment } = await client.payments.create(payload);
+    const intent = await stripe.paymentIntents.create(payload, {
+      stripeAccount: pp.accountId 
+    });
 
-    if(payment.status === "COMPLETED")
+    if(intent.status === "succeeded")
     {
       const order = await prisma.order.create({
         data: {
@@ -127,7 +127,7 @@ export async function POST(req) {
           shipping_id: shipping.id,
           status: "Pending",
           channel,
-          transactionId: payment.id,
+          transactionId: intent.id,
           organization_id: mid,
           order_items: {
             create: orderItems.map(item => ({

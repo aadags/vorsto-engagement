@@ -181,13 +181,13 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
 
     const admin = [
         {
-            title: "AI Agents",
+            title: "AI",
             pathname: "/agent",
             img: "/svg/robot.svg",
             key: user.role_id > 0 ? "manageAiAgent": "allow"
         },
         {
-            title: "Billing",
+            title: "Plans",
             pathname: user.organizations.plan === "free"? "/plan" : `/billing/${user.organizations.stripe_id}`,
             img: "/svg/dollar.svg",
             key: user.role_id > 0 ? "manageBilling" : "allow"
@@ -283,22 +283,22 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
         {
             title: "Orders",
             pathname: "/sales/orders",
-            img: "/svg/phone-volume.svg",
+            img: "/svg/sales.svg",
             key: user.role_id > 0 ? "orders" : "allow",
         },
         {
             title: "Catalog",
             pathname: "/sales/catalog",
-            img: "/svg/phone-volume.svg",
+            img: "/svg/option.svg",
             key: user.role_id > 0 ? "payments" : "allow",
         }
     ];
 
     const integration = [
         {
-            title: "Payment Providers",
+            title: "Payment",
             pathname: "/integration/payments",
-            img: "/svg/phone-volume.svg",
+            img: "/svg/cc.svg",
             key: user.role_id > 0 ? "paymentProviders" : "allow",
         }
     ];
@@ -398,22 +398,17 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
                                     </Link>
                                 </li>
                             ))}
-                            <li className={`menu-item-has-children ${isSalesToggle ? "closed" : ""}`} >
-                                <a className="fn__tooltip menu__item" title="Sales" onClick={toggleSalesHandle} >
-                                    <span className="icon"><img src="/svg/sales.svg" alt="" className="fn__svg" /></span>
-                                    <span className="text">Sales</span>
-                                    <span className="trigger"><img src="/svg/arrow.svg" alt="" className="fn__svg" /></span>
-                                </a>
-                                <ul className="sub-menu" style={{ display: `${isSalesToggle ? "block" : "none"}` }}>
-                                    {sales.map((item, i) => (
-                                        item.key && perms.includes(item.key) && <li key={i}>
-                                            <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
-                                                <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
-                                            </Link>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </li>
+                            {sales.map((item, i) => (
+                                item.key && perms.includes(item.key) && <li key={i}>
+                                    <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
+                                        <span className="icon">
+                                            <img src={item.img} alt="" className="fn__svg" />
+                                        </span>
+                                        <span className="text">{item.title}{item.counter > 0 && <span className="count">new</span>}</span>
+                                    </Link>
+                                </li>
+                            ))}
+                
                             <li className={`menu-item-has-children ${isChatToggle ? "closed" : ""}`} >
                                 <a className="fn__tooltip menu__item" title="Chat" onClick={toggleChatHandle} >
                                     <span className="icon"><img src="/svg/chat.svg" alt="" className="fn__svg" /></span>
@@ -518,22 +513,17 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
                                     </Link>
                                 </li>
                             ))}
-                            <li className={`menu-item-has-children ${isItgToggle ? "closed" : ""}`} >
-                                <a className="fn__tooltip menu__item" title="Integration" onClick={toggleItgHandle} >
-                                    <span className="icon"><img src="/svg/plug.svg" alt="" className="fn__svg" /></span>
-                                    <span className="text">Integration</span>
-                                    <span className="trigger"><img src="/svg/arrow.svg" alt="" className="fn__svg" /></span>
-                                </a>
-                                <ul className="sub-menu" style={{ display: `${isItgToggle ? "block" : "none"}` }}>
-                                    {integration.map((item, i) => (
-                                        item.key && perms.includes(item.key) && <li key={i}>
-                                            <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
-                                                <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
-                                            </Link>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </li>
+                            {integration.map((item, i) => (
+                                item.key && perms.includes(item.key) && <li key={i}>
+                                    <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
+                                        <span className="icon">
+                                            <img src={item.img} alt="" className="fn__svg" />
+                                        </span>
+                                        <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
+                                    </Link>
+                                </li>
+                            ))}
+                            
                             <li className={`menu-item-has-children ${isAccToggle ? "closed" : ""}`} >
                                 <a className="fn__tooltip menu__item" title="Channels" onClick={toggleAccHandle} >
                                     <span className="icon"><img src="/svg/community.svg" alt="" className="fn__svg" /></span>

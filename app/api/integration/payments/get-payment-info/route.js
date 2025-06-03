@@ -3,8 +3,6 @@ import prisma from "@/db/prisma";
 import { cookies } from "next/headers";
 import Stripe from 'stripe';
 import { SquareClient, SquareEnvironment } from "square";
-import { CompositionHookListInstance } from "twilio/lib/rest/video/v1/compositionHook";
-
 
 export const dynamic = "force-dynamic";
 
@@ -43,10 +41,21 @@ export async function GET(req) {
         paymentId: id,
       });
       
+      const safeStringify = (obj) => JSON.stringify(obj, (_k, v) => (typeof v === 'bigint' ? Number(v) : v));
+      payment = JSON.parse(safeStringify(payment));
     }
 
-    const safeStringify = (obj) => JSON.stringify(obj, (_k, v) => (typeof v === 'bigint' ? Number(v) : v));
-    payment = JSON.parse(safeStringify(payment));
+    if(paymentProcessor.name === "VorstoPay")
+    {
+      const intent = await stripe.paymentIntents.retrieve(id, {
+        stripeAccount: paymentProcessor.accountId,
+      });
+
+      payment = intent;
+      
+    }
+
+    
 
     return NextResponse.json(payment.payment);
   } catch (error) {

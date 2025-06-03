@@ -67,11 +67,35 @@ export async function GET(req) {
         });
 
       }
+      const safeStringify = (obj) => JSON.stringify(obj, (_k, v) => (typeof v === 'bigint' ? Number(v) : v));
+      payments = JSON.parse(safeStringify(payments));
       
     }
 
-    const safeStringify = (obj) => JSON.stringify(obj, (_k, v) => (typeof v === 'bigint' ? Number(v) : v));
-    payments = JSON.parse(safeStringify(payments));
+    if (paymentProcessor.name === "Stripe") {
+      const stripeAccountId = paymentProcessor.access_token; // this should be the connected account ID (i.e., Stripe Connect ID)
+    
+      let params = {
+        limit: Number(pageSize),
+        created: {
+          gte: Math.floor(new Date(fromDateISO).getTime() / 1000),
+          lte: Math.floor(new Date(toDateISO).getTime() / 1000),
+        },
+      };
+    
+      if (cursor && cursor !== "null" && cursor !== "undefined") {
+        params.starting_after = cursor;
+      }
+    
+      // Fetch charges for the connected account
+      let charges = await stripe.charges.list(params, {
+        stripeAccount: stripeAccountId,
+      });
+    
+      payments = charges
+    }
+
+    
 
     return NextResponse.json(payments.response);
   } catch (error) {

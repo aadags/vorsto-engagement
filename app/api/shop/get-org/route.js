@@ -18,7 +18,7 @@ export async function GET(req) {
     });
 
     const paymentProcessor = await prisma.paymentProcessor.findFirstOrThrow({
-      where: { name: "Square", organization_id: org.id },
+      where: { name: "VorstoPay", organization_id: org.id },
     });
 
     const categories = await prisma.category.findMany({

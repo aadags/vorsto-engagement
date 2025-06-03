@@ -29,7 +29,7 @@ export async function POST(req) {
 
     await prisma.paymentProcessor.create({
       data: {
-        name: "Stripe",
+        name: "VorstoPay",
         access_token: response.access_token,
         refresh_token: response.refresh_token,
         public_token: response.stripe_publishable_key,

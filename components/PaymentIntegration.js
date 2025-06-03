@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import SquareDetails from "./SquareDetails";
+import StripeDetails from "./StripeDetails";
 
 export default function PaymentIntegration({ org }) {
   const router = useRouter();
@@ -14,15 +14,24 @@ export default function PaymentIntegration({ org }) {
   const [paymentProcessors] = useState(org.payment_processors);
 
   const paymentProviders = [
-    // { id: 1, category: 1, img: "/img/stripe2.png", title: 'Stripe', desc: "Financial infrastructure to grow your revenue", url: `https://connect.stripe.com/oauth/authorize?response_type=code&client_id=${process.env.NEXT_PUBLIC_STRIPE_CLIENT_ID}&scope=read_write` },
     {
-      id: 2,
+      id: 1,
       category: 1,
-      img: "/img/square2.png",
-      title: "Square",
-      desc: "Powering all the different ways you do business. Connect your existing or new Square accounts",
-      url: `${process.env.NEXT_PUBLIC_SQUARE_BASE}/oauth2/authorize?client_id=${process.env.NEXT_PUBLIC_SQUARE_APP_ID}&scope=ITEMS_WRITE+ITEMS_READ+ORDERS_WRITE+ORDERS_READ+PAYMENTS_WRITE+PAYMENTS_READ+PAYMENTS_WRITE_ADDITIONAL_RECIPIENTS+INVENTORY_WRITE+INVENTORY_READ+CUSTOMERS_WRITE+CUSTOMERS_READ+INVOICES_READ+INVOICES_WRITE+MERCHANT_PROFILE_WRITE+MERCHANT_PROFILE_READ+LOYALTY_WRITE+LOYALTY_READ+SUBSCRIPTIONS_WRITE+SUBSCRIPTIONS_READ&session=false&state=82201dd8d83d23cc8a48caf52b`,
+      img: "/img/vorstopay2.png",
+      title: "VorstoPay",
+      desc: "Financial infrastructure to grow your revenue powered by stripe",
+      url: `https://connect.stripe.com/oauth/authorize?response_type=code&client_id=${process.env.NEXT_PUBLIC_STRIPE_CLIENT_ID}&scope=read_write`,
+      onclick: () => getStripeConnectLink()
+
     },
+    // {
+    //   id: 2,
+    //   category: 1,
+    //   img: "/img/square2.png",
+    //   title: "Square",
+    //   desc: "Powering all the different ways you do business. Connect your existing or new Square accounts",
+    //   url: `${process.env.NEXT_PUBLIC_SQUARE_BASE}/oauth2/authorize?client_id=${process.env.NEXT_PUBLIC_SQUARE_APP_ID}&scope=ITEMS_WRITE+ITEMS_READ+ORDERS_WRITE+ORDERS_READ+PAYMENTS_WRITE+PAYMENTS_READ+PAYMENTS_WRITE_ADDITIONAL_RECIPIENTS+INVENTORY_WRITE+INVENTORY_READ+CUSTOMERS_WRITE+CUSTOMERS_READ+INVOICES_READ+INVOICES_WRITE+MERCHANT_PROFILE_WRITE+MERCHANT_PROFILE_READ+LOYALTY_WRITE+LOYALTY_READ+SUBSCRIPTIONS_WRITE+SUBSCRIPTIONS_READ&session=false&state=82201dd8d83d23cc8a48caf52b`,
+    // },
   ];
 
   const [bookmarkStates, setBookmarkStates] = useState(
@@ -79,7 +88,7 @@ export default function PaymentIntegration({ org }) {
                         <p className="">{product.desc}</p>
                         {paymentProcessors.some(
                           (p) => p.name === product.title
-                        ) && <SquareDetails />}
+                        ) && <StripeDetails />}
                       </div>
                       <div className="item__author">
                         {paymentProcessors.some(
@@ -88,10 +97,10 @@ export default function PaymentIntegration({ org }) {
                           <a href="#" className="author_name">
                             Activated
                           </a>
-                        ) : ((product.title==="Stripe")?
-                            <a className="techwave_fn_button" href={product.url}>Activate</a>
-                                :
-                            <a className="techwave_fn_button" href={product.url}>Activate</a>
+                        )  : (
+                          <button className="techwave_fn_button" onClick={product.onclick}>
+                            Activate
+                          </button>
                         )}
                       </div>
                     </div>
