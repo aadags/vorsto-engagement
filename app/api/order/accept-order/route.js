@@ -52,6 +52,13 @@ export async function GET(req) {
 
     })
 
+    const response = await fetch(`${process.env.SHIPPING_API}/api/delivery-init`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ deliveryId: order.shipping_id }),
+    });
+    const data = await response.json();
+
     const client = await faktory.connect({
       url: process.env.FAKTORY_URL  || ""
     });
