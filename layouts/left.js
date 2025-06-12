@@ -181,7 +181,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
 
     const admin = [
         {
-            title: "AI",
+            title: "AI settings",
             pathname: "/agent",
             img: "/svg/robot.svg",
             key: user.role_id > 0 ? "manageAiAgent": "allow"
@@ -227,18 +227,6 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
 
     const channel = [
         {
-            title: "Web Chat",
-            pathname: "/channel/webchat",
-            img: "/svg/webchat.svg",
-            key: user.role_id > 0 ? "configureWebChat" : "allow"
-        },
-        {
-            title: "Web Forms",
-            pathname: "/channel/webform",
-            img: "/svg/form.svg",
-            key: user.role_id > 0 ? "configureWebForm" : "allow"
-        },
-        {
             title: "Whatsapp",
             pathname: "/channel/whatsapp",
             img: "/svg/whatsapp.svg",
@@ -261,6 +249,21 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
             pathname: "/channel/voice",
             img: "/svg/tty.svg",
             key: user.role_id > 0 ? "configureVoice": "allow"
+        },
+    ];
+
+    const tools = [
+        {
+            title: "Web Chat",
+            pathname: "/channel/webchat",
+            img: "/svg/webchat.svg",
+            key: user.role_id > 0 ? "configureWebChat" : "allow"
+        },
+        {
+            title: "Web Forms",
+            pathname: "/channel/webform",
+            img: "/svg/form.svg",
+            key: user.role_id > 0 ? "configureWebForm" : "allow"
         },
     ];
 
@@ -543,7 +546,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
                             <li className={`menu-item-has-children ${isChannelToggle ? "closed" : ""}`} >
                                 <a className="fn__tooltip menu__item" title="Channels" onClick={toggleChannelHandle} >
                                     <span className="icon"><img src="/svg/setting.svg" alt="" className="fn__svg" /></span>
-                                    <span className="text">Channels</span>
+                                    <span className="text">Communications</span>
                                     <span className="trigger"><img src="/svg/arrow.svg" alt="" className="fn__svg" /></span>
                                 </a>
                                 <ul className="sub-menu" style={{ display: `${isChannelToggle ? "block" : "none"}` }}>

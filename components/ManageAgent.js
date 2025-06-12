@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSpinner, faCheckCircle } from '@fortawesome/free-solid-svg-icons'
 import { replaceAccents } from '@/utils/helper'
+import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
 export default function ManageAgent() {
@@ -12,6 +13,9 @@ export default function ManageAgent() {
   const [hook, setHook] = useState('');
   const [systemBio, setSystemBio] = useState('');
   const [humanTakeOver, setHumanTakeOver] = useState(true);
+  const [autoEngage, setAutoEngage] = useState(true);
+  const [autoFeedBack, setAutoFeedBack] = useState(true);
+  const [autoMarketing, setAutoMarketing] = useState(true);
   const [outputType, setOutputType] = useState('');
   const [outputParameter, setOutputParameter] = useState([]);
   const [functions, setFunctions] = useState([]);
@@ -76,7 +80,7 @@ export default function ManageAgent() {
     }
   
     setLoading(true);
-    const botData = { name, humanTakeOver, systemBio, model, hook, key, functions, outputType, outputParameter };
+    const botData = { humanTakeOver, systemBio, autoEngage, autoFeedBack, autoMarketing };
   
     try {
       const response = await fetch('/api/create-bot', {
@@ -90,7 +94,6 @@ export default function ManageAgent() {
       if (response.ok) {
         // Handle success, e.g., show a success message or redirect
         setSaved(true);
-        router.refresh();
       } else {
         // Handle error
         setError("An error occurred while saving your agent!");
@@ -103,28 +106,41 @@ export default function ManageAgent() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+
+    const fetchOrg = async () => {
+      
+      const response = await axios.get(`/api/get-org-details`);
+      const org = response.data;
+      setAutoEngage(org.ai_auto_engage);
+      setSystemBio(org.ai_system_bio);
+      setHumanTakeOver(org.ai_human_take_over);
+      setAutoFeedBack(org.ai_auto_feedBack);
+      setAutoMarketing(org.ai_auto_marketing);
+
+    };
+    fetchOrg();
+  }, [])
   
 
   return (
     <>
       <div className="techwave_fn_image_generation_page">
+      <div className="fn__title_holder">
+                    <div className="container">
+                      <br/>
+                        <h1 className="title">AI Settings</h1>
+                    </div>
+                </div>
         <div className="generation__page">
           {/* Generation Header */}
           <div className="generation_header">
+          <div className="container">
             <div className="header_bottom">
               <form onSubmit={handleSubmit}>
-                <div className="form_group">
-                  <input
-                    type="text"
-                    id="name"
-                    className="full_width"
-                    placeholder="Agent Name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                  />
-                </div>
-                <br/>
+                
+                
                 <div className="form_group">
                 <textarea
                   id="system_bio"
@@ -136,10 +152,27 @@ export default function ManageAgent() {
                     resize: 'vertical', // Allows vertical resizing by user
                     overflow: 'auto', // Adds scroll when content overflows
                   }}
-                  placeholder="General information about your agent, what your agent can do"
+                  placeholder="Additional information about your business or frequently asked questions that you want your customers to know"
                   required
                 />
                 </div>
+                <br/>
+
+                <label className="fn__toggle">
+                  <span className="t_in">
+                    <input 
+                      type="checkbox" 
+                      checked={autoEngage} 
+                      id="auto_engage" 
+                      onChange={(e) => setAutoEngage(e.target.checked)} 
+                    />
+
+                    <span className="t_slider" />
+                    <span className="t_content" />
+                  </span>
+                  Enable auto engagement - AI handles all customer engagement.
+                </label>
+
                 <br/>
 
                 <label className="fn__toggle">
@@ -154,8 +187,43 @@ export default function ManageAgent() {
                     <span className="t_slider" />
                     <span className="t_content" />
                   </span>
-                  Activate human-AI collaboration
+                  Enable human-AI collaboration - Conversations are automatically escalated if beyond AI functions
                 </label>
+
+                <br/>
+
+                <label className="fn__toggle">
+                  <span className="t_in">
+                    <input 
+                      type="checkbox" 
+                      checked={autoFeedBack} 
+                      id="auto_feedback" 
+                      onChange={(e) => setAutoFeedBack(e.target.checked)} 
+                    />
+
+                    <span className="t_slider" />
+                    <span className="t_content" />
+                  </span>
+                  Enable feedback collection - collect customer feedback after a sale.
+                </label>
+
+                <br/>
+
+                <label className="fn__toggle">
+                  <span className="t_in">
+                    <input 
+                      type="checkbox" 
+                      checked={autoMarketing} 
+                      id="human_takeover" 
+                      onChange={(e) => setAutoMarketing(e.target.checked)} 
+                    />
+
+                    <span className="t_slider" />
+                    <span className="t_content" />
+                  </span>
+                  Enable marketing - Auto targeted marketing and upsells.
+                </label>
+
                 <br/>
                 
                   {outputType === "text" && (<div className="form_group">
@@ -253,10 +321,11 @@ export default function ManageAgent() {
                 <br/>
                 <div className="generate_section">
                   <button type="submit" className="techwave_fn_button" aria-readonly={loading}>
-                    <span>Create Agent {loading && <FontAwesomeIcon icon={faSpinner} spin={true} />} {saved && <FontAwesomeIcon icon={faCheckCircle} />}</span>
+                    <span>Update AI {loading && <FontAwesomeIcon icon={faSpinner} spin={true} />} {saved && <FontAwesomeIcon icon={faCheckCircle} />}</span>
                   </button>
                 </div>
               </form>
+            </div>
             </div>
           </div>
           {/* !Generation Header */}

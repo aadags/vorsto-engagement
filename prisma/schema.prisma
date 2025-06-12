@@ -64,6 +64,11 @@ model Organization {
   channel_fee  Int    @default(2)
   shop_template  String?    @default("simple")
   quarterly_revenue_target             Int?    @default(2500000)
+  ai_human_take_over   Boolean   @default(true)
+  ai_system_bio        String?  
+  ai_auto_engage       Boolean   @default(true)
+  ai_auto_feedBack     Boolean   @default(true)
+  ai_auto_marketing    Boolean   @default(true)
   created_at                           DateTime?                      @default(now())
   updated_at                           DateTime?                      @updatedAt
 

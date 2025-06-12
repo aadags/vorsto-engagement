@@ -10,46 +10,28 @@ export async function POST(req) {
     );
 
     const {
-      name,
-      humanTakeOver,
-      systemBio,
-      model,
-      outputType,
-      outputParameter,
-      functions,
+      humanTakeOver, 
+      systemBio, 
+      autoEngage, 
+      autoFeedBack, 
+      autoMarketing
     } = body;
 
-    const bot = await prisma.bot.create({
+    const bot = await prisma.organization.update({
+      where: {
+        id: organizationId
+      }, 
       data: {
-        name,
-        system_bio: systemBio,
-        human_takeover: humanTakeOver,
-        model,
-        output_type: outputType,
-        output_parameters: JSON.stringify(outputParameter),
-        organization_id: organizationId,
+        ai_human_take_over: humanTakeOver,
+        ai_system_bio: systemBio,
+        ai_auto_engage: autoEngage,
+        ai_auto_feedBack: autoFeedBack,
+        ai_auto_marketing: autoMarketing
       },
     });
 
-    for (const func of functions) {
-      const { name, description, api, parameterConfig } = func;
-
-      await prisma.tool.create({
-        data: {
-          name,
-          description,
-          api,
-          parameters: JSON.stringify(parameterConfig),
-          bot_id: bot.id, // Associate the tool with the updated bot
-        },
-      });
-    }
-
-    // const redisHandler = new RedisHandler(id);
-    // await redisHandler.invalidateCacheValue();
-
     return NextResponse.json({
-      message: "Bot and tools created functions",
+      message: "Bot created functions",
       data: bot,
     });
   } catch (error) {
