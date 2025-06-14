@@ -21,6 +21,14 @@ export async function GET(req) {
       }
     });
 
+    const paymentProcessor = await prisma.paymentProcessor.findFirstOrThrow({
+      where: { name: "VorstoPay", organization_id: org.id },
+    });
+
+    if(paymentProcessor){
+      org.paymentProcessor = paymentProcessor
+    }
+  
     return NextResponse.json(org);
   } catch (error) {
     console.error(error);

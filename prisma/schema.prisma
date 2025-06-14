@@ -69,6 +69,8 @@ model Organization {
   ai_auto_engage       Boolean   @default(true)
   ai_auto_feedBack     Boolean   @default(true)
   ai_auto_marketing    Boolean   @default(true)
+  loyalty_programs LoyaltyProgram[]
+  membership_plans MembershipPlan[]
   created_at                           DateTime?                      @default(now())
   updated_at                           DateTime?                      @updatedAt
 
@@ -283,6 +285,8 @@ model Contact {
   calls  Call[]
   carts  Cart[]
   orders  Order[]
+  loyalty_accounts LoyaltyAccount[]
+
 
   @@map("contacts")
 
@@ -454,6 +458,7 @@ model Order {
   address      String? 
   note      String? 
   order_items  OrderItem[]
+  loyalty_transactions LoyaltyTransaction[]
   status        String        @default("Pending")
   shipping_id   String?       @unique  
   tracking_id   String?       @unique  
@@ -507,4 +512,72 @@ model CartItem {
   updatedAt  DateTime @updatedAt
 
   @@map("cart_items")
+}
+
+model LoyaltyProgram {
+  id               String         @id @default(cuid())
+  organization     Organization   @relation(fields: [organization_id], references: [id])
+  organization_id  Int
+  name             String
+  point_rate       Int            // e.g., 1 point per $1
+  redeem_rate      Int            // e.g., 100 points = $1
+  is_active        Boolean        @default(true)
+  created_at       DateTime       @default(now())
+  updated_at       DateTime       @updatedAt
+
+  loyalty_accounts LoyaltyAccount[]
+
+  @@unique([organization_id, name])
+  @@map("loyalty_programs")
+}
+
+model MembershipPlan {
+  id               String         @id @default(cuid())
+  organization     Organization   @relation(fields: [organization_id], references: [id])
+  organization_id  Int
+  name             String
+  price            Int            // in cents
+  duration_days    Int            // how long membership lasts
+  benefits         String?        @db.LongText
+  is_active        Boolean        @default(true)
+  created_at       DateTime       @default(now())
+  updated_at       DateTime       @updatedAt
+
+  loyalty_accounts LoyaltyAccount[]
+
+  @@unique([organization_id, name])
+  @@map("membership_plans")
+}
+
+model LoyaltyAccount {
+  id                  String           @id @default(cuid())
+  contact             Contact          @relation(fields: [contact_id], references: [id])
+  contact_id          String
+  loyalty_program     LoyaltyProgram?  @relation(fields: [loyalty_program_id], references: [id])
+  loyalty_program_id  String?
+  membership_plan     MembershipPlan?  @relation(fields: [membership_plan_id], references: [id])
+  membership_plan_id  String?
+  points              Int              @default(0)
+  membership_expires  DateTime?
+  transactions LoyaltyTransaction[]
+  created_at          DateTime         @default(now())
+  updated_at          DateTime         @updatedAt
+
+  @@unique([contact_id, loyalty_program_id])
+  @@unique([contact_id, membership_plan_id])
+  @@map("loyalty_accounts")
+}
+
+model LoyaltyTransaction {
+  id                String          @id @default(cuid())
+  loyalty_account   LoyaltyAccount  @relation(fields: [loyalty_account_id], references: [id])
+  loyalty_account_id String
+  type              String          // "earn", "redeem", "adjust"
+  amount            Int             // positive or negative, based on type
+  description       String?         // e.g., "Earned from Order #123"
+  order             Order?          @relation(fields: [order_id], references: [id])
+  order_id          String?
+  created_at        DateTime        @default(now())
+
+  @@map("loyalty_transactions")
 }

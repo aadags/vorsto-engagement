@@ -3,6 +3,7 @@ import PaymentIntegration from '@/components/PaymentIntegration'
 import Layout from '@/layouts/layout'
 import React, { useEffect, useState } from 'react'
 import axios from 'axios';
+import StripeDashboard from '@/components/StripeDashboard';
 
 
 export default function page() {
@@ -22,7 +23,7 @@ export default function page() {
 
   return (
     <Layout>
-      {org && <PaymentIntegration org={org} />}
+      {org && (org.paymentProcessor? <StripeDashboard /> : <PaymentIntegration org={org} />)}
     </Layout>
   )
 }
