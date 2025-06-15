@@ -55,6 +55,23 @@ export async function POST(req) {
   
     await client.close();
 
+    if(status == 1)
+    {
+      const client2 = await faktory.connect({
+        url: process.env.FAKTORY_URL  || ""
+      });
+      
+      await client2.push({
+        jobtype: 'SendOrderReview',
+        args: [{ order }],
+        queue: 'default', // or specify another queue
+        at: new Date(Date.now() + 2 * 60 * 60 * 1000)
+      });
+    
+      await client2.close();
+  
+    }
+
     return NextResponse.json(
       { message: "Order updated" },
       { status: 200 }
