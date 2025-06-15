@@ -17,7 +17,7 @@ export async function POST(req) {
       if (!orderId || !productId || !rating || !message) {
         return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
       }
-
+1
       await prisma.review.upsert({
         where: {
           order_id_product_id: {
