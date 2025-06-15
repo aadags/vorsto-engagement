@@ -11,6 +11,11 @@ export async function POST(req) {
       return NextResponse.json({ error: "Invalid request format" }, { status: 400 });
     }
 
+    const order = await prisma.order.update({
+      where: { id: body[0].orderId },
+      data: { reviewed: true },
+    });
+
     for (const review of body) {
       const { orderId, productId, rating, message, contactId } = review;
 
@@ -31,6 +36,7 @@ export async function POST(req) {
           rating,
           message,
           contact_id: contactId || null,
+          organization_id: order.organization_id || null,
         },
         update: {
           rating,
@@ -39,11 +45,6 @@ export async function POST(req) {
         },
       });
     }
-
-    await prisma.order.update({
-      where: { id: body[0].orderId },
-      data: { reviewed: true },
-    });
 
     return NextResponse.json({ status: true });
   } catch (error) {
