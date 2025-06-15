@@ -286,6 +286,7 @@ model Contact {
   carts  Cart[]
   orders  Order[]
   loyalty_accounts LoyaltyAccount[]
+  reviews      Review[]
 
 
   @@map("contacts")
@@ -389,6 +390,7 @@ model Product {
   organization     Organization   @relation(fields: [organization_id], references: [id])
   organization_id   Int
   active      Boolean?  @default(true)   
+  reviews      Review[]
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
 
@@ -464,6 +466,8 @@ model Order {
   tracking_id   String?       @unique  
   driver_info   String?       @db.LongText
   driver_location   String?     @db.LongText
+  reviewed       Boolean    @default(false)
+  reviews      Review[]
   created_at     DateTime       @default(now())
   updated_at     DateTime       @updatedAt
 
@@ -580,4 +584,21 @@ model LoyaltyTransaction {
   created_at        DateTime        @default(now())
 
   @@map("loyalty_transactions")
+}
+
+model Review {
+  id          String   @id @default(cuid())
+  product     Product  @relation(fields: [product_id], references: [id])
+  product_id  String
+  order       Order    @relation(fields: [order_id], references: [id])
+  order_id    String
+  contact     Contact? @relation(fields: [contact_id], references: [id])
+  contact_id  String?
+  rating      Int
+  message     String   @db.LongText
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@unique([order_id, product_id]) // prevent duplicate reviews per product in an order
+  @@map("reviews")
 }
