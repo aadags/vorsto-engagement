@@ -96,15 +96,15 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
         },
         {
             title: "Loyalty",
-            pathname: "/payments",
-            img: "/svg/phone-volume.svg",
-            key: user.role_id > 0 ? "callQueue" : "allow",
+            pathname: "/loyalty",
+            img: "/svg/award.svg",
+            key: user.role_id > 0 ? "loyalty" : "allow",
         },
         {
             title: "Coupons",
             pathname: "/payments",
             img: "/svg/phone-volume.svg",
-            key: user.role_id > 0 ? "callQueue" : "allow",
+            key: user.role_id > 0 ? "coupons" : "allow",
         },
     ];
 
@@ -181,7 +181,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
 
     const admin = [
         {
-            title: "AI settings",
+            title: "Artificial Intelligence",
             pathname: "/agent",
             img: "/svg/robot.svg",
             key: user.role_id > 0 ? "manageAiAgent": "allow"
@@ -207,6 +207,18 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
             key: user.role_id > 0 ? "manageBusinessHours" : "allow"
     
         },
+        {
+            title: "Payment",
+            pathname: "/integration/payments",
+            img: "/svg/cc.svg",
+            key: user.role_id > 0 ? "paymentProviders" : "allow",
+        },
+        {
+            title: "Loyalty Manager",
+            pathname: "/loyalty-setup",
+            img: "/svg/setting.svg",
+            key: user.role_id > 0 ? "manageLoyalty" : "allow",
+        }
     ];
 
     const access = [
@@ -226,6 +238,12 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
     ];
 
     const channel = [
+        {
+            title: "Web",
+            pathname: "/channel/web",
+            img: "/svg/cube.svg",
+            key: user.role_id > 0 ? "configureWeb": "allow"
+        },
         {
             title: "Whatsapp",
             pathname: "/channel/whatsapp",
@@ -297,15 +315,6 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
         }
     ];
 
-    const integration = [
-        {
-            title: "Payment",
-            pathname: "/integration/payments",
-            img: "/svg/cc.svg",
-            key: user.role_id > 0 ? "paymentProviders" : "allow",
-        }
-    ];
-
     const pathname = usePathname()
 
     const isChannelActive = channel.some((item) => item.pathname === pathname);
@@ -340,10 +349,6 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
     const [isSalesToggle, setSalesToggle] = useState(isSalesActive);
     const toggleSalesHandle = () => setSalesToggle((prev) => !prev);
 
-    const isItgActive = integration.some((item) => item.pathname === pathname);
-    const [isItgToggle, setItgToggle] = useState(isItgActive);
-    const toggleItgHandle = () => setItgToggle((prev) => !prev);
-
     useEffect(() => {
         setChatToggle(isChatActive);
         setCallToggle(isCallActive);
@@ -352,7 +357,6 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
         setAccToggle(isAccActive);
         setChannelToggle(isChannelActive);
         setSalesToggle(isSalesActive);
-        setItgToggle(isItgActive);
     }, [pathname]);
 
     useEffect(() => {
@@ -516,16 +520,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
                                     </Link>
                                 </li>
                             ))}
-                            {integration.map((item, i) => (
-                                item.key && perms.includes(item.key) && <li key={i}>
-                                    <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
-                                        <span className="icon">
-                                            <img src={item.img} alt="" className="fn__svg" />
-                                        </span>
-                                        <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
-                                    </Link>
-                                </li>
-                            ))}
+                            
                             
                             <li className={`menu-item-has-children ${isAccToggle ? "closed" : ""}`} >
                                 <a className="fn__tooltip menu__item" title="Channels" onClick={toggleAccHandle} >
@@ -546,7 +541,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
                             <li className={`menu-item-has-children ${isChannelToggle ? "closed" : ""}`} >
                                 <a className="fn__tooltip menu__item" title="Channels" onClick={toggleChannelHandle} >
                                     <span className="icon"><img src="/svg/setting.svg" alt="" className="fn__svg" /></span>
-                                    <span className="text">Communications</span>
+                                    <span className="text">Channels</span>
                                     <span className="trigger"><img src="/svg/arrow.svg" alt="" className="fn__svg" /></span>
                                 </a>
                                 <ul className="sub-menu" style={{ display: `${isChannelToggle ? "block" : "none"}` }}>

@@ -519,8 +519,8 @@ model LoyaltyProgram {
   organization     Organization   @relation(fields: [organization_id], references: [id])
   organization_id  Int
   name             String
-  point_rate       Int            // e.g., 1 point per $1
-  redeem_rate      Int            // e.g., 100 points = $1
+  point_rate       Float            // e.g., 1 point per $1
+  redeem_rate      Float            // e.g., 100 points = $1
   is_active        Boolean        @default(true)
   created_at       DateTime       @default(now())
   updated_at       DateTime       @updatedAt
