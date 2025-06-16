@@ -208,12 +208,6 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
     
         },
         {
-            title: "Payment",
-            pathname: "/integration/payments",
-            img: "/svg/cc.svg",
-            key: user.role_id > 0 ? "paymentProviders" : "allow",
-        },
-        {
             title: "Loyalty Manager",
             pathname: "/loyalty-setup",
             img: "/svg/setting.svg",
@@ -301,6 +295,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
         //     img: "/svg/phone-volume.svg",
         //     key: user.role_id > 0 ? "payments" : "allow",
         // },
+        
         {
             title: "Orders",
             pathname: "/sales/orders",
@@ -311,8 +306,14 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
             title: "Catalog",
             pathname: "/sales/catalog",
             img: "/svg/option.svg",
-            key: user.role_id > 0 ? "payments" : "allow",
-        }
+            key: user.role_id > 0 ? "catalog" : "allow",
+        },
+        {
+            title: "Payments",
+            pathname: "/integration/payments",
+            img: "/svg/cc.svg",
+            key: user.role_id > 0 ? "paymentProviders" : "allow",
+        },
     ];
 
     const pathname = usePathname()
