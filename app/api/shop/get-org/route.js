@@ -14,7 +14,7 @@ export async function GET(req) {
       where: { subdomain: hostname }
     });
 
-    const paymentProcessor = await prisma.paymentProcessor.findFirstOrThrow({
+    const paymentProcessor = await prisma.paymentProcessor.findFirst({
       where: { name: "VorstoPay", organization_id: org.id },
     });
 
