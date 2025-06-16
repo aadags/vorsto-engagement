@@ -1,21 +1,32 @@
-import React from 'react'
+'use client'
+
+import React, { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import '../../globals.css'
 import '../../../public/css/style.css'
 import Validate from '@/components/Validate'
 
-export const metadata = {
-  title:'Vorsto AI - Validate',
-  content:'text/html',
-  openGraph: {
-    title:'Vorsto AI - Validate',
-    content:'text/html',
-  },
-}
+export default function Page() {
+  const router = useRouter()
 
-export default function page() {
-  return (
-    <>
-      <Validate />
-    </>
-  )
+  useEffect(() => {
+    const checkValidation = async () => {
+      try {
+        const res = await fetch('/api/get-user-details')
+        const data = await res.json()
+
+        if (!data?.is_validate) {
+          router.push('/launch')
+        }
+      } catch (error) {
+        console.error('Validation check failed:', error)
+        // Optional fallback route
+        router.push('/launch')
+      }
+    }
+
+    checkValidation()
+  }, [router])
+
+  return <Validate />
 }
