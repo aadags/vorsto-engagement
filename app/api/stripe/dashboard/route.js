@@ -38,7 +38,8 @@ export async function GET() {
     })
 
     return NextResponse.json({
-      balance: balance.available[0]?.amount || 0,
+      availableBalance: balance.available.reduce((sum, b) => sum + b.amount, 0),
+      pendingBalance: balance.pending.reduce((sum, b) => sum + b.amount, 0),
       transactions: transactions.data,
       payouts: payouts.data,
     });

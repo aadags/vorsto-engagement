@@ -5,7 +5,7 @@ export default function LoyaltySetup() {
   const [loyaltyProgram, setLoyaltyProgram] = useState({
     name: '',
     point_rate: 1,
-    redeem_rate: 100,
+    redeem_rate: 10000
   });
 
   const [membershipPlans, setMembershipPlans] = useState([
@@ -26,7 +26,7 @@ export default function LoyaltySetup() {
   }, []);
 
   const addMembershipPlan = () => {
-    setMembershipPlans([...membershipPlans, { name: '', price: 1000, duration_days: 30, benefits: '' }]);
+    setMembershipPlans([...membershipPlans, { name: '', price: 1000, duration_days: 30, benefits: '', discount_percent: 0, cashback_percent: 0 }]);
   };
 
   const updatePlan = (index, field, value) => {
@@ -95,7 +95,31 @@ export default function LoyaltySetup() {
               </div>
 
               <div className="form-group">
-                <label>Benefits</label>
+                <label>Discount (%)</label>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  value={plan.discount_percent ?? 0}
+                  onChange={e => updatePlan(index, 'discount_percent', e.target.value)}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Cashback (%) - Given as loyalty points</label>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  value={plan.cashback_percent ?? 0}
+                  onChange={e => updatePlan(index, 'cashback_percent', e.target.value)}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Other Benefits</label>
                 <textarea value={plan.benefits}
                   onChange={e => updatePlan(index, 'benefits', e.target.value)} />
               </div>
@@ -120,7 +144,6 @@ export default function LoyaltySetup() {
         }
 
         h2 {
-          text-align: center;
           margin-bottom: 32px;
           font-size: 24px;
         }
@@ -160,27 +183,11 @@ export default function LoyaltySetup() {
           min-height: 80px;
         }
 
-        button {
-          background-color: black;
-          color: white;
-          padding: 14px;
-          border: none;
-          border-radius: 6px;
-          font-size: 16px;
-          width: 100%;
-          cursor: pointer;
-          margin-top: 20px;
-        }
-
         .secondary {
           background-color: #eee;
           color: black;
           font-weight: bold;
           margin-top: 10px;
-        }
-
-        button:hover {
-          background-color: #222;
         }
 
         @media (max-width: 600px) {

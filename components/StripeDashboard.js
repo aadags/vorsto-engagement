@@ -5,6 +5,7 @@ import axios from 'axios'
 
 export default function StripeDashboard() {
   const [balance, setBalance] = useState(null)
+  const [pending, setPending] = useState(null)
   const [transactions, setTransactions] = useState([])
   const [payouts, setPayouts] = useState([])
   const [selectedTx, setSelectedTx] = useState(null)
@@ -12,7 +13,8 @@ export default function StripeDashboard() {
   useEffect(() => {
     const fetchData = async () => {
       const res = await axios.get('/api/stripe/dashboard')
-      setBalance(res.data.balance)
+      setBalance(res.data.availableBalance)
+      setPending(res.data.pendingBalance)
       setTransactions(res.data.transactions)
       setPayouts(res.data.payouts)
     }
@@ -27,6 +29,10 @@ export default function StripeDashboard() {
         <div className="card">
           <h2>Balance</h2>
           <p>${(balance ?? 0) / 100}</p>
+        </div>
+        <div className="card">
+          <h2>Pending</h2>
+          <p>${(pending ?? 0) / 100}</p>
         </div>
         <div className="card">
           <h2>Transactions</h2>

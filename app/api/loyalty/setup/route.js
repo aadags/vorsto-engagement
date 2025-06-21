@@ -9,11 +9,22 @@ export async function POST(req) {
     const cookie = cookies().get("organizationId");
     const organizationId = Number(cookie?.value ?? 0);
 
-    const { loyaltyProgram, membershipPlan } = data;
+    const { loyaltyProgram, membershipPlans } = data;
 
+    // === Upsert LoyaltyProgram ===
     if (loyaltyProgram) {
-      await prisma.loyaltyProgram.create({
-        data: {
+      await prisma.loyaltyProgram.upsert({
+        where: {
+          organization_id_name: {
+            organization_id: organizationId,
+            name: loyaltyProgram.name,
+          },
+        },
+        update: {
+          point_rate: loyaltyProgram.point_rate,
+          redeem_rate: loyaltyProgram.redeem_rate,
+        },
+        create: {
           name: loyaltyProgram.name,
           point_rate: loyaltyProgram.point_rate,
           redeem_rate: loyaltyProgram.redeem_rate,
@@ -22,16 +33,28 @@ export async function POST(req) {
       });
     }
 
-    if (membershipPlan) {
-      await prisma.membershipPlan.create({
-        data: {
-          name: membershipPlan.name,
-          price: membershipPlan.price * 100,
-          duration_days: membershipPlan.duration_days,
-          benefits: membershipPlan.benefits,
+    // === Loop through MembershipPlans ===
+    if (membershipPlans && Array.isArray(membershipPlans)) {
+      for (const plan of membershipPlans) {
+        const data = {
+          name: plan.name,
+          price: parseInt(plan.price) * 100,
+          duration_days: parseInt(plan.duration_days),
+          benefits: plan.benefits,
+          discount_percent: parseFloat(plan.discount_percent ?? 0),
+          cashback_percent: parseFloat(plan.cashback_percent ?? 0),
           organization_id: organizationId,
-        },
-      });
+        };
+
+        if (plan.id) {
+          await prisma.membershipPlan.update({
+            where: { id: plan.id },
+            data,
+          });
+        } else {
+          await prisma.membershipPlan.create({ data });
+        }
+      }
     }
 
     return NextResponse.json({ success: true });

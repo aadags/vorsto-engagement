@@ -544,6 +544,8 @@ model MembershipPlan {
   price            Int            // in cents
   duration_days    Int            // how long membership lasts
   benefits         String?        @db.LongText
+  discount_percent Float?   @default(0) // e.g. 10 = 10% discount
+  cashback_percent Float?   @default(0) // e.g. 5 = 5% back in points
   is_active        Boolean        @default(true)
   created_at       DateTime       @default(now())
   updated_at       DateTime       @updatedAt

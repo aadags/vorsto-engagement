@@ -526,7 +526,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
                             <li className={`menu-item-has-children ${isAccToggle ? "closed" : ""}`} >
                                 <a className="fn__tooltip menu__item" title="Channels" onClick={toggleAccHandle} >
                                     <span className="icon"><img src="/svg/community.svg" alt="" className="fn__svg" /></span>
-                                    <span className="text">Access Management</span>
+                                    <span className="text">Access Manager</span>
                                     <span className="trigger"><img src="/svg/arrow.svg" alt="" className="fn__svg" /></span>
                                 </a>
                                 <ul className="sub-menu" style={{ display: `${isAccToggle ? "block" : "none"}` }}>
