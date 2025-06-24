@@ -8,6 +8,7 @@ const EditProduct = ({ productId, org, cat }) => {
 
   const [productName, setProductName] = useState("");
   const [description, setDescription] = useState("");
+  const [sku, setSku] = useState("");
   const [currency] = useState(org.currency);
   const [outofstock, setOutofstock] = useState("");
   const [tax, setTax] = useState(0);
@@ -36,7 +37,16 @@ const EditProduct = ({ productId, org, cat }) => {
   };
 
   const addVariety = () => {
-    setVarieties([...varieties, { name: '', price: '', quantity: '' }]);
+    setVarieties([...varieties, {
+      name: '',
+      barcode: '',
+      price: '',
+      quantity: '',
+      price_unit: '',
+      weight_available: '',
+      min_weight: '',
+      weight_step: '',
+    }]);
   };
 
   const removeVariety = async (v, index) => {
@@ -80,6 +90,7 @@ const EditProduct = ({ productId, org, cat }) => {
           id: productId,
           name: productName,
           description,
+          sku,
           image,
           category: isNewCategory? newCategoryName : selectedCategory,
           newCategoryDescription,
@@ -89,8 +100,11 @@ const EditProduct = ({ productId, org, cat }) => {
           taxType,
           varieties: varieties.map((v) => ({
             ...v,
-            price: Number(v.price),
-            quantity: Number(v.quantity),
+            price: v.price,
+            quantity: v.quantity,
+            weight_available: v.weight_available,
+            min_weight: v.min_weight,
+            weight_step: v.weight_step,
           })),
         }),
       });
@@ -125,6 +139,7 @@ useEffect(() => {
         console.log({ product });
         setProductName(product.name);
         setDescription(product.description);
+        setSku(product.sku);
         setOutofstock(product.outofstock);
         setTax(product.tax)
         setTaxType(product.tax_type)
@@ -170,6 +185,19 @@ useEffect(() => {
             style={{ resize: 'vertical', overflow: 'auto' }}
             placeholder="Product Description"
             required
+          />
+        </div>
+        <br />
+
+        {/* Product sku */}
+        <div className="form_group">
+        <input
+            type="text"
+            id="product_sku"
+            className="full_width"
+            placeholder="Product Sku (Optional)"
+            value={sku}
+            onChange={(e) => setSku(e.target.value)}
           />
         </div>
         <br />
@@ -261,6 +289,17 @@ useEffect(() => {
         <h6>Varieties</h6>
         {varieties.map((v, idx) => (
           <div key={idx} className="variety-row">
+
+            <select
+              value={v.price_unit}
+              onChange={(e) => handleVarietyChange(idx, 'price_unit', e.target.value)}
+            >
+              <option value="">Select Price Unit</option>
+              <option value="unit">Unit</option>
+              <option value="kg">Weight (kg)</option>
+              <option value="lb">Weight (lb)</option>
+            </select>
+
             <input
               type="text"
               type="text"
@@ -273,28 +312,72 @@ useEffect(() => {
               <input
                 type="number"
                 className="currency-input"
-                placeholder="Price"
+                placeholder="Unit Price"
                 value={v.price}
                 onChange={(e) => handleVarietyChange(idx, 'price', e.target.value)}
                 required
               />
               <span className="currency-suffix">{currency}</span>
             </div>
+            <input
+              type="text"
+              type="text"
+              placeholder="Barcode (optional)"
+              value={v.barcode}
+              onChange={(e) => handleVarietyChange(idx, 'barcode', e.target.value)}
+            />
 
-            <div className="currency-wrapper">
-              <input
-                type="number"
-                className="currency-input"
-                placeholder="Stock Quantity"
-                value={v.quantity}
-                onChange={(e) => handleVarietyChange(idx, 'quantity', e.target.value)}
-                required
-              />
-              <span className="currency-suffix">Units</span>
-            </div>
-            {idx > 0 && <button type="button" className="techwave_fn_button" onClick={() => removeVariety(v, idx)}>
+            {v.price_unit === 'unit' || !v.price_unit ? (
+              <div className="currency-wrapper">
+                <input
+                  type="number"
+                  className="currency-input"
+                  placeholder="Stock Quantity"
+                  value={v.quantity}
+                  onChange={(e) => handleVarietyChange(idx, 'quantity', e.target.value)}
+                  required
+                />
+                <span className="currency-suffix">Units</span>
+              </div>
+            ) : (
+              <>
+                <div className="currency-wrapper">
+                  <input
+                    type="number"
+                    className="currency-input"
+                    placeholder="Available Weight"
+                    value={v.weight_available}
+                    onChange={(e) => handleVarietyChange(idx, 'weight_available', e.target.value)}
+                    required
+                  />
+                  <span className="currency-suffix">{varieties[idx].price_unit}</span>
+                </div>
+                <div className="currency-wrapper">
+                <input
+                  type="number"
+                  placeholder="Minimum Weight"
+                  value={v.min_weight}
+                  onChange={(e) => handleVarietyChange(idx, 'min_weight', e.target.value)}
+                  required
+                /><span className="currency-suffix">{varieties[idx].price_unit}</span>
+                </div>
+                <div className="currency-wrapper">
+                <input
+                  type="number"
+                  placeholder="Unit Weight"
+                  value={v.weight_step}
+                  onChange={(e) => handleVarietyChange(idx, 'weight_step', e.target.value)}
+                  required
+                />
+                <span className="currency-suffix">{varieties[idx].price_unit}</span>
+                </div>
+              </>
+            )}
+            
+            {idx > 0 && <button type="button" className="techwave_fn_button" style={{ backgroundColor: "grey"}} onClick={() => removeVariety(v, idx)}>
               -
             </button>}
+
           </div>
         ))}
         <button type="button" className="techwave_fn_button" onClick={addVariety}>

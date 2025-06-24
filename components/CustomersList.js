@@ -4,7 +4,7 @@ import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBinoculars } from "@fortawesome/free-solid-svg-icons";
 
-export default function Contacts() {
+export default function CustomersList({ viewCustomer }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [totalRows, setTotalRows] = useState(0);
@@ -40,9 +40,9 @@ export default function Contacts() {
       name: "Actions",
       cell: (row) => (
         <div>
-          <a href={`/contact/${row.id}`}>
-            <FontAwesomeIcon icon={faBinoculars} /> Dashboard
-          </a>
+          <button onClick={() => viewCustomer(row.id)}>
+            <FontAwesomeIcon icon={faBinoculars} /> Manage
+          </button>
           <br />
         </div>
       ),

@@ -381,9 +381,11 @@ model Product {
   name          String
   description   String?
   image         String?  
+  sku         String?  
   tax           Int?
   tax_type           String?
-  outofstock      Boolean? @default(false)   
+  outofstock      Boolean? @default(false)  
+  measurement_type String   @default("unit") // "unit" or "weight" 
   images  Image[]
   inventories     Inventory[]
   category         Category?      @relation(fields: [category_id], references: [id])
@@ -414,18 +416,23 @@ model Category {
 }  
 
 model Inventory {
-  id              String      @id @default(cuid())
-  product         Product      @relation(fields: [product_id], references: [id])
-  product_id       String
+  id              String   @id @default(cuid())
+  product         Product  @relation(fields: [product_id], references: [id])
+  product_id      String
   name            String      
-  parent_id            String?      
-  quantity        Int          
-  price           Int          
-  order_items  OrderItem[]
-  cart_items  CartItem[]
-  active      Boolean?  @default(true)
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updatedAt
+  parent_id       String?      
+  barcode       String?      
+  quantity        Int           // for unit-based items
+  weight_available Float?       // for weight-based items (e.g., 50.5 kg)
+  price           Int           // price per unit or per kg (in cents)
+  price_unit      String?       // "per_item", "per_kg", "per_lb", etc.
+  min_weight      Float?        // e.g., 1.0 (minimum 1kg to order)
+  weight_step     Float?        // e.g., 0.25 (must order in steps like 1.25kg, 1.5kg)
+  order_items     OrderItem[]
+  cart_items      CartItem[]
+  active          Boolean?  @default(true)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
 
   @@map("inventories")
 }
@@ -481,6 +488,7 @@ model OrderItem {
   inventory_id       String
   status   String
   quantity        Int 
+  weight          Float? 
   price             Int? 
   tax             Int 
   order     Order   @relation(fields: [order_id], references: [id])
@@ -511,6 +519,7 @@ model CartItem {
   inventory         Inventory      @relation(fields: [inventory_id], references: [id])
   inventory_id       String
   quantity   Int
+  weight       Float?
   cart         Cart       @relation(fields: [cart_id], references: [id])
   cart_id      String
   createdAt  DateTime @default(now())
@@ -564,6 +573,7 @@ model LoyaltyAccount {
   loyalty_program_id  String?
   membership_plan     MembershipPlan?  @relation(fields: [membership_plan_id], references: [id])
   membership_plan_id  String?
+  card_code   String?
   points              Int              @default(0)
   membership_expires  DateTime?
   transactions LoyaltyTransaction[]

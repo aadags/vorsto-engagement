@@ -44,7 +44,7 @@ export async function POST(req) {
       })
     );
 
-    if(productId)
+    if(productId && productId !== "null")
     {
       for (const [index, img] of uploads.entries()) {
         await prisma.image.create({

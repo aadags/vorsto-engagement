@@ -2,99 +2,99 @@
 import { NextResponse } from "next/server";
 import prisma from "@/db/prisma";
 
-
 export async function POST(req) {
   try {
-    const organizationId = Number(
-      req.cookies.get("organizationId")?.value ?? 0
-    );
+    const organizationId = Number(req.cookies.get("organizationId")?.value ?? 0);
 
     const org = await prisma.organization.findFirst({
       where: { id: organizationId },
     });
 
+    if (!org) {
+      return NextResponse.json({ error: "Organization not found" }, { status: 404 });
+    }
+
     const body = await req.json();
-    
-    const { id, name, description, category, isNewCategory, newCategoryDescription, image, tax, taxType, outofstock, varieties } = body;
+
+    const {
+      id,
+      name,
+      description,
+      sku,
+      category,
+      isNewCategory,
+      newCategoryDescription,
+      image,
+      tax,
+      taxType,
+      outofstock,
+      varieties,
+    } = body;
 
     let cat = { id: category };
 
-    if(isNewCategory) {
-
+    // Create new category if needed
+    if (isNewCategory) {
       cat = await prisma.category.create({
         data: {
           name: category,
           description: newCategoryDescription,
-          organization_id: org.id
-        }
+          organization_id: org.id,
+        },
       });
-
     }
 
+    // Update the product
     const product = await prisma.product.update({
       where: {
-        id, organization_id: org.id
+        id,
+        organization_id: org.id,
       },
       data: {
         name,
         description,
+        sku,
         category_id: cat.id,
-        tax: Number(tax),
+        tax: parseFloat(tax),
         tax_type: taxType,
-        outofstock
-      }
+        outofstock,
+      },
     });
 
+    // Handle inventory (varieties)
     for (const variety of varieties) {
+      const payload = {
+        name: variety.name,
+        barcode: variety.barcode,
+        quantity: parseInt(variety.quantity) || 0,
+        price: parseFloat(variety.price) * 100, // cents
+        price_unit: variety.price_unit,
+        weight_available: parseFloat(variety.weight_available) || null,
+        min_weight: parseFloat(variety.min_weight) || null,
+        weight_step: parseFloat(variety.weight_step) || null,
+      };
 
-      if(!variety.id)
-      {
+      if (!variety.id) {
+        // Create new variety
         await prisma.inventory.create({
           data: {
-            name: variety.name,
-            quantity: variety.quantity,
-            price: variety.price * 100,
-            product_id: product.id
+            ...payload,
+            product_id: product.id,
           },
         });
-
       } else {
-
-        const existing = await prisma.inventory.findFirst({
+        // Update existing variety
+        await prisma.inventory.update({
           where: {
-            id: variety.id, product_id: id
-          }
-        })
-
-        if(existing.price !==  variety.price * 100) {
-
-          await prisma.inventory.update({
-            where: {
-              id: variety.id
-            },
-            data: {
-              name: variety.name,
-              quantity: variety.quantity,
-              price: variety.price * 100
-            },
-          });
-
-        } else {
-
-          await prisma.inventory.update({
-            where: {
-              id: variety.id
-            },
-            data: {
-              name: variety.name,
-              quantity: variety.quantity,
-            },
-          });
-        }
+            id: variety.id,
+          },
+          data: payload,
+        });
       }
     }
 
-    for (const [index, img] of image.entries()) {
+    // Save new images (assumes duplicates are handled in the UI or DB constraint)
+    for (const img of image) {
       await prisma.image.create({
         data: {
           product_id: product.id,
@@ -103,16 +103,11 @@ export async function POST(req) {
         },
       });
     }
-    
-    return NextResponse.json({
-      product
-    });
+
+    return NextResponse.json({ product });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { error: "Failed to save product" },
-      { status: 500 }
-    );
+    console.error("Product update error:", error);
+    return NextResponse.json({ error: "Failed to update product" }, { status: 500 });
   }
 }
 

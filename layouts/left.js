@@ -88,10 +88,10 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
             key: "allow"
         },
         {
-            title: "Contacts",
-            pathname: "/contacts",
-            img: "/svg/bookmarked.svg",
-            key: user.role_id > 0 ? "contacts" : "allow"
+            title: "Customers",
+            pathname: "/customers",
+            img: "/svg/person.svg",
+            key: user.role_id > 0 ? "customers" : "allow"
     
         },
         {

@@ -1,12 +1,11 @@
 "use server";
 import { NextResponse } from "next/server";
 import prisma from "@/db/prisma";
-import Stripe from 'stripe';
+import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY, {
-  apiVersion: '2024-12-18.acacia', // Use the correct API version
+  apiVersion: "2024-12-18.acacia",
 });
-
 
 export async function POST(req) {
   try {
@@ -18,50 +17,72 @@ export async function POST(req) {
       where: { id: organizationId },
     });
 
+    if (!org) {
+      return NextResponse.json(
+        { error: "Organization not found" },
+        { status: 404 }
+      );
+    }
+
     const body = await req.json();
-    
-    const { name, description, category, isNewCategory, newCategoryDescription, tax, taxType, image, outofstock, varieties } = body;
+
+    const {
+      name,
+      description,
+      sku,
+      category,
+      isNewCategory,
+      newCategoryDescription,
+      tax,
+      taxType,
+      image,
+      outofstock,
+      varieties,
+    } = body;
 
     let cat = { id: category };
 
-    if(isNewCategory) {
-
+    if (isNewCategory) {
       cat = await prisma.category.create({
         data: {
           name: category,
           description: newCategoryDescription,
-          organization_id: org.id
-        }
+          organization_id: org.id,
+        },
       });
-
     }
 
     const product = await prisma.product.create({
       data: {
         name,
+        sku,
         description,
         category_id: cat.id,
-        tax: Number(tax),
+        tax: parseFloat(tax),
         tax_type: taxType,
         outofstock,
-        image: (image.length > 0)? image[0].secure_url : null,
-        organization_id: org.id
-      }
+        image: image.length > 0 ? image[0].secure_url : null,
+        organization_id: org.id,
+      },
     });
 
     for (const variety of varieties) {
-
       await prisma.inventory.create({
         data: {
           product_id: product.id,
           name: variety.name,
-          quantity: variety.quantity,
-          price: variety.price * 100,
+          barcode: variety.barcode || null,
+          quantity: parseInt(variety.quantity) || 0,
+          price: parseFloat(variety.price) * 100,
+          price_unit: variety.price_unit,
+          weight_available: parseFloat(variety.weight_available) || null,
+          min_weight: parseFloat(variety.min_weight) || null,
+          weight_step: parseFloat(variety.weight_step) || null,
         },
       });
     }
 
-    for (const [index, img] of image.entries()) {
+    for (const img of image) {
       await prisma.image.create({
         data: {
           product_id: product.id,
@@ -70,14 +91,12 @@ export async function POST(req) {
         },
       });
     }
-    
-    return NextResponse.json({
-      product
-    });
+
+    return NextResponse.json({ product });
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: "Failed to save comment" },
+      { error: "Failed to create product" },
       { status: 500 }
     );
   }

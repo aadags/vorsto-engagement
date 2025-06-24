@@ -6,19 +6,20 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit, faEye, faChartSimple } from '@fortawesome/free-solid-svg-icons'
 import OrderList from './OrderList';
 import ViewOrder from './ViewOrder';
+import CustomersList from './CustomersList';
+import CustomerMetric from './CustomerMetric';
 
-export default function Order({org}) {
+export default function Customers() {
 
     const [activeIndex, setActiveIndex] = useState(1);
-    const [viewOrder, setViewOrder] = useState();
-    const [paymentProcessors, setPaymentprocessors] = useState(org?.payment_processors);
+    const [customer, setCustomer] = useState();
 
     const handleOnClick = (index) => {
         setActiveIndex(index);
     };
     
-    const handleViewOrder = async (id) => {
-        setViewOrder({id});
+    const handleViewCustomer = async (id) => {
+        setCustomer({id});
         setActiveIndex(2)
     };
 
@@ -27,7 +28,7 @@ export default function Order({org}) {
             <div className="techwave_fn_models_page">
                 <div className="fn__title_holder">
                     <div className="container">
-                        <h1 className="title">Orders</h1>
+                        <h1 className="title">Customers</h1>
                     </div>
                 </div>
                 {/* Models */}
@@ -35,8 +36,8 @@ export default function Order({org}) {
                     <div className="fn__tabs">
                         <div className="container">
                             <div className="tab_in">
-                                <a className={activeIndex === 1 ? "active" : ""} onClick={() => handleOnClick(1)}>Online Orders</a>
-                                {viewOrder && <a className={activeIndex === 2 ? "active" : ""} onClick={() => handleOnClick(2)}>Order Id: {viewOrder.id}</a>}
+                                <a className={activeIndex === 1 ? "active" : ""} onClick={() => handleOnClick(1)}>All Customers</a>
+                                {customer && <a className={activeIndex === 2 ? "active" : ""} onClick={() => handleOnClick(2)}>Customer: {customer.id}</a>}
                             </div>
                         </div>
                     </div>
@@ -54,11 +55,10 @@ export default function Order({org}) {
                                         
                                     </div> */}
                                     <div id="tab1" className={activeIndex === 1 ? "tab__item active" : "tab__item"}>
-                                        {paymentProcessors && paymentProcessors.length < 1 && <p>Payments is not setup for your business. <br/><br/><a href="/integration/payments" className="techwave_fn_button" type="submit">Activate Payments</a></p>}
-                                        {paymentProcessors && paymentProcessors.length > 0 && activeIndex === 1 && <OrderList viewOrder={handleViewOrder} />}
+                                        <CustomersList viewCustomer={handleViewCustomer} />
                                     </div>
                                     <div id="tab2" className={activeIndex === 2 ? "tab__item active" : "tab__item"}>
-                                        {viewOrder && <ViewOrder orderId={viewOrder.id} />}
+                                        {customer && <CustomerMetric contactId={customer.id} />}
                                     </div>
                                    
                                    

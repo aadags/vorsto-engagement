@@ -7,6 +7,7 @@ const NewProduct = ({ org, cat }) => {
 
   const [productName, setProductName] = useState('');
   const [description, setDescription] = useState('');
+  const [sku, setSku] = useState('');
   const [currency] = useState(org.currency);
   const [outofstock, setOutofstock] = useState(false);
   const [tax, setTax] = useState();
@@ -17,7 +18,7 @@ const NewProduct = ({ org, cat }) => {
 const [error, setError] = useState('');
 const [successMessage, setSuccessMessage] = useState('');
 const [varieties, setVarieties] = useState([
-  { name: '', price: '', quantity: '' },
+  { name: '', barcode: '', price: '', quantity: '', price_unit: '', weight_available: '', min_weight: '', weight_step: '' },
 ]);
 const [categories, setCategories] = useState(cat);
 const [selectedCategory, setSelectedCategory] = useState("");
@@ -37,7 +38,7 @@ const handleCategoryChange = (e) => {
 };
 
 const addVariety = () => {
-  setVarieties([...varieties, { name: '', price: '', quantity: '' }]);
+  setVarieties([...varieties, { name: '', barcode: '', price: '', quantity: '', price_unit: '', weight_available: '', min_weight: '', weight_step: '' }]);
 };
 
 const removeVariety = (index) => {
@@ -69,6 +70,7 @@ const handleVarietyChange = (index, field, value) => {
         body: JSON.stringify({
           name: productName,
           description,
+          sku,
           image,
           tax,
           taxType,
@@ -78,8 +80,11 @@ const handleVarietyChange = (index, field, value) => {
           outofstock,
           varieties: varieties.map((v) => ({
             ...v,
-            price: Number(v.price),
-            quantity: Number(v.quantity),
+            price: v.price,
+            quantity: v.quantity,
+            weight_available: v.weight_available,
+            min_weight: v.min_weight,
+            weight_step: v.weight_step,
           })),
         }),
       });
@@ -92,6 +97,7 @@ const handleVarietyChange = (index, field, value) => {
       // Optionally reset form:
       setProductName('');
       setDescription('');
+      setSku('');
       setPrice('');
       router.refresh();
     } catch (err) {
@@ -131,6 +137,18 @@ const handleVarietyChange = (index, field, value) => {
             style={{ resize: 'vertical', overflow: 'auto' }}
             placeholder="Product Description"
             required
+          />
+        </div>
+        <br />
+        {/* Product sku */}
+        <div className="form_group">
+        <input
+            type="text"
+            id="product_sku"
+            className="full_width"
+            placeholder="Product Sku (Optional)"
+            value={sku}
+            onChange={(e) => setSku(e.target.value)}
           />
         </div>
         <br />
@@ -221,6 +239,17 @@ const handleVarietyChange = (index, field, value) => {
         <h6>Varieties & Sub Varieties</h6>
         {varieties.map((v, idx) => (
           <div key={idx} className="variety-row">
+
+            <select
+              value={v.price_unit}
+              onChange={(e) => handleVarietyChange(idx, 'price_unit', e.target.value)}
+            >
+              <option value="">Select Price Unit</option>
+              <option value="unit">Unit</option>
+              <option value="kg">Weight (kg)</option>
+              <option value="lb">Weight (lb)</option>
+            </select>
+
             <input
               type="text"
               type="text"
@@ -233,7 +262,7 @@ const handleVarietyChange = (index, field, value) => {
               <input
                 type="number"
                 className="currency-input"
-                placeholder="Price"
+                placeholder="Unit Price"
                 value={v.price}
                 onChange={(e) => handleVarietyChange(idx, 'price', e.target.value)}
                 required
@@ -241,18 +270,62 @@ const handleVarietyChange = (index, field, value) => {
               <span className="currency-suffix">{currency}</span>
             </div>
 
-            <div className="currency-wrapper">
-              <input
-                type="number"
-                className="currency-input"
-                placeholder="Stock Quantity"
-                value={v.quantity}
-                onChange={(e) => handleVarietyChange(idx, 'quantity', e.target.value)}
-                required
-              />
-              <span className="currency-suffix">Units</span>
-            </div>
-            {idx > 0 && <button type="button" className="techwave_fn_button" onClick={() => removeVariety(idx)}>
+            <input
+              type="text"
+              type="text"
+              placeholder="Barcode (optional)"
+              value={v.barcode}
+              onChange={(e) => handleVarietyChange(idx, 'barcode', e.target.value)}
+            />
+
+            {v.price_unit === 'unit' ? (
+              <div className="currency-wrapper">
+                <input
+                  type="number"
+                  className="currency-input"
+                  placeholder="Stock Quantity"
+                  value={v.quantity}
+                  onChange={(e) => handleVarietyChange(idx, 'quantity', e.target.value)}
+                  required
+                />
+                <span className="currency-suffix">Units</span>
+              </div>
+            ) : (
+              <>
+                <div className="currency-wrapper">
+                  <input
+                    type="number"
+                    className="currency-input"
+                    placeholder="Available Weight"
+                    value={v.weight_available}
+                    onChange={(e) => handleVarietyChange(idx, 'weight_available', e.target.value)}
+                    required
+                  />
+                  <span className="currency-suffix">{varieties[idx].price_unit}</span>
+                </div>
+                <div className="currency-wrapper">
+                <input
+                  type="number"
+                  placeholder="Minimum Weight"
+                  value={v.min_weight}
+                  onChange={(e) => handleVarietyChange(idx, 'min_weight', e.target.value)}
+                  required
+                /><span className="currency-suffix">{varieties[idx].price_unit}</span>
+                </div>
+                <div className="currency-wrapper">
+                <input
+                  type="number"
+                  placeholder="Unit Weight"
+                  value={v.weight_step}
+                  onChange={(e) => handleVarietyChange(idx, 'weight_step', e.target.value)}
+                  required
+                />
+                <span className="currency-suffix">{varieties[idx].price_unit}</span>
+                </div>
+              </>
+            )}
+
+            {idx > 0 && <button type="button" className="techwave_fn_button" style={{ backgroundColor: "grey"}} onClick={() => removeVariety(idx)}>
               -
             </button>}
           </div>

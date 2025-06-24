@@ -8,6 +8,7 @@ const ViewProduct = ({ productId, org }) => {
 
   const [productName, setProductName] = useState("");
   const [description, setDescription] = useState("");
+  const [sku, setSku] = useState("");
   const [category, setCategory] = useState("");
   const [outofstock, setOutofstock] = useState("");
   const [currency] = useState(org.currency);
@@ -57,10 +58,10 @@ useEffect(() => {
         console.log({ product });
         setProductName(product.name);
         setDescription(product.description);
+        setSku(product.sku);
         setCategory(product.category.name);
         setOutofstock(product.outofstock);
         setVarieties(product.inventories);
-        setStripeProductId(product.stripeProductId);
         setStockImages(product.images);
         setTax(product.tax)
         setTaxType(product.tax_type)
@@ -88,6 +89,11 @@ useEffect(() => {
           <h6>Description: {description}</h6>
         </div>
 
+        {/* Product Sku */}
+        <div className="form_group">
+          <h6>Sku: {sku}</h6>
+        </div>
+
         <div className="form_group">
           <h6>Category: {category}</h6>
         </div>
@@ -112,18 +118,44 @@ useEffect(() => {
                   </span>
                 </label>
                 <br /><br />
-        <div style={{ display: "flex", alignItems: "center", gap: "11.0rem", paddingLeft: "0em", paddingBottom: "0.5em" }}>
-            <span>Variety</span>
-            <span>{`Price (${currency})`}</span>
-            <span>Quantity</span>
-        </div>
-        {varieties.map((v, idx) => (
-          <div key={idx} style={{ display: "flex", alignItems: "center", gap: "12.0rem", paddingLeft: "0em", paddingBottom: "0.5em" }}>
-            <span>{v.name}</span>
-            <span>{`${v.price} ${currency}`}</span>
-            <span>{v.quantity}</span>
-          </div>
-        ))}
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "4rem",
+                    paddingBottom: "0.5em",
+                    fontWeight: "bold",
+                  }}
+                >
+                  <span style={{ width: "16%" }}>Variety</span>
+                  <span style={{ width: "16%" }}>{`Price (${currency})`}</span>
+                  <span style={{ width: "16%" }}>Stock</span>
+                </div>
+
+                {varieties.map((v, idx) => {
+                  const isWeight = v.price_unit === "kg" || v.price_unit === "lb";
+                  const unitLabel = v.price_unit === "kg" ? "kg"
+                                  : v.price_unit === "lb" ? "lb"
+                                  : "unit";
+
+                  return (
+                    <div
+                      key={idx}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4rem",
+                        paddingBottom: "0.5em",
+                      }}
+                    >
+                      <span style={{ width: "16%" }}>{v.name}</span>
+                      <span style={{ width: "16%" }}>{(v.price).toFixed(2)} {currency}</span>
+                      <span style={{ width: "16%" }}>{unitLabel === "unit"? v.quantity : v.weight_available} {unitLabel}</span>
+                      
+                    </div>
+                  );
+                })}
+
     
       <br />
       <br />
