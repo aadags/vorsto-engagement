@@ -186,13 +186,13 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
             img: "/svg/robot.svg",
             key: user.role_id > 0 ? "manageAiAgent": "allow"
         },
-        {
-            title: "Plans",
-            pathname: user.organizations.plan === "free"? "/plan" : `/billing/${user.organizations.stripe_id}`,
-            img: "/svg/dollar.svg",
-            key: user.role_id > 0 ? "manageBilling" : "allow"
+        // {
+        //     title: "Plans",
+        //     pathname: user.organizations.plan === "free"? "/plan" : `/billing/${user.organizations.stripe_id}`,
+        //     img: "/svg/dollar.svg",
+        //     key: user.role_id > 0 ? "manageBilling" : "allow"
     
-        },
+        // },
         {
             title: "Business Information", 
             pathname: "/information",

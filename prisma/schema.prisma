@@ -64,11 +64,11 @@ model Organization {
   channel_fee  Int    @default(2)
   shop_template  String?    @default("simple")
   quarterly_revenue_target             Int?    @default(2500000)
-  ai_human_take_over   Boolean   @default(true)
+  ai_human_take_over   Boolean   @default(false)
   ai_system_bio        String?   @db.LongText
-  ai_auto_engage       Boolean   @default(true)
-  ai_auto_feedBack     Boolean   @default(true)
-  ai_auto_marketing    Boolean   @default(true)
+  ai_auto_engage       Boolean   @default(false)
+  ai_auto_feedBack     Boolean   @default(false)
+  ai_auto_marketing    Boolean   @default(false)
   loyalty_programs LoyaltyProgram[]
   membership_plans MembershipPlan[]
   reviews      Review[]

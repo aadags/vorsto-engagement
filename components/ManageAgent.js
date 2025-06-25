@@ -22,6 +22,7 @@ export default function ManageAgent() {
   const [pageLoad, setPageLoad] = useState(true);
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [premium, setPremium] = useState(false);
   const [error, setError] = useState('');
 
   const router = useRouter();
@@ -118,6 +119,7 @@ export default function ManageAgent() {
       setHumanTakeOver(org.ai_human_take_over);
       setAutoFeedBack(org.ai_auto_feedBack);
       setAutoMarketing(org.ai_auto_marketing);
+      setPremium(org.plan !== "free");
 
     };
     fetchOrg();
@@ -165,6 +167,7 @@ export default function ManageAgent() {
                       checked={autoEngage} 
                       id="auto_engage" 
                       onChange={(e) => setAutoEngage(e.target.checked)} 
+                      readOnly={premium}
                     />
 
                     <span className="t_slider" />
@@ -182,6 +185,7 @@ export default function ManageAgent() {
                       checked={humanTakeOver} 
                       id="human_takeover" 
                       onChange={(e) => setHumanTakeOver(e.target.checked)} 
+                      readOnly={premium}
                     />
 
                     <span className="t_slider" />
@@ -198,6 +202,7 @@ export default function ManageAgent() {
                       type="checkbox" 
                       checked={autoFeedBack} 
                       id="auto_feedback" 
+                      readOnly={premium}
                       onChange={(e) => setAutoFeedBack(e.target.checked)} 
                     />
 
@@ -216,6 +221,7 @@ export default function ManageAgent() {
                       checked={autoMarketing} 
                       id="human_takeover" 
                       onChange={(e) => setAutoMarketing(e.target.checked)} 
+                      readOnly={premium}
                     />
 
                     <span className="t_slider" />
