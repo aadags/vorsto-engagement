@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@elastic/elasticsearch": "^9.0.2",
     "@firebase/app-compat": "^0.2.39",
     "@firebase/auth-compat": "^0.5.12",
     "@fortawesome/fontawesome-svg-core": "^6.6.0",
