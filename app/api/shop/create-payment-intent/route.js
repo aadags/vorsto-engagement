@@ -63,7 +63,15 @@ export async function POST(req) {
     
     const { subtotal, taxTotal } = orderItems.reduce(
       (acc, item) => {
-        const base = item.inventory.price * item.quantity;
+        const isWeight = item.inventory.price_unit !== "unit";
+        const step = isWeight ? item.inventory.weight_step : 1;
+        const qty = item.quantity;
+        const price = item.inventory.price;
+    
+        const base = isWeight
+          ? (qty / step) * price  // For weight: calculate how many steps and apply price per step
+          : qty * price;          // For unit: simple quantity * price
+    
         const tax = item.inventory.product.tax_type === "flatfee"
           ? item.inventory.product.tax
           : (base * item.inventory.product.tax) / 100;

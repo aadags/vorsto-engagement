@@ -425,7 +425,7 @@ model Inventory {
   quantity        Int           // for unit-based items
   weight_available Float?       // for weight-based items (e.g., 50.5 kg)
   price           Int           // price per unit or per kg (in cents)
-  price_unit      String?       // "per_item", "per_kg", "per_lb", etc.
+  price_unit      String?       @default("unit") // "per_item", "per_kg", "per_lb", etc.
   min_weight      Float?        // e.g., 1.0 (minimum 1kg to order)
   weight_step     Float?        // e.g., 0.25 (must order in steps like 1.25kg, 1.5kg)
   order_items     OrderItem[]
@@ -487,8 +487,8 @@ model OrderItem {
   inventory         Inventory      @relation(fields: [inventory_id], references: [id])
   inventory_id       String
   status   String
-  quantity        Int 
-  weight          Float? 
+  quantity        Float 
+  price_unit          String? @default("unit")
   price             Int? 
   tax             Int 
   order     Order   @relation(fields: [order_id], references: [id])

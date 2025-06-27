@@ -63,7 +63,15 @@ export async function POST(req) {
     
     const { subtotal, taxTotal } = orderItems.reduce(
       (acc, item) => {
-        const base = item.inventory.price * item.quantity;
+        const isWeight = item.inventory.price_unit !== "unit";
+        const step = isWeight ? item.inventory.weight_step : 1;
+        const qty = item.quantity; // this holds either unit or weight directly
+        const price = item.inventory.price;
+    
+        const base = isWeight
+          ? (qty / step) * price  // price is per weight_step
+          : qty * price;          // normal unit price
+    
         const tax = item.inventory.product.tax_type === "flatfee"
           ? item.inventory.product.tax
           : (base * item.inventory.product.tax) / 100;
@@ -75,6 +83,7 @@ export async function POST(req) {
       },
       { subtotal: 0, taxTotal: 0 }
     );
+    
     
     
     const total = Math.ceil(subtotal + taxTotal + shipping.total + shipping.tip)
@@ -107,14 +116,30 @@ export async function POST(req) {
           transactionId: intentId,
           organization_id: mid,
           order_items: {
-            create: orderItems.map(item => ({
-              inventory_id: item.inventory_id,
-              status: "Pending",
-              quantity: item.quantity,
-              price: item.inventory.price * item.quantity,
-              tax: item.inventory.product.tax_type==="flatfee"? item.inventory.product.tax : ((item.inventory.price * item.quantity) * item.inventory.product.tax) / 100,
-            })),
-          },
+            create: orderItems.map(item => {
+              const isWeight = item.inventory.price_unit !== "unit";
+              const step = isWeight ? item.inventory.weight_step : 1;
+              const qty = item.quantity;
+              const price = item.inventory.price;
+          
+              const base = isWeight
+                ? (qty / step) * price
+                : qty * price;
+          
+              const tax = item.inventory.product.tax_type === "flatfee"
+                ? item.inventory.product.tax
+                : (base * item.inventory.product.tax) / 100;
+          
+              return {
+                inventory_id: item.inventory_id,
+                status: "Pending",
+                quantity: qty,
+                price: Math.round(base), // round to ensure it's an integer if needed
+                tax: Math.round(tax),
+                price_unit: item.inventory.price_unit || "unit",
+              };
+            })
+          }
         },
         include: {
           order_items: true,
