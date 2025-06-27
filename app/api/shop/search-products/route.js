@@ -35,7 +35,13 @@ export async function POST(req) {
             { description: { contains: query } },
             { sku: { contains: query } },
             { category: { name: { contains: query } } },
-            { inventory: { name: { contains: query } } },
+            {
+              inventories: {
+                some: {
+                  name: { contains: query },
+                },
+              },
+            }
           ],
         }
       : filters;
