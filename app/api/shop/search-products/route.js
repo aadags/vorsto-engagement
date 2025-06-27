@@ -1,49 +1,62 @@
-// /app/api/search/route.ts
 import { NextResponse } from 'next/server';
-import { esClient } from '@/elastic/elasticClient';
+import prisma from '@/db/prisma';
 
 export async function POST(req) {
-  const { query, organizationId, categoryId, page, limit } = await req.json();
+  const { query = '', organizationId, categoryId, page = 1, limit = 20 } = await req.json();
 
-  const from = (page - 1) * limit;
+  const skip = (page - 1) * limit;
 
   try {
+    const filters = {
+      organization_id: organizationId,
+      active: true,
+    };
 
-    const filters = [
-        { term: { organization_id: organizationId } },
-        { term: { active: true } }
-      ];
-  
-      if (categoryId) {
-        filters.push({ term: { category_id: categoryId } });
-      }
+    if (categoryId) {
+      filters.category_id = categoryId;
+    }
 
-    const result = await esClient.search({
-      index: 'products',
-      from,
-      size: limit,
-      query: {
-        bool: {
-          must: {
-            multi_match: {
-              query,
-              fields: ['name^3', 'description', 'sku', 'category.name'],
-              fuzziness: 'AUTO',
-            },
-          },
-          filter: filters
+    if (query.length < 3) {
+      return NextResponse.json({
+        data: [],
+        page,
+        limit,
+        total: 0,
+        totalPages: 0,
+      });
+    }
+
+    // Prisma doesn't support 'mode' in all setups — removed it
+    const where = query.length >= 3
+      ? {
+          ...filters,
+          OR: [
+            { name: { contains: query } },
+            { description: { contains: query } },
+            { sku: { contains: query } },
+            { category: { name: { contains: query } } },
+          ],
         }
-      }
-    });
+      : filters;
 
-    const hits = result.hits.hits.map(hit => hit._source);
+    const [data, total] = await Promise.all([
+      prisma.product.findMany({
+        where,
+        skip,
+        take: limit,
+        include: {
+          category: true,
+        },
+      }),
+      prisma.product.count({ where }),
+    ]);
 
     return NextResponse.json({
-      data: hits,
+      data,
       page,
       limit,
-      total: result.hits.total.value,
-      totalPages: Math.ceil(result.hits.total.value / limit),
+      total,
+      totalPages: Math.ceil(total / limit),
     });
 
   } catch (err) {
