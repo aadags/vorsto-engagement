@@ -35,6 +35,7 @@ export async function POST(req) {
             { description: { contains: query } },
             { sku: { contains: query } },
             { category: { name: { contains: query } } },
+            { inventory: { name: { contains: query } } },
           ],
         }
       : filters;
@@ -46,6 +47,7 @@ export async function POST(req) {
         take: limit,
         include: {
           category: true,
+          inventories: true
         },
       }),
       prisma.product.count({ where }),
