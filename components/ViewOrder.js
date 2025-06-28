@@ -252,7 +252,7 @@ useEffect(() => {
             />
             <div style={{ flex: "1 1 150px" }}>{o.inventory.product.name}</div>
             <div style={{ flex: "1 1 120px" }}>{o.inventory.name}</div>
-            <div style={{ flex: "1 1 100px" }}>Qty: {o.quantity}</div>
+            <div style={{ flex: "1 1 100px" }}>Qty: {o.quantity} {o.price_unit !=="unit" && o.price_unit}</div>
             <div style={{ flex: "1 1 160px" }}>
               Charge: {formatCurrency(o.price, order.org.currency)}{" "}
               <sup style={{ fontSize: "0.75em" }}>
