@@ -18,18 +18,14 @@ export async function GET(req) {
     const pageSize = parseInt(req.nextUrl.searchParams.get("per_page"));
 
     const orders = await prisma.order.findMany({
-      where: { organization_id: organizationId, channel: {
-        not: "in_person"
-      } },
+      where: { organization_id: organizationId, channel: "in_person" },
       orderBy: { created_at: 'desc' },
       skip: (page - 1) * pageSize,
       take: pageSize,
     });
 
     const total = await prisma.order.count({
-      where: { organization_id: organizationId, channel: {
-        not: "in_person"
-      } },
+      where: { organization_id: organizationId, channel: "in_person" },
     });
 
     const org = await prisma.organization.findFirst({

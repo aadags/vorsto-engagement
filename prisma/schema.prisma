@@ -385,7 +385,6 @@ model Product {
   tax           Int?
   tax_type           String?
   outofstock      Boolean? @default(false)  
-  measurement_type String   @default("unit") // "unit" or "weight" 
   images  Image[]
   inventories     Inventory[]
   category         Category?      @relation(fields: [category_id], references: [id])
@@ -421,7 +420,7 @@ model Inventory {
   product_id      String
   name            String      
   parent_id       String?      
-  barcode       String?      
+  barcode         String?      @unique()
   quantity        Int           // for unit-based items
   weight_available Float?       // for weight-based items (e.g., 50.5 kg)
   price           Int           // price per unit or per kg (in cents)

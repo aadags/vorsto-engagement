@@ -146,6 +146,32 @@ export async function POST(req) {
         },
       });
 
+      // Decrement inventory after order creation
+      for (const item of order.order_items) {
+        const inventory = await prisma.inventory.findUnique({
+          where: { id: item.inventory_id },
+          select: {
+            id: true,
+            price_unit: true,
+            quantity: true,
+            weight_available: true
+          }
+        });
+
+        const isWeight = inventory.price_unit !== "unit";
+        const qtyToDecrement = item.quantity;
+
+        const inventoryUpdate = isWeight
+          ? { weight_available: inventory.weight_available - qtyToDecrement }
+          : { quantity: inventory.quantity - qtyToDecrement };
+
+        await prisma.inventory.update({
+          where: { id: inventory.id },
+          data: inventoryUpdate,
+        });
+      }
+
+
       await prisma.$transaction(async (tx) => {
         
         await tx.cartItem.deleteMany({

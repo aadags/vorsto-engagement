@@ -60,13 +60,13 @@ export default function LoyaltySetup() {
           </div>
 
           <div className="form-group">
-            <label>Point Rate (e.g. 1 pt per $)</label>
+            <label>Point Rate (e.g. 1pt per ${loyaltyProgram.point_rate})</label>
             <input type="number" value={loyaltyProgram.point_rate}
               onChange={e => setLoyaltyProgram({ ...loyaltyProgram, point_rate: +e.target.value })} />
           </div>
 
           <div className="form-group">
-            <label>Redeem Rate (e.g. 100 pts = $1)</label>
+            <label>Redeem Rate (e.g. {loyaltyProgram.redeem_rate}pts = $1)</label>
             <input type="number" value={loyaltyProgram.redeem_rate}
               onChange={e => setLoyaltyProgram({ ...loyaltyProgram, redeem_rate: +e.target.value })} />
           </div>
@@ -84,7 +84,7 @@ export default function LoyaltySetup() {
 
               <div className="form-group">
                 <label>Price</label>
-                <input type="number" value={plan.price}
+                <input type="number" value={plan.price / 100}
                   onChange={e => updatePlan(index, 'price', e.target.value)} />
               </div>
 

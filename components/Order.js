@@ -5,6 +5,7 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit, faEye, faChartSimple } from '@fortawesome/free-solid-svg-icons'
 import OrderList from './OrderList';
+import OrderListTwo from './OrderListTwo';
 import ViewOrder from './ViewOrder';
 
 export default function Order({org}) {
@@ -36,6 +37,7 @@ export default function Order({org}) {
                         <div className="container">
                             <div className="tab_in">
                                 <a className={activeIndex === 1 ? "active" : ""} onClick={() => handleOnClick(1)}>Online Orders</a>
+                                <a className={activeIndex === 3 ? "active" : ""} onClick={() => handleOnClick(3)}>In-Person Orders</a>
                                 {viewOrder && <a className={activeIndex === 2 ? "active" : ""} onClick={() => handleOnClick(2)}>Order Id: {viewOrder.id}</a>}
                             </div>
                         </div>
@@ -59,6 +61,10 @@ export default function Order({org}) {
                                     </div>
                                     <div id="tab2" className={activeIndex === 2 ? "tab__item active" : "tab__item"}>
                                         {viewOrder && <ViewOrder orderId={viewOrder.id} />}
+                                    </div>
+                                    <div id="tab3" className={activeIndex === 3 ? "tab__item active" : "tab__item"}>
+                                        {paymentProcessors && paymentProcessors.length < 1 && <p>Payments is not setup for your business. <br/><br/><a href="/integration/payments" className="techwave_fn_button" type="submit">Activate Payments</a></p>}
+                                        {paymentProcessors && paymentProcessors.length > 0 && activeIndex === 3 && <OrderListTwo viewOrder={handleViewOrder} />}
                                     </div>
                                    
                                    

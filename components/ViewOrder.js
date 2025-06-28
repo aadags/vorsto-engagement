@@ -129,7 +129,7 @@ useEffect(() => {
             </h6>
             <br/>
             <h6>Transaction ID: <a href onClick={onOpen} style={{ color: "blue" }}>{order.transactionId}</a></h6>
-            <h6>Channel: {order.channel.toUpperCase()}</h6>
+            <h6>Channel: {order.channel.replace(/_/g, ' ').toUpperCase()}</h6>
             
           </div>
 
@@ -139,19 +139,19 @@ useEffect(() => {
               <code>Customer Information</code>
             </h6>
             <h6>
-              Name: <b>{order.contact.name}</b>
+              Name: <b>{order?.contact?.name}</b>
             </h6>
             <h6>
-              Email: <b>{order.contact.email}</b>
+              Email: <b>{order?.contact?.email}</b>
             </h6>
             <h6>
-              Phone: <b>{order.contact.phone}</b>
+              Phone: <b>{order?.contact?.phone}</b>
             </h6>
+            {order?.address && <h6>
+              Delivery Address: <b>{order?.address}</b>
+            </h6>}
             <h6>
-              Delivery Address: <b>{order.address}</b>
-            </h6>
-            <h6>
-              Instruction: <b>{order.note}</b>
+              Note: <b>{order.note}</b>
             </h6>
           </div>
         </div>
