@@ -15,7 +15,9 @@ export async function POST(req) {
     const products = await prisma.product.findMany({
       where: { organization_id: id, category_id: categoryId, active: true },
       include:{
-        inventories: true
+        inventories: {
+          where: { active: true },
+        },
       }
     });
 
