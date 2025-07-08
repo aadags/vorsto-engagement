@@ -26,6 +26,9 @@ export async function GET(req) {
       include: {
         products: {
           take: 1, // limit to 1 product
+          where: {
+            active: true, // only include active products
+          },
         },
       },
     });
