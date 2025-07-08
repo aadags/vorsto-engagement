@@ -18,7 +18,7 @@ export async function GET(req) {
       where: { name: "VorstoPay", organization_id: org.id },
     });
 
-    const categories = await prisma.category.findMany({
+    const categoriesWithProducts = await prisma.category.findMany({
       where: { organization_id: org.id, active: true },
       orderBy: {
         arrangement: 'asc',
@@ -32,6 +32,8 @@ export async function GET(req) {
         },
       },
     });
+
+    const categories = categoriesWithProducts.filter(cat => cat.products.length > 0);
 
     return NextResponse.json({ org, categories, paymentProcessor });
   } catch (error) {
