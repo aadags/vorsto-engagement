@@ -18,6 +18,7 @@ export async function GET(req) {
     });
 
     const where = {
+      active: true,
       organization_id: org.id,
       ...(categoryId && { category_id: categoryId }),
     };
