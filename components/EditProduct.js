@@ -42,7 +42,7 @@ const EditProduct = ({ productId, org, cat }) => {
       barcode: '',
       price: '',
       quantity: '',
-      price_unit: '',
+      price_unit: 'unit',
       weight_available: '',
       min_weight: '',
       weight_step: '',

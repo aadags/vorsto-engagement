@@ -28,6 +28,7 @@ export async function POST(req) {
 
     const {
       name,
+      type,
       description,
       sku,
       category,
@@ -38,6 +39,7 @@ export async function POST(req) {
       image,
       outofstock,
       varieties,
+      comboItems
     } = body;
 
     let cat = { id: category };
@@ -55,6 +57,7 @@ export async function POST(req) {
     const product = await prisma.product.create({
       data: {
         name,
+        type,
         sku,
         description,
         category_id: cat.id,
@@ -66,20 +69,36 @@ export async function POST(req) {
       },
     });
 
-    for (const variety of varieties) {
-      await prisma.inventory.create({
-        data: {
-          product_id: product.id,
-          name: variety.name,
-          barcode: variety.barcode || null,
-          quantity: parseInt(variety.quantity) || 0,
-          price: parseFloat(variety.price) * 100,
-          price_unit: variety.price_unit,
-          weight_available: parseFloat(variety.weight_available) || null,
-          min_weight: parseFloat(variety.min_weight) || null,
-          weight_step: parseFloat(variety.weight_step) || null,
-        },
-      });
+    if(type === "default")
+    {
+      for (const variety of varieties) {
+        await prisma.inventory.create({
+          data: {
+            product_id: product.id,
+            name: variety.name,
+            barcode: variety.barcode || null,
+            quantity: parseInt(variety.quantity) || 0,
+            price: parseFloat(variety.price) * 100,
+            price_unit: variety.price_unit,
+            weight_available: parseFloat(variety.weight_available) || null,
+            min_weight: parseFloat(variety.min_weight) || null,
+            weight_step: parseFloat(variety.weight_step) || null,
+          },
+        });
+      }
+    }
+
+    if(type === "combo")
+    {
+      for (const item of comboItems) {
+        await prisma.comboItem.create({
+          data: {
+            product_id: product.id,
+            inventory_id: item.inventory_id,
+            extra_price: item.extra_price * 100 || 0,
+          },
+        });
+      }
     }
 
     for (const img of image) {

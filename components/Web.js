@@ -1,125 +1,72 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import axios from "axios";
-import StripeDetails from "./StripeDetails";
+'use client'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
+import SetupSiteMedia from './SetupSiteMedia';
+import WebTemplate from './WebTemplate';
+
 
 export default function Web({ org }) {
-  const router = useRouter();
-  // For filter
 
-  // Initialize your component state
-  const [activeIndex, setActiveIndex] = useState(1);
-  const [selectedTag, setSelectedTag] = useState("");
-  const [storefront] = useState(org.shop_template);
+    const [activeIndex, setActiveIndex] = useState(1);
 
-  const templates = [
-    {
-      id: 1,
-      category: "Simple",
-      img: "/simple.jpg",
-      title: "Simple Market",
-      slug: "simple",
-      desc: "Simple ecommerce store template",
-      category: "Simple",
-      onclick: () => getStripeConnectLink("simple")
+    const handleOnClick = (index) => {
+        setActiveIndex(index);
+    };
 
-    },
-    {
-      id: 2,
-      category: "Simple",
-      img: "/simple-res.png",
-      title: "Simple Restaurant",
-      slug: "simple-res",
-      desc: "Simple online restaurant template",
-      category: "Simple",
-      onclick: () => getStripeConnectLink("simple-res")
-
-    },
-    // {
-    //   id: 2,
-    //   category: 1,
-    //   img: "/img/square2.png",
-    //   title: "Square",
-    //   desc: "Powering all the different ways you do business. Connect your existing or new Square accounts",
-    //   url: `${process.env.NEXT_PUBLIC_SQUARE_BASE}/oauth2/authorize?client_id=${process.env.NEXT_PUBLIC_SQUARE_APP_ID}&scope=ITEMS_WRITE+ITEMS_READ+ORDERS_WRITE+ORDERS_READ+PAYMENTS_WRITE+PAYMENTS_READ+PAYMENTS_WRITE_ADDITIONAL_RECIPIENTS+INVENTORY_WRITE+INVENTORY_READ+CUSTOMERS_WRITE+CUSTOMERS_READ+INVOICES_READ+INVOICES_WRITE+MERCHANT_PROFILE_WRITE+MERCHANT_PROFILE_READ+LOYALTY_WRITE+LOYALTY_READ+SUBSCRIPTIONS_WRITE+SUBSCRIPTIONS_READ&session=false&state=82201dd8d83d23cc8a48caf52b`,
-    // },
-  ];
-
-
-  const handleOnClick = (index) => {
-    setActiveIndex(index);
-    setSelectedTag("");
-  };
-
-  const filteredTemplatesByCategory = activeIndex
-    ? templates.filter(
-        (paymentProvider) => paymentProvider.category === activeIndex
-      )
-    : null;
-
-  const filteredPayments = selectedTag
-    ? filteredTemplatesByCategory.filter((paymentProvider) =>
-        paymentProvider.tags.includes(selectedTag)
-      )
-    : filteredTemplatesByCategory;
-
-  const handleTagChange = (event) => {
-    setSelectedTag(event.target.value);
-  };
-
-  const getStripeConnectLink = async (slug) => {
-    const confirmed = window.confirm("Are you sure you want to update the store template?");
-    
-    if (!confirmed) return;
-  
-    try {
-      const response = await axios.post('/api/update-store-template', { slug });
-  
-      if (response.data) {
-        router.refresh();
-      }
-    } catch (error) {
-      console.error("Error getting payments:", error);
-    }
-  };
-  
-  
-
-  return (
-    <>
-      <div className="techwave_fn_models_page">
-        <div className="techwave_fn_models">
-          <div className="container">
-            <ul className="fn__model_items">
-              {templates.map((product, index) => (
-                  <li key={product.id} className="fn__model_item">
-                    <div className="item">
-                      <div className="img">
-                        <img src={product.img} alt="" />
-                      </div>
-                      <div className="item__info">
-                        <h3 className="title">{product.title}</h3>
-                        <p className="">{product.desc}</p>
-                      </div>
-                      <div className="item__author">
-                        { product.slug === storefront ? (
-                          <a href="#" className="author_name">
-                            Current Template
-                          </a>
-                        )  : (
-                          <button className="techwave_fn_button" onClick={product.onclick}>
-                            Install Template
-                          </button>
-                        )}
-                      </div>
+    return (
+        <>
+            <div className="techwave_fn_models_page">
+                <div className="fn__title_holder">
+                    <div className="container">
+                        <h1 className="title">Web Channel</h1>
                     </div>
-                  </li>
-                ))}
-            </ul>
-          </div>
-        </div>
-      </div>
-    </>
-  );
+                </div>
+                {/* Models */}
+            
+                <div className="techwave_fn_models">
+                    <div className="fn__tabs">
+                        <div className="container">
+                            <div className="tab_in">
+                                <a className={activeIndex === 1 ? "active" : ""} onClick={() => handleOnClick(1)}>Templates</a>
+                                <a className={activeIndex === 2 ? "active" : ""} onClick={() => handleOnClick(2)}>Media</a>
+                                <a className={activeIndex === 3 ? "active" : ""} onClick={() => handleOnClick(3)}>Site Settings</a>
+                            </div>
+                        </div>
+                    </div>
+                   
+                    <div className="container">
+                        {/* models content */}
+                        <div className="models__content">
+                            <div className="models__results">
+                                <div className="fn__preloader">
+                                    <div className="icon" />
+                                    <div className="text">Loading</div>
+                                </div>
+                                <div className="fn__tabs_content">
+                                    {/* <div id="tab1" className={activeIndex === 1 ? "tab__item active" : "tab__item"}>
+                                        
+                                    </div> */}
+                                    <div id="tab1" className={activeIndex === 1 ? "tab__item active" : "tab__item"}>
+                                        {activeIndex === 1 && <WebTemplate org={org} />}
+                                    </div>
+                                    <div id="tab2" className={activeIndex === 2 ? "tab__item active" : "tab__item"}>
+                                        {activeIndex === 2 && <SetupSiteMedia org={org} />}
+                                    </div>
+                                    <div id="tab3" className={activeIndex === 3 ? "tab__item active" : "tab__item"}>
+                                        {activeIndex === 3 && <WebTemplate org={org} />}
+                                    </div>
+
+                                   
+                                   
+                                </div>
+                            </div>
+                        </div>
+                        {/* !models content */}
+                    </div>
+                </div>
+                {/* !Models */}
+            </div>
+
+        </>
+    )
 }

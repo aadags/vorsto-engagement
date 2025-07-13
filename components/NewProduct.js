@@ -1,11 +1,13 @@
-import { useState } from "react";;
+import { useEffect, useState } from "react";;
 import { useRouter } from 'next/navigation';
 import UploadImageForm from "./UploadImageForm";
+import axios from "axios";
 
 const NewProduct = ({ org, cat }) => {
   const router = useRouter();
 
   const [productName, setProductName] = useState('');
+  const [type, setType] = useState('');
   const [description, setDescription] = useState('');
   const [sku, setSku] = useState('');
   const [currency] = useState(org.currency);
@@ -14,17 +16,33 @@ const NewProduct = ({ org, cat }) => {
   const [taxType, setTaxType] = useState("");
   const [price, setPrice] = useState(''); // Store as string for input, convert to number on submit
   const [image, setImage] = useState([]);
+  const [inventories, setInventories] = useState([]);
   const [loading, setLoading] = useState(false);
 const [error, setError] = useState('');
 const [successMessage, setSuccessMessage] = useState('');
 const [varieties, setVarieties] = useState([
-  { name: '', barcode: '', price: '', quantity: '', price_unit: '', weight_available: '', min_weight: '', weight_step: '' },
+  { name: '', barcode: '', price: '', quantity: '', price_unit: 'unit', weight_available: '', min_weight: '', weight_step: '' },
 ]);
 const [categories, setCategories] = useState(cat);
 const [selectedCategory, setSelectedCategory] = useState("");
 const [isNewCategory, setIsNewCategory] = useState(false);
 const [newCategoryName, setNewCategoryName] = useState("");
 const [newCategoryDescription, setNewCategoryDescription] = useState("");
+const [comboItems, setComboItems] = useState([{ inventory_id: '', extra_price: '' }]);
+
+const addComboItem = () => {
+  setComboItems([...comboItems, { inventory_id: '', extra_price: '' }]);
+};
+
+const removeComboItem = (index) => {
+  setComboItems(comboItems.filter((_, i) => i !== index));
+};
+
+const handleComboChange = (index, field, value) => {
+  const updated = [...comboItems];
+  updated[index][field] = value;
+  setComboItems(updated);
+};
 
 const handleCategoryChange = (e) => {
   const value = e.target.value;
@@ -38,7 +56,7 @@ const handleCategoryChange = (e) => {
 };
 
 const addVariety = () => {
-  setVarieties([...varieties, { name: '', barcode: '', price: '', quantity: '', price_unit: '', weight_available: '', min_weight: '', weight_step: '' }]);
+  setVarieties([...varieties, { name: '', barcode: '', price: '', quantity: '', price_unit: 'unit', weight_available: '', min_weight: '', weight_step: '' }]);
 };
 
 const removeVariety = (index) => {
@@ -69,6 +87,7 @@ const handleVarietyChange = (index, field, value) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: productName,
+          type,
           description,
           sku,
           image,
@@ -86,6 +105,7 @@ const handleVarietyChange = (index, field, value) => {
             min_weight: v.min_weight,
             weight_step: v.weight_step,
           })),
+          comboItems
         }),
       });
   
@@ -106,6 +126,19 @@ const handleVarietyChange = (index, field, value) => {
       setLoading(false);
     }
   };
+
+  const fetchInventories = async () => {
+
+    const response = await axios.get(
+      `/api/catalog/get-inventories`
+    );
+
+    setInventories(response.data.data);
+  };
+
+  useEffect(() => {
+    fetchInventories(); // fetch page 1 of users
+  }, []);
   
 
   return (
@@ -123,6 +156,23 @@ const handleVarietyChange = (index, field, value) => {
             onChange={(e) => setProductName(e.target.value)}
             required
           />
+        </div>
+        <br />
+
+        <div className="form_group">
+          <select
+            id="type"
+            className="full_width"
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+            required
+          >
+            <option value="">Select Product Type</option>
+            <option value="default">Default</option>
+            <option value="combo">Combo</option>
+        
+            {/* Add more currencies as needed */}
+          </select>
         </div>
         <br />
 
@@ -236,8 +286,9 @@ const handleVarietyChange = (index, field, value) => {
                 </label>
                 <br /><br />
 
-        <h6>Varieties & Sub Varieties</h6>
-        {varieties.map((v, idx) => (
+        {type === "default" &&<h6>Varieties</h6>}
+        {type === "combo" &&<h6>Combos</h6>}
+        {type === "default" && varieties.map((v, idx) => (
           <div key={idx} className="variety-row">
 
             <select
@@ -330,10 +381,40 @@ const handleVarietyChange = (index, field, value) => {
             </button>}
           </div>
         ))}
-        <button type="button" className="techwave_fn_button" onClick={addVariety}>
+        {type === "default" && <button type="button" className="techwave_fn_button" onClick={addVariety}>
               +
-            </button>
+            </button>}
     
+      {type === "combo" && (
+        <>
+          {comboItems.map((item, idx) => (
+            <div className="variety-row" key={idx}>
+              <select value={item.inventory_id} onChange={(e) => handleComboChange(idx, 'inventory_id', e.target.value)}>
+                <option value="">Select Inventory</option>
+                {inventories.map(inv => (
+                  <option key={inv.id} value={inv.id}>{inv.name}</option>
+                ))}
+              </select>
+              <div className="currency-wrapper">
+                <input
+                  type="number"
+                  placeholder="Extra Price"
+                  value={item.extra_price}
+                  onChange={(e) => handleComboChange(idx, 'extra_price', e.target.value)}
+                  required
+                /><span className="currency-suffix">{currency}</span>
+                </div>
+                {idx > 0 && <button type="button" className="techwave_fn_button" style={{ backgroundColor: "grey"}} onClick={() => removeComboItem(idx)}>
+                    -
+                  </button>}
+            </div>
+            
+          ))}
+          <button type="button" className="techwave_fn_button" onClick={addComboItem}>+ Add Item</button>
+        </>
+      )}
+
+
       <br />
       <br />
 

@@ -60,6 +60,7 @@ model Organization {
   hours  Json?
   contact_number  String?
   contact_email  String?
+  google_verification_code   String?
   subdomain  String?    @unique()
   channel_fee  Int    @default(2)
   shop_template  String?    @default("simple")
@@ -71,6 +72,7 @@ model Organization {
   ai_auto_marketing    Boolean   @default(false)
   loyalty_programs LoyaltyProgram[]
   membership_plans MembershipPlan[]
+  devices Device[]
   reviews      Review[]
   created_at                           DateTime?                      @default(now())
   updated_at                           DateTime?                      @updatedAt
@@ -379,6 +381,7 @@ model PaymentProcessor {
 model Product {
   id            String   @id @default(cuid())
   name          String
+  type           String @default("default")
   description   String?
   image         String?  
   sku         String?  
@@ -393,11 +396,12 @@ model Product {
   organization_id   Int
   active      Boolean?  @default(true)   
   reviews      Review[]
+  comboItems    ComboItem[]
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
 
   @@map("products")
-}    
+} 
 
 model Category {
   id            String   @id @default(cuid())
@@ -429,6 +433,7 @@ model Inventory {
   weight_step     Float?        // e.g., 0.25 (must order in steps like 1.25kg, 1.5kg)
   order_items     OrderItem[]
   cart_items      CartItem[]
+  comboItems      ComboItem[]
   active          Boolean?  @default(true)
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
@@ -436,6 +441,15 @@ model Inventory {
   @@map("inventories")
 }
 
+model ComboItem {
+  id           String     @id @default(cuid())
+  product      Product    @relation(fields: [product_id], references: [id])
+  product_id   String
+  inventory    Inventory  @relation(fields: [inventory_id], references: [id])
+  inventory_id String
+  extra_price  Int?       // additional price in cents for this inventory item
+  @@map("combo_items")
+}
 
 model Image {
   id            String   @id @default(cuid())
@@ -614,4 +628,14 @@ model Review {
 
   @@unique([order_id, product_id]) // prevent duplicate reviews per product in an order
   @@map("reviews")
+}
+
+model Device {
+  id                Int            @id @default(autoincrement())
+  type              String?
+  token              String       @unique
+  organizations     Organization   @relation(fields: [organization_id], references: [id])
+  organization_id   Int
+
+  @@map("devices")
 }

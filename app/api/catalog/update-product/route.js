@@ -65,7 +65,7 @@ export async function POST(req) {
     for (const variety of varieties) {
       const payload = {
         name: variety.name,
-        barcode: variety.barcode,
+        barcode: variety.barcode || null,
         quantity: parseInt(variety.quantity) || 0,
         price: parseFloat(variety.price) * 100, // cents
         price_unit: variety.price_unit,
