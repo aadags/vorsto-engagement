@@ -17,6 +17,7 @@ export default function Home2() {
 
   const router = useRouter();
   const [organization, setOrganization] = useState('');
+  const [user, setUser] = useState('');
   const [name, setName] = useState('');
   const [country, setCountry] = useState('');
   const [loading, setLoading] = useState(false);
@@ -39,6 +40,17 @@ export default function Home2() {
       }
     };
     fetchOrg();
+    const fetchUser = async () => {
+      
+      const response = await axios.get(`/api/get-user-details`);
+      const user = response.data;
+      setUser(user);
+
+      if(!user.is_validated)
+      {
+        router.push('/validate');
+      }
+    };
     animationText()
   }, [])
 

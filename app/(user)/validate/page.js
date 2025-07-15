@@ -15,13 +15,11 @@ export default function Page() {
         const res = await fetch('/api/get-user-details')
         const data = await res.json()
 
-        if (!data?.is_validate) {
+        if (data?.is_validate) {
           router.push('/launch')
         }
       } catch (error) {
         console.error('Validation check failed:', error)
-        // Optional fallback route
-        router.push('/launch')
       }
     }
 
