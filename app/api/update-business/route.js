@@ -15,7 +15,20 @@ export async function POST(req) {
 
     const body = await req.json();
     
-    const { name, tagline, phone, email, country } = body;
+    const { name,
+      dba,
+      number,
+      type,
+      address,
+      pickupAddress,
+      lat,
+      lng,
+      country,
+      tagline,
+      phone,
+      commission,
+      init = false,
+      email } = body;
 
     const currency = localeCurrency.getCurrency(country.toUpperCase()) || 'USD';
 
@@ -25,6 +38,10 @@ export async function POST(req) {
       }, 
       data: {
         name,
+        number,
+        type,
+        address,
+        dba,
         tagline,
         contact_number: phone,
         contact_email: email,
@@ -33,6 +50,26 @@ export async function POST(req) {
         onboarding: true,
       }
     })
+
+    if(init){
+
+      const response = await fetch(`${process.env.SHIPPING_API}/api/create-company`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, address: pickupAddress, lat, lng, commission: type==="Food"? 20 : 0, currency }),
+      });
+      const data = await response.json();
+
+      await prisma.location.create({
+        data: {
+          address: pickupAddress,
+          address_lat: `${lat}`,
+          address_long: `${lng}`,
+          ship_org_id: data.company.id,
+          organization_id: org.id
+        }
+      });
+    }
     
     return NextResponse.json({
       status: true

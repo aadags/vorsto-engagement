@@ -15,7 +15,7 @@ export default function Page() {
         const res = await fetch('/api/get-user-details')
         const data = await res.json()
 
-        if (data?.is_validate) {
+        if (data?.is_validated) {
           router.push('/launch')
         }
       } catch (error) {

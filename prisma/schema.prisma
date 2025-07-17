@@ -16,6 +16,10 @@ datasource db {
 model Organization {
   id           Int         @id @default(autoincrement())
   name         String?
+  number         String?
+  dba         String?
+  type         String?
+  address         String?    @db.LongText
   tagline         String?
   uid          String     @unique()
   wa_token       String?     @db.LongText
@@ -74,10 +78,25 @@ model Organization {
   membership_plans MembershipPlan[]
   devices Device[]
   reviews      Review[]
+  locations Location[]
   created_at                           DateTime?                      @default(now())
   updated_at                           DateTime?                      @updatedAt
 
   @@map("organizations")
+}
+
+
+model Location {
+  id          String   @id @default(cuid())
+  address         String?
+  address_lat         String?
+  address_long         String?
+  ship_org_id       String?
+  organizations     Organization   @relation(fields: [organization_id], references: [id])
+  organization_id   Int
+  orders         Order[]
+
+  @@map("locations")
 }
 
 model User {
@@ -477,6 +496,8 @@ model Order {
   organization_id   Int    
   contact         Contact?       @relation(fields: [contact_id], references: [id])
   contact_id      String? 
+  locationId     String?
+  location       Location?    @relation(fields: [locationId], references: [id])
   channel      String? 
   address      String? 
   note      String? 

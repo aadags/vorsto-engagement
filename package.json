@@ -67,6 +67,7 @@
     "stripe": "^13.4.0",
     "styled-components": "^6.1.13",
     "twilio": "^5.4.2",
+    "uber-direct": "^0.1.8",
     "waypoints": "^4.0.1",
     "xlsx": "^0.18.5"
   },

@@ -1,17 +1,12 @@
 'use client'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import axios from 'axios';
+import Script from "next/script";
 import { animationText } from '@/components/Utilities'
 import { useRouter } from 'next/navigation';
 import PhoneInput from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
-
-// import { useStripeConnect } from "../hooks/useStripeConnect";
-// import {
-//   ConnectAccountOnboarding,
-//   ConnectComponentsProvider,
-// } from "@stripe/react-connect-js";
 
 export default function Home2() {
 
@@ -19,9 +14,16 @@ export default function Home2() {
   const [organization, setOrganization] = useState('');
   const [user, setUser] = useState('');
   const [name, setName] = useState('');
-  const [country, setCountry] = useState('');
+  const [dba, setDBName] = useState('');
+  const [number, setNumber] = useState('');
+  const [type, setType] = useState('');
+  const [country, setCountry] = useState('CA');
   const [loading, setLoading] = useState(false);
   const [tagline, setTagline] = useState('');
+  const [address, setAddress] = useState('')
+  const [pickupAddress, setPickupAddress] = useState('')
+  const [lat, setLat] = useState(null)
+  const [lng, setLng] = useState(null)
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [error, setError] = useState(false);
@@ -40,19 +42,10 @@ export default function Home2() {
       }
     };
     fetchOrg();
-    const fetchUser = async () => {
-      
-      const response = await axios.get(`/api/get-user-details`);
-      const user = response.data;
-      setUser(user);
-
-      if(!user.is_validated)
-      {
-        router.push('/validate');
-      }
-    };
     animationText()
   }, [])
+
+  const inputRef = useRef(null)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -66,9 +59,17 @@ export default function Home2() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name,
+          dba,
+          number,
+          type,
+          address,
+          pickupAddress,
+          lat,
+          lng,
           country,
           tagline,
           phone,
+          init: true,
           email
         }),
       });
@@ -96,6 +97,7 @@ export default function Home2() {
                   <h2>Get ready for take off</h2>
                   <p>Setup your business.</p>
                   <div className="form_group"  >
+                  <label>Business Legal Name</label>
                     <input
                       type="text"
                       id="b_name"
@@ -107,13 +109,64 @@ export default function Home2() {
                     />
                   </div>
                   <br />
+                  <div className="form_group"  >
+                  <label>Doing Business As?</label>
+                    <input
+                      type="text"
+                      id="b_name"
+                      className="full_width"
+                      placeholder="DBA"
+                      value={dba}
+                      onChange={(e) => setDBName(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <br />
+                  <div className="form_group"  >
+                  <label>Business Number</label>
+                    <input
+                      type="text"
+                      id="b_name"
+                      className="full_width"
+                      placeholder="Business Number"
+                      value={number}
+                      onChange={(e) => setNumber(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <br />
                   <div className="form_group" >
+                  <label>Business Address</label>
+                  <input
+                    type="text"
+                    id="address"
+                    className="full_width"
+                    placeholder="Address"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    required
+                  />
+                </div>
+                <br/>
+                  <div className="form_group" >
+                  <label>Business Type</label>
+                      <select
+                          value={type}
+                          onChange={(e) =>
+                                      setType(e.target.value)
+                                    }>
+                          <option value="Retail">Retail/Wholesale Store</option>
+                          <option value="Food">Restaurant</option>
+                      </select>
+                  </div>
+                  <br/>
+                  <div className="form_group" >
+                  <label>Country</label>
                       <select
                           value={country}
                           onChange={(e) =>
                                       setCountry(e.target.value)
                                     }>
-                          <option value="">Select your country</option>
                           <option value="CA">Canada</option>
                           <option value="US">United States of America</option>
                       </select>
@@ -157,6 +210,26 @@ export default function Home2() {
                   />
                 </div>
                 <br/>
+                
+                <div className="form_group" >
+                  <label>Store Location (Orders & Pickups will be routed to this location)</label>
+                  <input
+                    type="text"
+                    id="address"
+                    className="full_width"
+                    placeholder="Address"
+                    value={pickupAddress}
+                    ref={inputRef}
+                    onChange={(e) => setPickupAddress(e.target.value)}
+                    required
+                  />
+                </div>
+                <br/>
+
+                <span style={{ color: "green" }}>Business Verification 1 - 3 days. We may ask to share your business documents, otherwise we will notify you once you are ready to go!</span>
+
+                <br/><br/>
+
                   {loading && <span>updating...</span>} 
                   {!loading && <button className="techwave_fn_button" type="submit">Proceed</button>} 
 
@@ -165,6 +238,24 @@ export default function Home2() {
           </div>
         </div>
       </div>
+      <Script
+        src={`https://maps.googleapis.com/maps/api/js?key=AIzaSyCzZUtpoLjBKa5hFrvqCAP_9zBQFPVcXy8&libraries=places`}
+        strategy="afterInteractive"
+        onLoad={() => {
+          const autocomplete = new window.google.maps.places.Autocomplete(
+            inputRef.current,
+            { types: ["address"], componentRestrictions: { country: `${country}` }, },
+          );
+
+          autocomplete.addListener("place_changed", () => {
+            const place = autocomplete.getPlace();
+            const location = place.geometry?.location;
+            setPickupAddress(place.formatted_address)
+            setLat(location?.lat())
+            setLng(location?.lng())
+          });
+        }}
+      />
 
     </>
   )
