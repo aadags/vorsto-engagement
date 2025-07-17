@@ -226,7 +226,7 @@ export default function Home2() {
                 </div>
                 <br/>
 
-                <span style={{ color: "green" }}>Business Verification 1 - 3 days. We may ask to share your business documents, otherwise we will notify you once you are ready to go!</span>
+                <span style={{ color: "green" }}>Business Verification may take a few moments. We may ask to share additional information, otherwise you are ready to go!</span>
 
                 <br/><br/>
 
