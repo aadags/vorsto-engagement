@@ -29,6 +29,7 @@ const [isNewCategory, setIsNewCategory] = useState(false);
 const [newCategoryName, setNewCategoryName] = useState("");
 const [newCategoryDescription, setNewCategoryDescription] = useState("");
 const [comboItems, setComboItems] = useState([{ inventory_id: '', extra_price: '' }]);
+const [organization, setOrganization] = useState('');
 
 const addComboItem = () => {
   setComboItems([...comboItems, { inventory_id: '', extra_price: '' }]);
@@ -137,6 +138,18 @@ const handleVarietyChange = (index, field, value) => {
   };
 
   useEffect(() => {
+    const fetchOrg = async () => {
+      
+      const response = await axios.get(`/api/get-org-details`);
+      const org = response.data;
+      setOrganization(org);
+
+      if(org.onboarding)
+      {
+        router.push('/');
+      }
+    };
+    fetchOrg();
     fetchInventories(); // fetch page 1 of users
   }, []);
   

@@ -20,7 +20,6 @@ export async function POST(req) {
       number,
       type,
       address,
-      pickupAddress,
       lat,
       lng,
       country,
@@ -41,6 +40,8 @@ export async function POST(req) {
         number,
         type,
         address,
+        address_lat: lat,
+        address_long: lng, 
         dba,
         tagline,
         contact_number: phone,
@@ -56,19 +57,20 @@ export async function POST(req) {
       const response = await fetch(`${process.env.SHIPPING_API}/api/create-company`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, address: pickupAddress, lat, lng, commission: type==="Food"? 20 : 0, currency }),
+        body: JSON.stringify({ name, address, lat, lng, commission: type==="Food"? 20 : 0, currency }),
       });
       const data = await response.json();
-
-      await prisma.location.create({
+      
+      await prisma.organization.update({
+        where:{
+          id: org.id
+        }, 
         data: {
-          address: pickupAddress,
-          address_lat: `${lat}`,
-          address_long: `${lng}`,
           ship_org_id: data.company.id,
-          organization_id: org.id
+
         }
-      });
+      })
+
     }
     
     return NextResponse.json({

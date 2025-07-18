@@ -21,7 +21,6 @@ export default function Home2() {
   const [loading, setLoading] = useState(false);
   const [tagline, setTagline] = useState('');
   const [address, setAddress] = useState('')
-  const [pickupAddress, setPickupAddress] = useState('')
   const [lat, setLat] = useState(null)
   const [lng, setLng] = useState(null)
   const [phone, setPhone] = useState('');
@@ -63,7 +62,6 @@ export default function Home2() {
           number,
           type,
           address,
-          pickupAddress,
           lat,
           lng,
           country,
@@ -136,17 +134,20 @@ export default function Home2() {
                   </div>
                   <br />
                   <div className="form_group" >
-                  <label>Business Address</label>
+                  <label>Business Address (Orders & Pickups will be routed to this location)</label>
                   <input
                     type="text"
                     id="address"
                     className="full_width"
                     placeholder="Address"
                     value={address}
+                    ref={inputRef}
                     onChange={(e) => setAddress(e.target.value)}
                     required
                   />
                 </div>
+                <br/>
+
                 <br/>
                   <div className="form_group" >
                   <label>Business Type</label>
@@ -211,21 +212,6 @@ export default function Home2() {
                 </div>
                 <br/>
                 
-                <div className="form_group" >
-                  <label>Store Location (Orders & Pickups will be routed to this location)</label>
-                  <input
-                    type="text"
-                    id="address"
-                    className="full_width"
-                    placeholder="Address"
-                    value={pickupAddress}
-                    ref={inputRef}
-                    onChange={(e) => setPickupAddress(e.target.value)}
-                    required
-                  />
-                </div>
-                <br/>
-
                 <span style={{ color: "green" }}>Business Verification may take a few moments. We may ask to share additional information, otherwise you are ready to go!</span>
 
                 <br/><br/>
@@ -250,7 +236,7 @@ export default function Home2() {
           autocomplete.addListener("place_changed", () => {
             const place = autocomplete.getPlace();
             const location = place.geometry?.location;
-            setPickupAddress(place.formatted_address)
+            setAddress(place.formatted_address)
             setLat(location?.lat())
             setLng(location?.lng())
           });

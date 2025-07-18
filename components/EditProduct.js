@@ -7,6 +7,7 @@ const EditProduct = ({ productId, org, cat }) => {
   const router = useRouter();
 
   const [productName, setProductName] = useState("");
+  const [type, setType] = useState('');
   const [description, setDescription] = useState("");
   const [sku, setSku] = useState("");
   const [currency] = useState(org.currency);
@@ -19,11 +20,28 @@ const EditProduct = ({ productId, org, cat }) => {
   const [successMessage, setSuccessMessage] = useState('');
   const [varieties, setVarieties] = useState([]);
   const [stockImages, setStockImages] = useState([]);
+  const [inventories, setInventories] = useState([]);
   const [categories, setCategories] = useState(cat);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [isNewCategory, setIsNewCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [newCategoryDescription, setNewCategoryDescription] = useState("");
+  const [comboItems, setComboItems] = useState([{ inventory_id: '', extra_price: '' }]);
+  const [organization, setOrganization] = useState('');
+
+  const addComboItem = () => {
+    setComboItems([...comboItems, { inventory_id: '', extra_price: '' }]);
+  };
+
+  const removeComboItem = (index) => {
+    setComboItems(comboItems.filter((_, i) => i !== index));
+  };
+
+  const handleComboChange = (index, field, value) => {
+    const updated = [...comboItems];
+    updated[index][field] = value;
+    setComboItems(updated);
+  };
 
   const handleCategoryChange = (e) => {
     const value = e.target.value;
@@ -89,6 +107,7 @@ const EditProduct = ({ productId, org, cat }) => {
         body: JSON.stringify({
           id: productId,
           name: productName,
+          type,
           description,
           sku,
           image,
@@ -106,6 +125,7 @@ const EditProduct = ({ productId, org, cat }) => {
             min_weight: v.min_weight,
             weight_step: v.weight_step,
           })),
+          comboItems
         }),
       });
   
@@ -143,6 +163,7 @@ useEffect(() => {
         setOutofstock(product.outofstock);
         setTax(product.tax)
         setTaxType(product.tax_type)
+        setType(product.type)
         setVarieties(product.inventories);
         setSelectedCategory(product.category_id);
         setStockImages(product.images);
@@ -155,6 +176,30 @@ useEffect(() => {
   }
 }, [productId]);
 
+const fetchInventories = async () => {
+
+  const response = await axios.get(
+    `/api/catalog/get-inventories`
+  );
+
+  setInventories(response.data.data);
+};
+
+useEffect(() => {
+  const fetchOrg = async () => {
+      
+    const response = await axios.get(`/api/get-org-details`);
+    const org = response.data;
+    setOrganization(org);
+
+    if(org.onboarding)
+    {
+      router.push('/');
+    }
+  };
+  fetchOrg();
+  fetchInventories(); // fetch page 1 of users
+}, []);
 
   return (
     <div className="form_container" style={{ width: "70%" }}>
@@ -162,6 +207,7 @@ useEffect(() => {
       {productName && <form onSubmit={handleSubmit}>
         {/* Product Name */}
         <div className="form_group">
+        <label>Product Name</label>
           <input
             type="text"
             id="product_name"
@@ -174,8 +220,27 @@ useEffect(() => {
         </div>
         <br />
 
+        <div className="form_group">
+        <label>Product Type</label>
+          <select
+            id="type"
+            className="full_width"
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+            required
+          >
+            <option value="">Select Product Type</option>
+            <option value="default">Default</option>
+            <option value="combo">Combo</option>
+        
+            {/* Add more currencies as needed */}
+          </select>
+        </div>
+        <br />
+
         {/* Product Description */}
         <div className="form_group">
+        <label>Product Description</label>
           <textarea
             id="product_description"
             className="full_width"
@@ -191,6 +256,7 @@ useEffect(() => {
 
         {/* Product sku */}
         <div className="form_group">
+        <label>Sku</label>
         <input
             type="text"
             id="product_sku"
@@ -203,6 +269,7 @@ useEffect(() => {
         <br />
 
         <div className="form_group">
+        <label>Category</label>
           <select
             id="category"
             className="full_width"
@@ -245,6 +312,7 @@ useEffect(() => {
 
         {/* Currency */}
         <div className="form_group">
+        <label>Tax Type</label>
           <select
             id="tax"
             className="full_width"
@@ -286,8 +354,9 @@ useEffect(() => {
                 </label>
                 <br /><br />
 
-        <h6>Varieties</h6>
-        {varieties.map((v, idx) => (
+        {type === "default" &&<h6>Varieties</h6>}
+        {type === "combo" &&<h6>Combos</h6>}
+        {type === "default" && varieties.map((v, idx) => (
           <div key={idx} className="variety-row">
 
             <select
@@ -380,9 +449,37 @@ useEffect(() => {
 
           </div>
         ))}
-        <button type="button" className="techwave_fn_button" onClick={addVariety}>
+        {type === "default" && <button type="button" className="techwave_fn_button" onClick={addVariety}>
               +
-            </button>
+            </button>}
+        {type === "combo" && (
+        <>
+          {comboItems.map((item, idx) => (
+            <div className="variety-row" key={idx}>
+              <select value={item.inventory_id} onChange={(e) => handleComboChange(idx, 'inventory_id', e.target.value)}>
+                <option value="">Select Inventory</option>
+                {inventories.map(inv => (
+                  <option key={inv.id} value={inv.id}>{inv.name}</option>
+                ))}
+              </select>
+              <div className="currency-wrapper">
+                <input
+                  type="number"
+                  placeholder="Extra Price"
+                  value={item.extra_price}
+                  onChange={(e) => handleComboChange(idx, 'extra_price', e.target.value)}
+                  required
+                /><span className="currency-suffix">{currency}</span>
+                </div>
+                {idx > 0 && <button type="button" className="techwave_fn_button" style={{ backgroundColor: "grey"}} onClick={() => removeComboItem(idx)}>
+                    -
+                  </button>}
+            </div>
+            
+          ))}
+          <button type="button" className="techwave_fn_button" onClick={addComboItem}>+ Add Item</button>
+        </>
+      )}
     
       <br />
       <br />

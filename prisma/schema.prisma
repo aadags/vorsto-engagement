@@ -20,6 +20,8 @@ model Organization {
   dba         String?
   type         String?
   address         String?    @db.LongText
+  address_lat         String?
+  address_long         String?
   tagline         String?
   uid          String     @unique()
   wa_token       String?     @db.LongText
@@ -74,29 +76,17 @@ model Organization {
   ai_auto_engage       Boolean   @default(false)
   ai_auto_feedBack     Boolean   @default(false)
   ai_auto_marketing    Boolean   @default(false)
+  parent_id        Int?
+  parent       Organization? @relation("OrgParent", fields: [parent_id], references: [id])
+  children     Organization[] @relation("OrgParent")
   loyalty_programs LoyaltyProgram[]
   membership_plans MembershipPlan[]
   devices Device[]
   reviews      Review[]
-  locations Location[]
   created_at                           DateTime?                      @default(now())
   updated_at                           DateTime?                      @updatedAt
 
   @@map("organizations")
-}
-
-
-model Location {
-  id          String   @id @default(cuid())
-  address         String?
-  address_lat         String?
-  address_long         String?
-  ship_org_id       String?
-  organizations     Organization   @relation(fields: [organization_id], references: [id])
-  organization_id   Int
-  orders         Order[]
-
-  @@map("locations")
 }
 
 model User {
@@ -496,8 +486,6 @@ model Order {
   organization_id   Int    
   contact         Contact?       @relation(fields: [contact_id], references: [id])
   contact_id      String? 
-  locationId     String?
-  location       Location?    @relation(fields: [locationId], references: [id])
   channel      String? 
   address      String? 
   note      String? 

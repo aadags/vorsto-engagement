@@ -28,8 +28,8 @@ export default function Web({ org }) {
                         <div className="container">
                             <div className="tab_in">
                                 <a className={activeIndex === 1 ? "active" : ""} onClick={() => handleOnClick(1)}>Templates</a>
-                                <a className={activeIndex === 2 ? "active" : ""} onClick={() => handleOnClick(2)}>Media</a>
-                                <a className={activeIndex === 3 ? "active" : ""} onClick={() => handleOnClick(3)}>Site Settings</a>
+                                {/* <a className={activeIndex === 2 ? "active" : ""} onClick={() => handleOnClick(2)}>Media</a>
+                                <a className={activeIndex === 3 ? "active" : ""} onClick={() => handleOnClick(3)}>Site Settings</a> */}
                             </div>
                         </div>
                     </div>
