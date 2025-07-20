@@ -4,33 +4,51 @@ import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCancel, faComment, faEye, faEdit, faX } from "@fortawesome/free-solid-svg-icons";
 
-export default function Products({ viewProduct, handleProduct }) {
+export default function Products({ org, viewProduct, handleProduct, handleIngredients }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [totalRows, setTotalRows] = useState(0);
   const [perPage, setPerPage] = useState(10);
 
-  const columns = [
+  const ingredientsColumn = {
+    key: "ingredients",
+    name: "",
+    cell: (row) => (
+      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", paddingBottom: "0.5em", width: "100%" }}>
+        <a href="#" onClick={() => handleIngredients(row.name, row.id)}>
+          <FontAwesomeIcon icon={faEdit} /> Ingredients
+        </a>
+      </div>
+    ),
+    ignoreRowClick: true,
+    allowOverflow: true,
+    button: true,
+  };
+
+  const lastActionColumn = {
+    name: "",
+    cell: (row) => (
+      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", paddingBottom: "0.5em", width: "100%" }}>
+        <a href="#" onClick={() => deactivateProduct(row.id)}>
+          <FontAwesomeIcon icon={faX} /> Deactivate
+        </a>
+      </div>
+    ),
+    ignoreRowClick: true,
+    allowOverflow: true,
+    button: true,
+  };
+  
+  // 2️⃣ Build your base columns:
+  const baseColumns = [
     {
       name: "Image",
       selector: (row) => <img height="36px" src={row.image || "/no-image.jpg"} alt="img" />,
       sortable: true,
     },
-    {
-      name: "Name",
-      selector: (row) => row.name,
-      sortable: true,
-    },
-    {
-      name: "Description",
-      selector: (row) => row.description,
-      sortable: true,
-    },
-    {
-      name: "Category",
-      selector: (row) => row.category.name,
-      sortable: true,
-    },
+    { name: "Name", selector: (row) => row.name, sortable: true },
+    { name: "Description", selector: (row) => row.description, sortable: true },
+    { name: "Category", selector: (row) => row.category.name, sortable: true },
     {
       name: "Last Updated",
       selector: (row) =>
@@ -41,10 +59,12 @@ export default function Products({ viewProduct, handleProduct }) {
       sortable: true,
     },
     {
-      name: "Actions",
+      name: "",
       cell: (row) => (
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", paddingBottom: "0.5em", width: "100%" }}>
-          <a href="#" onClick={() => viewProduct(row.name, row.id)}><FontAwesomeIcon icon={faEye} /> View</a>
+          <a href="#" onClick={() => viewProduct(row.name, row.id)}>
+            <FontAwesomeIcon icon={faEye} /> View
+          </a>
         </div>
       ),
       ignoreRowClick: true,
@@ -55,25 +75,22 @@ export default function Products({ viewProduct, handleProduct }) {
       name: "",
       cell: (row) => (
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", paddingBottom: "0.5em", width: "100%" }}>
-          <a href="#" onClick={() => handleProduct(row.name, row.id)}><FontAwesomeIcon icon={faEdit} /> Edit</a>
+          <a href="#" onClick={() => handleProduct(row.name, row.id)}>
+            <FontAwesomeIcon icon={faEdit} /> Edit
+          </a>
         </div>
       ),
       ignoreRowClick: true,
       allowOverflow: true,
       button: true,
     },
-    {
-      name: "",
-      cell: (row) => (
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", paddingBottom: "0.5em", width: "100%" }}>
-          <a href="#" onClick={() => deactivateProduct(row.id)}><FontAwesomeIcon icon={faX} /> Deactivate</a>
-        </div>
-      ),
-      ignoreRowClick: true,
-      allowOverflow: true,
-      button: true,
-    }
   ];
+  
+  // 3️⃣ Conditionally compose the full columns array:
+  const columns =
+    org.type === "Food"
+      ? [...baseColumns, ingredientsColumn, lastActionColumn]
+      : [...baseColumns, lastActionColumn];
 
   createTheme("dark", {
     background: {

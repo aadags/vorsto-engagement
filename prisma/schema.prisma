@@ -83,6 +83,7 @@ model Organization {
   membership_plans MembershipPlan[]
   devices Device[]
   reviews      Review[]
+  ingredients      Ingredient[]
   created_at                           DateTime?                      @default(now())
   updated_at                           DateTime?                      @updatedAt
 
@@ -447,7 +448,62 @@ model Inventory {
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
 
+  ingredientUsages IngredientUsage[]
+
   @@map("inventories")
+}
+
+model Ingredient {
+  id              String   @id @default(cuid())
+  name            String
+  organization    Organization @relation(fields: [organization_id], references: [id])
+  organization_id Int
+  unit_type       String   // "unit", "kg", "lb", etc.
+  quantity        Int?     // For unit-based tracking
+  weight_available Float?  // For weight-based tracking (in kg or lb)
+
+  price  Int?     // Stored in cents
+
+  ingredientPurchases IngredientPurchase[]
+  ingredientUsages IngredientUsage[]
+
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  @@map("ingredients")
+}
+
+model IngredientPurchase {
+  id              String   @id @default(cuid())
+  ingredient      Ingredient @relation(fields: [ingredient_id], references: [id])
+  ingredient_id   String
+  quantity        Int?       // for unit type
+  weight          Float?     // for weight type
+  cost            Int        // total cost in cents
+  supplier        String?
+  purchase_date   DateTime
+
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  @@map("ingredients_purchase")
+}
+
+model IngredientUsage {
+  id              String   @id @default(cuid())
+  ingredient      Ingredient @relation(fields: [ingredient_id], references: [id])
+  ingredient_id   String
+
+  inventory       Inventory @relation(fields: [inventory_id], references: [id])
+  inventory_id    String
+
+  usage_quantity  Int?       // If unit-based ingredient
+  usage_weight    Float?     // If weight-based ingredient
+
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  @@map("ingredients_usage")
 }
 
 model ComboItem {

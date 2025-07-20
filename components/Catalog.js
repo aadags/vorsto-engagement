@@ -11,6 +11,8 @@ import EditProduct from './EditProduct';
 import ViewProduct from './ViewProduct';
 import Categories from './Categories';
 import EditCategory from './EditCategory';
+import ConfigureIngredientUsages from './IngredientUsage';
+import Ingredients from './Ingredients';
 
 
 export default function Catalog({ org, cat }) {
@@ -18,6 +20,7 @@ export default function Catalog({ org, cat }) {
     const [activeIndex, setActiveIndex] = useState(1);
     const [viewProduct, setViewProduct] = useState();
     const [editProduct, setEditProduct] = useState();
+    const [editProductIngredient, setEditProductIngredient] = useState();
     const [editCategory, setEditCategory] = useState();
     const [paymentProcessors, setPaymentprocessors] = useState(org?.payment_processors);
 
@@ -29,10 +32,20 @@ export default function Catalog({ org, cat }) {
         setEditProduct({ name, id});
         setActiveIndex(4)
     }; 
+
+    const handleIngredients = async (name, id) => {
+        setEditProductIngredient({ name, id});
+        setActiveIndex(8)
+    }; 
     
     const handleCat = async (name, id) => {
         setEditCategory({ name, id});
         setActiveIndex(7)
+    }; 
+
+    const handleIng = async (name, id) => {
+        setEditProductIngredient({ name, id});
+        setActiveIndex(9)
     }; 
     
     const handleViewProduct = async (name, id) => {
@@ -49,6 +62,7 @@ export default function Catalog({ org, cat }) {
                         <h1 className="title">Catalog</h1>
                         {paymentProcessors  && paymentProcessors.length > 0 &&<button className="techwave_fn_button" onClick={() => handleOnClick(5)} style={{ float: "right" }}>Deactivated Items</button>}
                         {paymentProcessors && paymentProcessors.length > 0 &&<button className="techwave_fn_button" onClick={() => handleOnClick(6)} style={{ float: "right", marginRight: "5px" }}>Categories</button>}
+                        {org.type === "Food" && paymentProcessors && paymentProcessors.length > 0 &&<button className="techwave_fn_button" onClick={() => handleOnClick(9)} style={{ float: "right", marginRight: "5px" }}>Ingredients</button>}
                     </div>
                 </div>
                 {/* Models */}
@@ -70,6 +84,8 @@ export default function Catalog({ org, cat }) {
                                 {activeIndex === 5 && <a className={activeIndex === 5 ? "active" : ""} onClick={() => handleOnClick(5)}>Deactivated Items</a>}
                                 {activeIndex === 6 && <a className={activeIndex === 6 ? "active" : ""} onClick={() => handleOnClick(6)}>Categories</a>}
                                 {editCategory && <a className={activeIndex === 7 ? "active" : ""} onClick={() => handleOnClick(7)}>Edit - {editCategory.name}</a>}
+                                {activeIndex === 9 && <a className={activeIndex === 9 ? "active" : ""} onClick={() => handleOnClick(9)}>All Ingredients</a>}
+                                {editProductIngredient && <a className={activeIndex === 8 ? "active" : ""} onClick={() => handleOnClick(8)}>Ingredients - {editProductIngredient.name}</a>}
                             </div>
                         </div>
                     </div>
@@ -87,7 +103,7 @@ export default function Catalog({ org, cat }) {
                                         
                                     </div> */}
                                     <div id="tab1" className={activeIndex === 1 ? "tab__item active" : "tab__item"}>
-                                        {activeIndex === 1 && <Products viewProduct={handleViewProduct} handleProduct={handleProduct} />}
+                                        {activeIndex === 1 && <Products org={org} viewProduct={handleViewProduct} handleProduct={handleProduct} handleIngredients={handleIngredients} />}
                                     </div>
                                     <div id="tab2" className={activeIndex === 2 ? "tab__item active" : "tab__item"}>
                                         <NewProduct org={org} cat={cat} />
@@ -106,6 +122,12 @@ export default function Catalog({ org, cat }) {
                                     </div>
                                     <div id="tab7" className={activeIndex === 7 ? "tab__item active" : "tab__item"}>
                                         {editCategory && <EditCategory catId={editCategory.id} org={org} />}
+                                    </div>
+                                    <div id="tab9" className={activeIndex === 9 ? "tab__item active" : "tab__item"}>
+                                        {activeIndex === 9 && <Ingredients handleCat={handleIng} />}
+                                    </div>
+                                    <div id="tab8" className={activeIndex === 8 ? "tab__item active" : "tab__item"}>
+                                        {editProductIngredient && <ConfigureIngredientUsages productId={editProductIngredient.id} org={org} />}
                                     </div>
 
                                    

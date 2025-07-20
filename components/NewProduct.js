@@ -143,11 +143,6 @@ const handleVarietyChange = (index, field, value) => {
       const response = await axios.get(`/api/get-org-details`);
       const org = response.data;
       setOrganization(org);
-
-      if(org.onboarding)
-      {
-        router.push('/');
-      }
     };
     fetchOrg();
     fetchInventories(); // fetch page 1 of users
