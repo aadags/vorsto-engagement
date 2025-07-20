@@ -33,7 +33,7 @@ export async function POST(req) {
 
     // Prepare update payload
     const data =
-      ing.unit_type === "unit"
+      ing.unit_type === "unit" || ing.unit_type === "ml"
         ? { quantity: (ing.quantity || 0) + Number(amount) }
         : { weight_available: (ing.weight_available || 0) + Number(amount) };
 
