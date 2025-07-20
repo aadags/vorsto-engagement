@@ -252,7 +252,7 @@ const ConfigureIngredientUsages = ({ productId }) => {
                     />} 
                     {newIngredients[usage.ingredient_id]?.unit_type === "ml" && <input
                       type="number"
-                      placeholder="Usage Metric"
+                      placeholder="Usage Volume"
                       value={usage.usage_quantity}
                       onChange={(e) => handleIngredientChange(idx, ingIdx, "usage_quantity", e.target.value)}
                     />} 
@@ -272,7 +272,7 @@ const ConfigureIngredientUsages = ({ productId }) => {
 
                     {usage.unit_type === "ml" && <div className="currency-wrapper"><input
                       type="number"
-                      placeholder="Usage Metric"
+                      placeholder="Usage Volume"
                       value={usage.usage_quantity}
                       onChange={(e) => handleIngredientChange(idx, ingIdx, "usage_quantity", e.target.value)}
                     /><span className="currency-suffix">{usage.unit_type}</span></div>} 
@@ -293,7 +293,7 @@ const ConfigureIngredientUsages = ({ productId }) => {
 
                     {isNew && newIngredients[usage.ingredient_id]?.unit_type === "ml" && <input
                       type="number"
-                      placeholder="Available Metric"
+                      placeholder="Available Volume"
                       value={newIngredients[usage.ingredient_id]?.available_quantity || ""}
                       onChange={(e) => handleNewIngredientChange(usage.ingredient_id, "available_quantity", e.target.value)}
                     />} 

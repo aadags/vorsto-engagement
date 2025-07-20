@@ -93,14 +93,15 @@ export default function Ingredients({ handleIng }) {
       button: true,
       cell: (row) => {
         const isUnit = row.unit_type === "unit";
+        const isVol = row.unit_type === "ml";
         const suffix = isUnit ? "units" : row.unit_type;
         return editingId === row.id ? (
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <input
               type="number"
-              step={isUnit ? "1" : "0.01"}
+              step={isUnit || isVol ? "1" : "0.01"}
               min="0"
-              placeholder={`Enter ${isUnit ? "quantity" : "weight"} (${suffix})`}
+              placeholder={`Enter ${isUnit ? "quantity": isVol? "volume" : "weight"} (${suffix})`}
               value={restockValue}
               onChange={(e) => setRestockValue(e.target.value)}
               style={{ width: "80px" }}
