@@ -407,6 +407,7 @@ model Product {
   active      Boolean?  @default(true)   
   reviews      Review[]
   comboItems    ComboItem[]
+  combo_price           Int?
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
 
@@ -513,6 +514,7 @@ model ComboItem {
   inventory    Inventory  @relation(fields: [inventory_id], references: [id])
   inventory_id String
   extra_price  Int?       // additional price in cents for this inventory item
+  option_index  Int        @default(0)
   @@map("combo_items")
 }
 

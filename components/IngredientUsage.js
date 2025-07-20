@@ -239,6 +239,7 @@ const ConfigureIngredientUsages = ({ productId }) => {
                           <option value="unit">unit</option>
                           <option value="kg">kg</option>
                           <option value="lb">lb</option>
+                          <option value="ml">ml</option>
                         </select>
                       </>
                     )}
@@ -246,6 +247,12 @@ const ConfigureIngredientUsages = ({ productId }) => {
                     {newIngredients[usage.ingredient_id]?.unit_type === "unit" && <input
                       type="number"
                       placeholder="Usage Quantity"
+                      value={usage.usage_quantity}
+                      onChange={(e) => handleIngredientChange(idx, ingIdx, "usage_quantity", e.target.value)}
+                    />} 
+                    {newIngredients[usage.ingredient_id]?.unit_type === "ml" && <input
+                      type="number"
+                      placeholder="Usage Metric"
                       value={usage.usage_quantity}
                       onChange={(e) => handleIngredientChange(idx, ingIdx, "usage_quantity", e.target.value)}
                     />} 
@@ -262,6 +269,14 @@ const ConfigureIngredientUsages = ({ productId }) => {
                       value={usage.usage_quantity}
                       onChange={(e) => handleIngredientChange(idx, ingIdx, "usage_quantity", e.target.value)}
                     /><span className="currency-suffix">{usage.unit_type}</span></div>} 
+
+                    {usage.unit_type === "ml" && <div className="currency-wrapper"><input
+                      type="number"
+                      placeholder="Usage Metric"
+                      value={usage.usage_quantity}
+                      onChange={(e) => handleIngredientChange(idx, ingIdx, "usage_quantity", e.target.value)}
+                    /><span className="currency-suffix">{usage.unit_type}</span></div>} 
+
                     {(usage.unit_type === "lb" || usage.unit_type === "kg") && <div className="currency-wrapper"><input
                       type="number"
                       placeholder="Usage Weight"
@@ -272,6 +287,13 @@ const ConfigureIngredientUsages = ({ productId }) => {
                     {isNew && newIngredients[usage.ingredient_id]?.unit_type === "unit" && <input
                       type="number"
                       placeholder="Available Quantity"
+                      value={newIngredients[usage.ingredient_id]?.available_quantity || ""}
+                      onChange={(e) => handleNewIngredientChange(usage.ingredient_id, "available_quantity", e.target.value)}
+                    />} 
+
+                    {isNew && newIngredients[usage.ingredient_id]?.unit_type === "ml" && <input
+                      type="number"
+                      placeholder="Available Metric"
                       value={newIngredients[usage.ingredient_id]?.available_quantity || ""}
                       onChange={(e) => handleNewIngredientChange(usage.ingredient_id, "available_quantity", e.target.value)}
                     />} 

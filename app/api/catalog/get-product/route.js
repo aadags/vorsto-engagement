@@ -18,24 +18,51 @@ export async function GET(req) {
     const id = req.nextUrl.searchParams.get("id");
 
     const product = await prisma.product.findFirst({
-      where: { id,
-        organization_id: organizationId 
+      where: {
+        id,
+        organization_id: organizationId,
       },
       include: {
         inventories: {
           where: { active: true },
         },
+        comboItems: {
+          include: { inventory: true },
+          orderBy: { option_index: 'asc' },
+        },
         images: true,
         category: true,
       },
     });
-
+    
     if (product) {
-      product.inventories = product.inventories.map(inventory => ({
-        ...inventory,
-        price: inventory.price / 100,
+      // 1. convert inventory prices to dollars
+      product.inventories = product.inventories.map(inv => ({
+        ...inv,
+        price: inv.price / 100,
       }));
+    
+      // 2. build nested comboOptions
+      const comboOptions = [];
+    
+      product.comboItems.forEach(combo => {
+        const idx = combo.option_index;
+        if (!comboOptions[idx]) {
+          comboOptions[idx] = { items: [] };
+        }
+        comboOptions[idx].items.push({
+          ...combo,
+          // 3. convert extra_price to dollars for the UI
+          extra_price: combo.extra_price != null
+            ? combo.extra_price / 100
+            : 0,
+        });
+      });
+
+      product.comboOptions = comboOptions;
+    
     }
+    
 
     return NextResponse.json({ ...product });
   } catch (error) {

@@ -462,7 +462,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
                                     </li>
                                     </ul>
                             </li>
-                            <li className={`menu-item-has-children ${isTicketToggle ? "closed" : ""}`} >
+                            {/* <li className={`menu-item-has-children ${isTicketToggle ? "closed" : ""}`} >
                                 <a className="fn__tooltip menu__item" title="Tickets" onClick={toggleTicketHandle} >
                                     <span className="icon"><img src="/svg/tickets.svg" alt="" className="fn__svg" /></span>
                                     <span className="text">Tickets</span>
@@ -477,7 +477,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
                                         </li>
                                     ))}
                                 </ul>
-                            </li>
+                            </li> */}
                             
                             {main.slice(1, 2).map((item, i) => (
                                 item.key && perms.includes(item.key) && <li key={i}>

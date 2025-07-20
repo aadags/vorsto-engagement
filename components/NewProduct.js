@@ -14,7 +14,7 @@ const NewProduct = ({ org, cat }) => {
   const [outofstock, setOutofstock] = useState(false);
   const [tax, setTax] = useState();
   const [taxType, setTaxType] = useState("");
-  const [price, setPrice] = useState(''); // Store as string for input, convert to number on submit
+  const [comboPrice, setComboPrice] = useState(''); 
   const [image, setImage] = useState([]);
   const [inventories, setInventories] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -28,21 +28,56 @@ const [selectedCategory, setSelectedCategory] = useState("");
 const [isNewCategory, setIsNewCategory] = useState(false);
 const [newCategoryName, setNewCategoryName] = useState("");
 const [newCategoryDescription, setNewCategoryDescription] = useState("");
-const [comboItems, setComboItems] = useState([{ inventory_id: '', extra_price: '' }]);
+const [comboOptions, setComboOptions] = useState([
+  { items: [{ inventory_id: '', extra_price: '' }] }
+]);
 const [organization, setOrganization] = useState('');
 
-const addComboItem = () => {
-  setComboItems([...comboItems, { inventory_id: '', extra_price: '' }]);
+const addOption = () => {
+  setComboOptions([
+    ...comboOptions,
+    { items: [{ inventory_id: '', extra_price: '' }] }
+  ]);
 };
 
-const removeComboItem = (index) => {
-  setComboItems(comboItems.filter((_, i) => i !== index));
+// remove an entire option
+const removeOption = (optIdx) => {
+  setComboOptions(comboOptions.filter((_, i) => i !== optIdx));
+};
+const addInventorySlot = (optIdx) => {
+  const next = comboOptions.map((opt, i) =>
+    i === optIdx
+      ? { 
+          ...opt, 
+          items: [...opt.items, { inventory_id: '', extra_price: '' }] 
+        }
+      : opt
+  );
+  setComboOptions(next);
 };
 
-const handleComboChange = (index, field, value) => {
-  const updated = [...comboItems];
-  updated[index][field] = value;
-  setComboItems(updated);
+// remove one inventory slot from an option
+const removeInventorySlot = (optIdx, itemIdx) => {
+  const next = comboOptions.map((opt, i) => {
+    if (i !== optIdx) return opt;
+    return {
+      ...opt,
+      items: opt.items.filter((_, j) => j !== itemIdx)
+    };
+  });
+  setComboOptions(next);
+};
+
+// update a field on a specific inventory slot
+const handleInventoryChange = (optIdx, itemIdx, field, value) => {
+  const next = comboOptions.map((opt, i) => {
+    if (i !== optIdx) return opt;
+    const newItems = opt.items.map((itm, j) =>
+      j === itemIdx ? { ...itm, [field]: value } : itm
+    );
+    return { ...opt, items: newItems };
+  });
+  setComboOptions(next);
 };
 
 const handleCategoryChange = (e) => {
@@ -89,6 +124,7 @@ const handleVarietyChange = (index, field, value) => {
         body: JSON.stringify({
           name: productName,
           type,
+          comboPrice,
           description,
           sku,
           image,
@@ -106,7 +142,7 @@ const handleVarietyChange = (index, field, value) => {
             min_weight: v.min_weight,
             weight_step: v.weight_step,
           })),
-          comboItems
+          comboOptions
         }),
       });
   
@@ -119,7 +155,7 @@ const handleVarietyChange = (index, field, value) => {
       setProductName('');
       setDescription('');
       setSku('');
-      setPrice('');
+      setComboPrice('');
       router.refresh();
     } catch (err) {
       setError(err.message);
@@ -199,7 +235,7 @@ const handleVarietyChange = (index, field, value) => {
         </div>
         <br />
         {/* Product sku */}
-        <div className="form_group">
+        {organization.type !== "Food" && <div className="form_group">
         <input
             type="text"
             id="product_sku"
@@ -208,7 +244,7 @@ const handleVarietyChange = (index, field, value) => {
             value={sku}
             onChange={(e) => setSku(e.target.value)}
           />
-        </div>
+        </div>}
         <br />
 
         <div className="form_group">
@@ -269,16 +305,30 @@ const handleVarietyChange = (index, field, value) => {
         </div>
         <br />
         
-        <input
+        <div className="form_group"><input
               type="number"
               placeholder="Tax Value"
               value={tax}
               onChange={(e) => setTax(e.target.value)}
               required
             />
+        </div>
+        <br />
+
+        {type === "combo" && <div className="currency-wrapper">
+              <input
+                type="number"
+                className="currency-input"
+                placeholder="Combo Price"
+                value={comboPrice}
+                onChange={(e) => setComboPrice(e.target.value)}
+                required
+              />
+              <span className="currency-suffix">{currency}</span>
+            </div>}
         <br /><br />
 
-        <label className="fn__toggle">
+        <div className="form_group"><label className="fn__toggle">
                   <span className="t_in">
                     <input 
                       type="checkbox" 
@@ -291,15 +341,15 @@ const handleVarietyChange = (index, field, value) => {
                     <span className="t_content" />
                   </span>
                   Continue Selling When Out of Stock
-                </label>
-                <br /><br />
+                </label></div>
+                <br />
 
         {type === "default" &&<h6>Varieties</h6>}
         {type === "combo" &&<h6>Combos</h6>}
         {type === "default" && varieties.map((v, idx) => (
           <div key={idx} className="variety-row">
 
-            <select
+            {organization.type !== "Food" && <select
               value={v.price_unit}
               onChange={(e) => handleVarietyChange(idx, 'price_unit', e.target.value)}
             >
@@ -307,7 +357,7 @@ const handleVarietyChange = (index, field, value) => {
               <option value="unit">Unit</option>
               <option value="kg">Weight (kg)</option>
               <option value="lb">Weight (lb)</option>
-            </select>
+            </select>}
 
             <input
               type="text"
@@ -329,16 +379,16 @@ const handleVarietyChange = (index, field, value) => {
               <span className="currency-suffix">{currency}</span>
             </div>
 
-            <input
+            {organization.type !== "Food" && <input
               type="text"
               type="text"
               placeholder="Barcode (optional)"
               value={v.barcode}
               onChange={(e) => handleVarietyChange(idx, 'barcode', e.target.value)}
-            />
+            />}
 
             {v.price_unit === 'unit' ? (
-              <div className="currency-wrapper">
+              organization.type !== "Food" && (<div className="currency-wrapper">
                 <input
                   type="number"
                   className="currency-input"
@@ -348,7 +398,7 @@ const handleVarietyChange = (index, field, value) => {
                   required
                 />
                 <span className="currency-suffix">Units</span>
-              </div>
+              </div>)
             ) : (
               <>
                 <div className="currency-wrapper">
@@ -393,34 +443,101 @@ const handleVarietyChange = (index, field, value) => {
               +
             </button>}
     
-      {type === "combo" && (
-        <>
-          {comboItems.map((item, idx) => (
-            <div className="variety-row" key={idx}>
-              <select value={item.inventory_id} onChange={(e) => handleComboChange(idx, 'inventory_id', e.target.value)}>
-                <option value="">Select Inventory</option>
-                {inventories.map(inv => (
-                  <option key={inv.id} value={inv.id}>{inv.name}</option>
-                ))}
-              </select>
-              <div className="currency-wrapper">
-                <input
-                  type="number"
-                  placeholder="Extra Price"
-                  value={item.extra_price}
-                  onChange={(e) => handleComboChange(idx, 'extra_price', e.target.value)}
-                  required
-                /><span className="currency-suffix">{currency}</span>
+            {type === "combo" && (
+            <>
+              {comboOptions.map((opt, optIdx) => (
+                <div key={optIdx} className="option-block border p-4 mb-4">
+                  <hr/>
+                  <div className="option-caption font-semibold mb-2">
+                    Option {optIdx + 1}
+
+                    {comboOptions.length > 1 && (
+                      <button
+                      type="button"
+                      style={{
+                        marginLeft: '1rem',
+                        fontSize: '0.875rem',
+                        color: 'red',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        padding: 0
+                      }}
+                      onClick={() => removeOption(optIdx)}
+                    >
+                      X Remove Option
+                    </button>
+                    
+                    )}
+                  </div>
+                  <br/>
+
+                  {opt.items.map((item, itemIdx) => (
+                    <div key={itemIdx} className="variety-row flex items-center mb-2">
+                      {/* Inventory select */}
+                      <select
+                        value={item.inventory_id}
+                        onChange={(e) =>
+                          handleInventoryChange(optIdx, itemIdx, "inventory_id", e.target.value)
+                        }
+                        className="border rounded px-2 py-1 flex-1"
+                        required
+                      >
+                        <option value="">Select Inventory</option>
+                        {inventories.map((inv) => (
+                          <option key={inv.id} value={inv.id}>
+                            {inv.name}
+                          </option>
+                        ))}
+                      </select>
+
+                      {/* Extra price */}
+                      <div className="currency-wrapper ml-4 flex items-center">
+                        <input
+                          type="number"
+                          placeholder="Extra Price"
+                          value={item.extra_price}
+                          onChange={(e) =>
+                            handleInventoryChange(optIdx, itemIdx, "extra_price", e.target.value)
+                          }
+                          className="border rounded px-2 py-1 w-24"
+                          required
+                        />
+                        <span className="currency-suffix ml-1">{currency}</span>
+                      </div>
+
+                      {/* Remove inventory slot */}
+                      {opt.items.length > 1 && (
+                        <button
+                          type="button"
+                          className="ml-4 techwave_fn_button"
+                          style={{ backgroundColor: "grey" }}
+                          onClick={() => removeInventorySlot(optIdx, itemIdx)}
+                        >
+                          –
+                        </button>
+                      )}
+                    </div>
+                  ))}
+
+                  <button
+                    type="button"
+                    className="mt-2 techwave_fn_button"
+                    onClick={() => addInventorySlot(optIdx)}
+                  >
+                    + Add Inventory to Option {optIdx + 1}
+                  </button>
+                  <br/>
                 </div>
-                {idx > 0 && <button type="button" className="techwave_fn_button" style={{ backgroundColor: "grey"}} onClick={() => removeComboItem(idx)}>
-                    -
-                  </button>}
-            </div>
-            
-          ))}
-          <button type="button" className="techwave_fn_button" onClick={addComboItem}>+ Add Item</button>
-        </>
-      )}
+              ))}
+
+              <button type="button" className="techwave_fn_button" onClick={addOption}>
+                + Add New Option
+              </button>
+            </>
+          )}
+
+
 
 
       <br />

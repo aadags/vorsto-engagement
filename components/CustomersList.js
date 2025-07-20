@@ -33,7 +33,7 @@ export default function CustomersList({ viewCustomer }) {
     },
     {
       name: "Satisfaction Score",
-      selector: (row) => (row.satisfaction_score>=0 && row.satisfaction_score+"%"),
+      selector: (row) => (row.satisfaction_score && row.satisfaction_score+"%"),
       sortable: true,
     },
     {

@@ -19,6 +19,8 @@ export async function POST(req) {
     const {
       id,
       name,
+      type,
+      comboPrice,
       description,
       sku,
       category,
@@ -29,6 +31,7 @@ export async function POST(req) {
       taxType,
       outofstock,
       varieties,
+      comboOptions
     } = body;
 
     let cat = { id: category };
@@ -53,6 +56,7 @@ export async function POST(req) {
       data: {
         name,
         description,
+        combo_price: Number(comboPrice || 0) * 100,
         sku,
         category_id: cat.id,
         tax: parseFloat(tax),
@@ -62,35 +66,57 @@ export async function POST(req) {
     });
 
     // Handle inventory (varieties)
-    for (const variety of varieties) {
-      const payload = {
-        name: variety.name,
-        barcode: variety.barcode || null,
-        quantity: parseInt(variety.quantity) || 0,
-        price: parseFloat(variety.price) * 100, // cents
-        price_unit: variety.price_unit,
-        weight_available: parseFloat(variety.weight_available) || null,
-        min_weight: parseFloat(variety.min_weight) || null,
-        weight_step: parseFloat(variety.weight_step) || null,
-      };
+    if(type === "default")
+    {
+      for (const variety of varieties) {
+        const payload = {
+          name: variety.name,
+          barcode: variety.barcode || null,
+          quantity: parseInt(variety.quantity) || 0,
+          price: parseFloat(variety.price) * 100, // cents
+          price_unit: variety.price_unit,
+          weight_available: parseFloat(variety.weight_available) || null,
+          min_weight: parseFloat(variety.min_weight) || null,
+          weight_step: parseFloat(variety.weight_step) || null,
+        };
 
-      if (!variety.id) {
-        // Create new variety
-        await prisma.inventory.create({
-          data: {
-            ...payload,
-            product_id: product.id,
-          },
-        });
-      } else {
-        // Update existing variety
-        await prisma.inventory.update({
-          where: {
-            id: variety.id,
-          },
-          data: payload,
-        });
+        if (!variety.id) {
+          // Create new variety
+          await prisma.inventory.create({
+            data: {
+              ...payload,
+              product_id: product.id,
+            },
+          });
+        } else {
+          // Update existing variety
+          await prisma.inventory.update({
+            where: {
+              id: variety.id,
+            },
+            data: payload,
+          });
+        }
       }
+    }
+
+    if(type === "combo")
+    {
+      const comboItemsPayload = comboOptions.flatMap((opt, optIdx) =>
+        opt.items.map((itm) => ({
+          product_id: product.id,
+          inventory_id: itm.inventory_id,
+          extra_price: Number(itm.extra_price || 0) * 100, // back to cents
+          option_index: optIdx,
+        }))
+      );
+
+      await prisma.comboItem.deleteMany({ where: { product_id: product.id } });
+
+      await prisma.comboItem.createMany({
+        data: comboItemsPayload,
+      });
+
     }
 
     // Save new images (assumes duplicates are handled in the UI or DB constraint)

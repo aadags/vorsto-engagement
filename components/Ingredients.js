@@ -81,8 +81,8 @@ export default function Ingredients({ handleIng }) {
     {
       name: "Available Stock",
       selector: (row) =>
-        row.unit_type === "unit"
-          ? `${row.quantity} units`
+        row.unit_type === "unit" || row.unit_type === "ml"
+          ? `${row.quantity} ${row.unit_type}`
           : `${row.weight_available} ${row.unit_type}`,
       sortable: true,
     },

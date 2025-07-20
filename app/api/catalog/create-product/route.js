@@ -32,6 +32,7 @@ export async function POST(req) {
       description,
       sku,
       category,
+      comboPrice,
       isNewCategory,
       newCategoryDescription,
       tax,
@@ -39,7 +40,7 @@ export async function POST(req) {
       image,
       outofstock,
       varieties,
-      comboItems
+      comboOptions
     } = body;
 
     let cat = { id: category };
@@ -57,6 +58,7 @@ export async function POST(req) {
     const product = await prisma.product.create({
       data: {
         name,
+        combo_price: Number(comboPrice || 0) * 100,
         type,
         sku,
         description,
@@ -90,15 +92,19 @@ export async function POST(req) {
 
     if(type === "combo")
     {
-      for (const item of comboItems) {
-        await prisma.comboItem.create({
-          data: {
-            product_id: product.id,
-            inventory_id: item.inventory_id,
-            extra_price: item.extra_price * 100 || 0,
-          },
-        });
-      }
+      const comboItemsPayload = comboOptions.flatMap((opt, optIdx) =>
+        opt.items.map((itm) => ({
+          product_id: product.id,
+          inventory_id: itm.inventory_id,
+          extra_price: Number(itm.extra_price || 0) * 100, // back to cents
+          option_index: optIdx,
+        }))
+      );
+
+      await prisma.comboItem.createMany({
+        data: comboItemsPayload,
+      });
+
     }
 
     for (const img of image) {
