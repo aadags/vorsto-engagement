@@ -12,7 +12,7 @@ async function getCookieData() {
 export async function POST(req) {
   try {
     const organizationId = Number(await getCookieData()) || 0;
-    const { id, amount } = await req.json();
+    const { id, amount, price } = await req.json();
 
     // Fetch the ingredient, scoped to this org
     const ing = await prisma.ingredient.findFirst({
@@ -20,7 +20,7 @@ export async function POST(req) {
       select: {
         unit_type: true,
         quantity: true,
-        weight_available: true,
+        weight_available: true
       },
     });
 
@@ -34,8 +34,8 @@ export async function POST(req) {
     // Prepare update payload
     const data =
       ing.unit_type === "unit" || ing.unit_type === "ml"
-        ? { quantity: (ing.quantity || 0) + Number(amount) }
-        : { weight_available: (ing.weight_available || 0) + Number(amount) };
+        ? { quantity: (ing.quantity || 0) + parseInt(amount), price: parseFloat(price) }
+        : { weight_available: (ing.weight_available || 0) + parseInt(amount), price: parseFloat(price) };
 
     // Perform update
     const updated = await prisma.ingredient.update({

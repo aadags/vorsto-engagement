@@ -20,15 +20,15 @@ export async function POST(req) {
       );
     }
 
-    const { name, unit_type, available_quantity, available_weight } = await req.json();
+    const { name, unit_type, available_quantity, available_weight, price } = await req.json();
 
-    // Upsert by unique “name”
     const ingredient = await prisma.ingredient.create({
       data: {
         name: name.trim(),
         unit_type,
+        price: parseFloat(price),
         quantity: Number(available_quantity || 0),
-        weight_available: Number(available_weight || 0),
+        weight_available: parseFloat(available_weight || 0),
         organization_id: organizationId
       },
     });
