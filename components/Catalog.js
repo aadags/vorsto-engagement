@@ -13,6 +13,7 @@ import Categories from './Categories';
 import EditCategory from './EditCategory';
 import ConfigureIngredientUsages from './IngredientUsage';
 import Ingredients from './Ingredients';
+import CostAnalysis from './CostAnalysis';
 
 
 export default function Catalog({ org, cat }) {
@@ -63,6 +64,7 @@ export default function Catalog({ org, cat }) {
                         {paymentProcessors  && paymentProcessors.length > 0 &&<button className="techwave_fn_button" onClick={() => handleOnClick(5)} style={{ float: "right" }}>Deactivated Items</button>}
                         {paymentProcessors && paymentProcessors.length > 0 &&<button className="techwave_fn_button" onClick={() => handleOnClick(6)} style={{ float: "right", marginRight: "5px" }}>Categories</button>}
                         {org.type === "Food" && paymentProcessors && paymentProcessors.length > 0 &&<button className="techwave_fn_button" onClick={() => handleOnClick(9)} style={{ float: "right", marginRight: "5px" }}>Ingredients</button>}
+                        {org.type === "Food" && paymentProcessors && paymentProcessors.length > 0 &&<button className="techwave_fn_button" onClick={() => handleOnClick(10)} style={{ float: "right", marginRight: "5px" }}>Costing Analysis</button>}
                     </div>
                 </div>
                 {/* Models */}
@@ -86,6 +88,7 @@ export default function Catalog({ org, cat }) {
                                 {editCategory && <a className={activeIndex === 7 ? "active" : ""} onClick={() => handleOnClick(7)}>Edit - {editCategory.name}</a>}
                                 {activeIndex === 9 && <a className={activeIndex === 9 ? "active" : ""} onClick={() => handleOnClick(9)}>All Ingredients</a>}
                                 {editProductIngredient && <a className={activeIndex === 8 ? "active" : ""} onClick={() => handleOnClick(8)}>Ingredients - {editProductIngredient.name}</a>}
+                                {activeIndex === 10 && <a className={activeIndex === 10 ? "active" : ""} onClick={() => handleOnClick(10)}>Cost Analysis</a>}
                             </div>
                         </div>
                     </div>
@@ -128,6 +131,9 @@ export default function Catalog({ org, cat }) {
                                     </div>
                                     <div id="tab8" className={activeIndex === 8 ? "tab__item active" : "tab__item"}>
                                         {editProductIngredient && <ConfigureIngredientUsages productId={editProductIngredient.id} org={org} />}
+                                    </div>
+                                    <div id="tab10" className={activeIndex === 10 ? "tab__item active" : "tab__item"}>
+                                        <CostAnalysis />
                                     </div>
 
                                    
