@@ -142,6 +142,8 @@ export async function POST(req) {
 
     // 🔽 Deplete inventory and ingredients
     for (const item of order.order_items) {
+      const qtyToDecrement = item.quantity;
+      
       const inventory = await prisma.inventory.findUnique({
         where: { id: item.inventory_id },
         select: {
@@ -150,18 +152,6 @@ export async function POST(req) {
           quantity: true,
           weight_available: true,
         },
-      });
-
-      const isWeight = inventory.price_unit !== "unit";
-      const qtyToDecrement = item.quantity;
-
-      const inventoryUpdate = isWeight
-        ? { weight_available: inventory.weight_available - qtyToDecrement }
-        : { quantity: inventory.quantity - qtyToDecrement };
-
-      await prisma.inventory.update({
-        where: { id: inventory.id },
-        data: inventoryUpdate,
       });
 
       // 🔁 Deplete ingredient stock if food org
@@ -190,6 +180,18 @@ export async function POST(req) {
             });
           }
         }
+      } else {
+        const isWeight = inventory.price_unit !== "unit";
+
+        const inventoryUpdate = isWeight
+          ? { weight_available: inventory.weight_available - qtyToDecrement }
+          : { quantity: inventory.quantity - qtyToDecrement };
+
+        await prisma.inventory.update({
+          where: { id: inventory.id },
+          data: inventoryUpdate,
+        });
+
       }
     }
 
