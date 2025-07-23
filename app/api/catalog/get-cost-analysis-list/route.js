@@ -45,7 +45,7 @@ export async function GET(req) {
         id:              inv.id,
         name:            inv.name,
         totalCost:       costCents,
-        usages:          inv.ingredientUsages.length,
+        salePrice:       inv.price,
       };
     });
 

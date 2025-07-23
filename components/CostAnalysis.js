@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import DataTable, { createTheme } from "react-data-table-component";
 import axios from "axios";
+import formatCurrency from "@/utils/formatCurrency";
 
-export default function CostAnalysis() {
+export default function CostAnalysis({ org }) {
   const [data, setData]         = useState([]);
   const [loading, setLoading]   = useState(false);
   const [totalRows, setTotal]   = useState(0);
@@ -31,9 +32,19 @@ export default function CostAnalysis() {
     },
     {
       name: "Cost to Prepare",
-      selector: (r) => `$${(r.totalCost / 100).toFixed(2)}`,
+      selector: (r) => formatCurrency((r.totalCost * 100), org.currency),
       sortable: true,
     },
+    {
+      name: "Current Selling Price",
+      selector: (r) => formatCurrency((r.salePrice), org.currency),
+      sortable: true,
+    },
+    {
+      name: "Current markup",
+      selector: (r) => formatCurrency(r.salePrice - (r.totalCost * 100), org.currency),
+      sortable: true,
+    }
   ];
 
   createTheme("dark", {

@@ -133,7 +133,7 @@ export default function Catalog({ org, cat }) {
                                         {editProductIngredient && <ConfigureIngredientUsages productId={editProductIngredient.id} org={org} />}
                                     </div>
                                     <div id="tab10" className={activeIndex === 10 ? "tab__item active" : "tab__item"}>
-                                        <CostAnalysis />
+                                        <CostAnalysis org={org} />
                                     </div>
 
                                    
