@@ -84,6 +84,7 @@ model Organization {
   devices Device[]
   reviews      Review[]
   ingredients      Ingredient[]
+  tags  Json?   @db.Json
   created_at                           DateTime?                      @default(now())
   updated_at                           DateTime?                      @updatedAt
 
@@ -424,6 +425,7 @@ model Product {
   reviews      Review[]
   comboItems    ComboItem[]
   combo_price           Int?
+  tags  Json?   @db.Json
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
 
