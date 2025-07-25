@@ -94,6 +94,19 @@ export default function Home2() {
               <form onSubmit={handleSubmit} className="business-form">
                   <h2>Get ready for take off</h2>
                   <p>Setup your business.</p>
+                  <div className="form_group" >
+                  <label>Country</label>
+                      <select
+                          value={country}
+                          onChange={(e) =>
+                                      setCountry(e.target.value)
+                                    }>
+                          <option value="CA">Canada</option>
+                          <option value="US">United States of America</option>
+                      </select>
+                  </div>
+                  <br/>
+                  
                   <div className="form_group"  >
                   <label>Business Legal Name</label>
                     <input
@@ -161,18 +174,7 @@ export default function Home2() {
                       </select>
                   </div>
                   <br/>
-                  <div className="form_group" >
-                  <label>Country</label>
-                      <select
-                          value={country}
-                          onChange={(e) =>
-                                      setCountry(e.target.value)
-                                    }>
-                          <option value="CA">Canada</option>
-                          <option value="US">United States of America</option>
-                      </select>
-                  </div>
-                  <br/>
+                  
                   <div className="form_group" >
                 <label>Phone Number</label>
                 <PhoneInput
