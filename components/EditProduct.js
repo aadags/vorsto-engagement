@@ -604,6 +604,9 @@ useEffect(() => {
         <UploadImageForm setImages={setImages} existingImagesFromServer={stockImages} productId={productId} />
         <br /><br />
 
+        {type === "default" && organization.type === "Food" && <p style={{color: "red"}}>Setup ingredients for your product to track your inventory</p>}
+
+
         {loading && <span>updating...</span>} 
         {!loading && <button className="techwave_fn_button" type="submit">Update Item</button>} 
         <br/>

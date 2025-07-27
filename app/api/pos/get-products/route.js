@@ -24,7 +24,7 @@ export async function POST(req) {
       // when “Recent”, sort by newest first
       orderBy: { updated_at: 'desc' },
       // when “Recent”, only grab the latest 16
-      take: 32,
+      take: 20,
       include: {
         inventories: {
           where: { active: true },

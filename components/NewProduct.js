@@ -538,13 +538,13 @@ const handleVarietyChange = (index, field, value) => {
           )}
 
 
-
-
       <br />
       <br />
 
         <UploadImageForm setImages={setImages} />
         <br /><br />
+
+        {type === "default" && organization.type === "Food" && <p style={{color: "green"}}>Setup your ingredients after product creation to track your inventory</p>}
 
         {loading && <span>creating...</span>} 
         {!loading && <button className="techwave_fn_button" type="submit">Create Item</button>} 
