@@ -11,26 +11,27 @@ export async function POST(req) {
     const body = await req.json();
     const { id, categoryId } = body;
 
-    // build base filter
+    // build dynamic “where”
     const where = {
       organization_id: id,
       active: true,
+      // only filter by category when not “Recent”
+      ...(categoryId !== 'Recent' && { category_id: categoryId }),
     };
-    
-    // if we're not in “Recent” mode, add the category filter
-    if (categoryId !== 'Recent') {
-      where.category_id = categoryId;
-    }
     
     const products = await prisma.product.findMany({
       where,
+      // when “Recent”, sort by newest first
+      orderBy: categoryId === 'Recent' ? { createdAt: 'desc' } : undefined,
+      // when “Recent”, only grab the latest 16
+      take: categoryId === 'Recent' ? 16 : undefined,
       include: {
         inventories: {
           where: { active: true },
         },
       },
-      take: 16
     });
+    
 
     return NextResponse.json({ products });
   } catch (error) {
