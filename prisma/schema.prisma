@@ -82,6 +82,7 @@ model Organization {
   loyalty_programs LoyaltyProgram[]
   membership_plans MembershipPlan[]
   devices Device[]
+  terminals Terminal[]
   reviews      Review[]
   ingredients      Ingredient[]
   tags  Json?   @db.Json
@@ -716,11 +717,30 @@ model Review {
 }
 
 model Device {
-  id                Int            @id @default(autoincrement())
-  type              String?
-  token              String       @unique
-  organizations     Organization   @relation(fields: [organization_id], references: [id])
-  organization_id   Int
+  id              Int         @id @default(autoincrement())
+  name            String?
+  type            String?
+  token           String      @unique
+  uid           String?      @unique
+  organization    Organization @relation(fields: [organization_id], references: [id])
+  organization_id Int
+
+  terminals       Terminal[]
 
   @@map("devices")
 }
+
+model Terminal {
+  id              Int         @id @default(autoincrement())
+  type            String?
+  token           String      @unique
+  organization    Organization @relation(fields: [organization_id], references: [id])
+  organization_id Int
+
+  device          Device?      @relation(fields: [device_id], references: [id])
+  device_id       Int?
+
+  @@map("terminals")
+}
+
+

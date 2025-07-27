@@ -34,12 +34,21 @@ export async function POST(req) {
     const merged = orgs.flatMap(p => Array.isArray(p.tags) ? p.tags : []);
     const uniqueTags = Array.from(new Set(merged));
 
+    const products = await prisma.product.findMany({
+      where: {
+        tags: {
+          array_contains: [uniqueTags[0]],
+        },
+      },
+      take: 20
+    });
     
 
     return NextResponse.json({
       success: true,
       orgs,
-      tags: uniqueTags
+      tags: uniqueTags,
+      products
     });
   } catch (err) {
     console.error("GET EXPLORE ERROR:", err);

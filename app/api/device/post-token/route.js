@@ -5,7 +5,7 @@ import prisma from "@/db/prisma";
 export async function POST(req) {
   try {
     const body = await req.json();
-    const { id, token, type } = body;
+    const { id, token, device } = body;
 
     if (!token) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -13,24 +13,27 @@ export async function POST(req) {
 
     const user = await prisma.user.findFirst({
       where: {
-        id
+        email: id
       }
     });
 
-    const device = await prisma.device.upsert({
-      where: { token }, // if id is null or undefined, it won't match anything
+    const dd = await prisma.device.upsert({
+      where: { token, uid: device.id }, // if id is null or undefined, it won't match anything
       update: {
-        type,
+        name: device.name,
+        type: device.type,
         organization_id: user.organization_id,
       },
       create: {
+        name: device.name,
         token,
-        type,
+        type: device.type,
+        uid: device.id,
         organization_id: user.organization_id,
       },
     });
 
-    return NextResponse.json({ message: "Saved token", device });
+    return NextResponse.json({ message: "Saved token", dd });
   } catch (error) {
     console.error(error);
     return NextResponse.json(
