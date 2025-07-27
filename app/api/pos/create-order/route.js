@@ -122,20 +122,57 @@ export async function POST(req) {
       })
     }
 
-    // 4. Decrement inventory for each item
-    for (const item of items) {
-      const isWeight = item.selectedInventory.price_unit !== "unit";
-      const decrement = item.quantity;
+    const org = await prisma.organization.findFirst({
+      where: {
+        id: id
+      }
+    });
+    
+    
+    for (const item of items){ 
+      const qtyToDecrement = item.quantity;
+      if (org.type === "Food") {
+        const ingredientUsages = await prisma.ingredientUsage.findMany({
+          where: { inventory_id: item.selectedInventory.id },
+          include: { ingredient: true },
+        });
+  
+        for (const usage of ingredientUsages) {
+          const ingredient = usage.ingredient;
+  
+          if (ingredient.unit_type === "unit") {
+            await prisma.ingredient.update({
+              where: { id: ingredient.id },
+              data: {
+                quantity: ingredient.quantity - (usage.usage_quantity ?? 0) * qtyToDecrement,
+              },
+            });
+          } else {
+            await prisma.ingredient.update({
+              where: { id: ingredient.id },
+              data: {
+                weight_available: ingredient.weight_available - (usage.usage_weight ?? 0) * qtyToDecrement,
+              },
+            });
+          }
+        }
+      } else {
+        const isWeight = item.selectedInventory.price_unit !== "unit";
+        const decrement = item.quantity;
 
-      const updateData = isWeight
-        ? { weight_available: item.selectedInventory.weight_available - decrement }
-        : { quantity: item.quantity - decrement };
+        const updateData = isWeight
+          ? { weight_available: item.selectedInventory.weight_available - decrement }
+          : { quantity: item.quantity - decrement };
 
-      await prisma.inventory.update({
-        where: { id: item.selectedInventory.id },
-        data: updateData,
-      });
+        await prisma.inventory.update({
+          where: { id: item.selectedInventory.id },
+          data: updateData,
+        });
+    
+      }
     }
+
+    
 
     return NextResponse.json({ order });
   } catch (error) {
