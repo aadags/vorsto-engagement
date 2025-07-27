@@ -47,6 +47,8 @@ export async function POST(req) {
       }),
       prisma.order.count({
         where: {
+          organization_id: id,
+          channel: "in_person",
           created_at: {
             gte: start,
             lte: end,
