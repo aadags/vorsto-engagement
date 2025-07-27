@@ -22,9 +22,9 @@ export async function POST(req) {
     const products = await prisma.product.findMany({
       where,
       // when “Recent”, sort by newest first
-      orderBy: categoryId === 'Recent' ? { createdAt: 'desc' } : undefined,
+      orderBy: { updated_at: 'desc' },
       // when “Recent”, only grab the latest 16
-      take: categoryId === 'Recent' ? 16 : undefined,
+      take: 32,
       include: {
         inventories: {
           where: { active: true },
