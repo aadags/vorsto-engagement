@@ -30,6 +30,7 @@ export async function POST(req) {
       tax,
       taxType,
       outofstock,
+      display,
       varieties,
       comboOptions
     } = body;
@@ -62,6 +63,7 @@ export async function POST(req) {
         tax: parseFloat(tax),
         tax_type: taxType,
         outofstock,
+        display
       },
     });
 

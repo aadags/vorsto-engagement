@@ -19,6 +19,7 @@ export async function GET(req) {
 
     const where = {
       active: true,
+      display: true,
       organization_id: org.id,
       ...(categoryId && { category_id: categoryId }),
     };

@@ -12,6 +12,7 @@ const EditProduct = ({ productId, org, cat }) => {
   const [sku, setSku] = useState("");
   const [currency] = useState(org.currency);
   const [outofstock, setOutofstock] = useState("");
+  const [display, setDisplay] = useState(true);
   const [tax, setTax] = useState(0);
   const [taxType, setTaxType] = useState("");
   const [comboPrice, setComboPrice] = useState('');
@@ -152,6 +153,7 @@ const EditProduct = ({ productId, org, cat }) => {
           newCategoryDescription,
           isNewCategory,
           outofstock,
+          display,
           tax,
           taxType,
           varieties: varieties.map((v) => ({
@@ -198,6 +200,7 @@ useEffect(() => {
         setDescription(product.description);
         setSku(product.sku);
         setOutofstock(product.outofstock);
+        setDisplay(product.display);
         setTax(product.tax)
         setTaxType(product.tax_type)
         setType(product.type)
@@ -403,7 +406,24 @@ useEffect(() => {
                   </span>
                   Continue Selling When Out of Stock
                 </label></div>
-                <br />  <br />
+                <br />  
+                
+                <div className="form_group"><label className="fn__toggle">
+                  <span className="t_in">
+                    <input 
+                      type="checkbox" 
+                      checked={display} 
+                      id="display" 
+                      onChange={(e) => setDisplay(e.target.checked)} 
+                    />
+
+                    <span className="t_slider" />
+                    <span className="t_content" />
+                  </span>
+                  Display product on store front
+                </label></div>
+                <br />
+                <br />
 
         {type === "default" &&<h6>Varieties</h6>}
         {type === "combo" &&<h6>Combos</h6>}

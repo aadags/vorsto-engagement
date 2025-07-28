@@ -13,6 +13,7 @@ export async function POST(req) {
     const filters = {
       organization_id: id,
       active: true,
+      display: true,
     };
 
     if (query.length < 3) {

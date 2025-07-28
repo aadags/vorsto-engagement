@@ -19,6 +19,7 @@ export async function POST(req) {
     const where = {
       organization_id: id,
       active: true,
+      display: true,
       // only filter by category when not “Recent”
       ...(categoryId !== 'Recent' && { category_id: categoryId }),
     };

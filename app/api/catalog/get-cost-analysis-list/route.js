@@ -16,7 +16,7 @@ export async function GET(req) {
     const per_page = parseInt(req.nextUrl.searchParams.get("per_page")) || 10;
 
     const inventories = await prisma.inventory.findMany({
-      where: { product: { organization_id: orgId } },
+      where: { active: true, product: { organization_id: orgId } },
       include: {
         ingredientUsages: {
           include: { ingredient: true },

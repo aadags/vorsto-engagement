@@ -416,6 +416,7 @@ model Product {
   tax           Int?
   tax_type           String?
   outofstock      Boolean? @default(false)  
+  display      Boolean? @default(true)  
   images  Image[]
   inventories     Inventory[]
   category         Category?      @relation(fields: [category_id], references: [id])

@@ -12,6 +12,7 @@ const NewProduct = ({ org, cat }) => {
   const [sku, setSku] = useState('');
   const [currency] = useState(org.currency);
   const [outofstock, setOutofstock] = useState(false);
+  const [display, setDisplay] = useState(true);
   const [tax, setTax] = useState();
   const [taxType, setTaxType] = useState("");
   const [comboPrice, setComboPrice] = useState(''); 
@@ -134,6 +135,7 @@ const handleVarietyChange = (index, field, value) => {
           newCategoryDescription,
           isNewCategory,
           outofstock,
+          display,
           varieties: varieties.map((v) => ({
             ...v,
             price: v.price,
@@ -341,6 +343,22 @@ const handleVarietyChange = (index, field, value) => {
                     <span className="t_content" />
                   </span>
                   Continue Selling When Out of Stock
+                </label></div>
+                <br />
+
+                <div className="form_group"><label className="fn__toggle">
+                  <span className="t_in">
+                    <input 
+                      type="checkbox" 
+                      checked={display} 
+                      id="display" 
+                      onChange={(e) => setDisplay(e.target.checked)} 
+                    />
+
+                    <span className="t_slider" />
+                    <span className="t_content" />
+                  </span>
+                  Display product on store front
                 </label></div>
                 <br />
 
