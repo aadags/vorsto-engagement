@@ -61,6 +61,7 @@ model Organization {
   currency  String?
   ship_org_id  String?
   logo  String?
+  promo_image  String?
   logo_id  String?
   timezone  String?
   hours  Json?
