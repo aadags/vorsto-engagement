@@ -277,6 +277,7 @@ export default function Ingredients({ handleIng }) {
             >
               <option value="unit">Unit</option>
               <option value="kg">kg</option>
+              <option value="g">g</option>
               <option value="lb">lb</option>
               <option value="ml">ml</option>
             </select>

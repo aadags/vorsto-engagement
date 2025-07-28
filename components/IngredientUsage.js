@@ -238,6 +238,7 @@ const ConfigureIngredientUsages = ({ productId }) => {
                         >
                           <option value="unit">unit</option>
                           <option value="kg">kg</option>
+                          <option value="g">g</option>
                           <option value="lb">lb</option>
                           <option value="ml">ml</option>
                         </select>
@@ -256,7 +257,7 @@ const ConfigureIngredientUsages = ({ productId }) => {
                       value={usage.usage_quantity}
                       onChange={(e) => handleIngredientChange(idx, ingIdx, "usage_quantity", e.target.value)}
                     />} 
-                    {(newIngredients[usage.ingredient_id]?.unit_type === "lb" || newIngredients[usage.ingredient_id]?.unit_type === "kg") && <input
+                    {(newIngredients[usage.ingredient_id]?.unit_type === "lb" || newIngredients[usage.ingredient_id]?.unit_type === "kg" || newIngredients[usage.ingredient_id]?.unit_type === "g") && <input
                       type="number"
                       placeholder="Usage Weight"
                       value={usage.usage_weight}
@@ -277,7 +278,7 @@ const ConfigureIngredientUsages = ({ productId }) => {
                       onChange={(e) => handleIngredientChange(idx, ingIdx, "usage_quantity", e.target.value)}
                     /><span className="currency-suffix">{usage.unit_type}</span></div>} 
 
-                    {(usage.unit_type === "lb" || usage.unit_type === "kg") && <div className="currency-wrapper"><input
+                    {(usage.unit_type === "lb" || usage.unit_type === "kg" || usage.unit_type === "g") && <div className="currency-wrapper"><input
                       type="number"
                       placeholder="Usage Weight"
                       value={usage.usage_weight}
@@ -298,7 +299,7 @@ const ConfigureIngredientUsages = ({ productId }) => {
                       onChange={(e) => handleNewIngredientChange(usage.ingredient_id, "available_quantity", e.target.value)}
                     />} 
 
-                    {isNew && (newIngredients[usage.ingredient_id]?.unit_type === "lb" || newIngredients[usage.ingredient_id]?.unit_type === "kg") && <input
+                    {isNew && (newIngredients[usage.ingredient_id]?.unit_type === "lb" || newIngredients[usage.ingredient_id]?.unit_type === "kg" || newIngredients[usage.ingredient_id]?.unit_type === "g") && <input
                       type="number"
                       placeholder="Available Weight"
                       value={newIngredients[usage.ingredient_id]?.available_weight || ""}
