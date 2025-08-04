@@ -12,6 +12,7 @@ export default function Users() {
   const [perPage, setPerPage] = useState(10);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [role, setRole] = useState(0);
 
   const columns = [
@@ -36,7 +37,7 @@ export default function Users() {
         row.role_id? (
           <div>
             <a target="_blank" href={`/metrics/agent/${row.id}`}>
-              <FontAwesomeIcon icon={faChartPie} /> Metrics
+              <FontAwesomeIcon icon={faChartPie} /> KPI
             </a>
             <br />
             <a href onClick={() => deleteUser(row.id)}>
@@ -48,7 +49,7 @@ export default function Users() {
         (
           <div>
             <a target="_blank" href={`/metrics/agent/${row.id}`}>
-              <FontAwesomeIcon icon={faChartPie} /> Metrics
+              <FontAwesomeIcon icon={faChartPie} /> KPI
             </a>
             <br />
           </div>
@@ -85,7 +86,7 @@ export default function Users() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, email, role }),
+        body: JSON.stringify({ name, email, password, role }),
       });
 
       if (response.ok) {
@@ -219,6 +220,18 @@ export default function Users() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <br />
+              <div className="form_group">
+                <input
+                  type="text"
+                  id="bot_pwd"
+                  className="full_width"
+                  placeholder="Password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
               <br />

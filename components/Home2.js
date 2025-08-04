@@ -20,6 +20,7 @@ export default function Home2() {
   const [country, setCountry] = useState('CA');
   const [loading, setLoading] = useState(false);
   const [tagline, setTagline] = useState('');
+  const [domain, setDomain] = useState('');
   const [address, setAddress] = useState('')
   const [lat, setLat] = useState(null)
   const [lng, setLng] = useState(null)
@@ -66,6 +67,7 @@ export default function Home2() {
           lng,
           country,
           tagline,
+          domain,
           phone,
           init: true,
           email
@@ -83,6 +85,13 @@ export default function Home2() {
       setLoading(false);
     }
   };
+
+  function slugify(name = '') {
+    return name
+      .toLowerCase()
+      .replace(/[^\w\s]/g, '')
+      .replace(/\s+/g, '');
+  }
 
   return (
     <>
@@ -211,6 +220,19 @@ export default function Home2() {
                     onChange={(e) => setTagline(e.target.value)}
                     required
                   />
+                </div>
+                <br/>
+
+                <div className="currency-wrapper" style={{ width: "100%" }}>
+                  <input
+                    type="text"
+                    className="full_width"
+                    placeholder="subdomain"
+                    value={domain}
+                    onChange={(e) => setDomain(e.target.value)}
+                    required
+                  />
+                  <span className="currency-suffix">.vorsto.shop</span>
                 </div>
                 <br/>
                 

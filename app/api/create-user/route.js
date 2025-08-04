@@ -1,6 +1,7 @@
 "use server";
 import { NextResponse } from "next/server";
 import prisma from "@/db/prisma";
+import { auth, createUserWithEmailAndPassword } from "@/firebaseConfig/FirebaseClient";
 
 export async function POST(req) {
   try {
@@ -9,7 +10,9 @@ export async function POST(req) {
     );
 
     const body = await req.json();
-    const { name, email, role } = body;
+    const { name, email, password, role } = body;
+
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
 
     const user = await prisma.user.create({
       data: {

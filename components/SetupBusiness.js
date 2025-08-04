@@ -18,10 +18,15 @@ export default function SetupBusiness() {
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
   const [file, setFile] = useState();
+  const [file2, setFile2] = useState();
   const [message, setMessage] = useState("");
+  const [message2, setMessage2] = useState("");
   const [uploaded, setUploaded] = useState();
+  const [uploaded2, setUploaded2] = useState();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting2, setIsSubmitting2] = useState(false);
   const fileInputRef = useRef(null);
+  const fileInputRef2 = useRef(null);
 
   const router = useRouter();
 
@@ -86,6 +91,36 @@ export default function SetupBusiness() {
     setIsSubmitting(false);
   };
 
+  const handlePromoImageSubmit = async (e) => {
+    e.preventDefault();
+    if (!file2) {
+      setMessage2("Please select a file.");
+      return;
+    }
+
+    setIsSubmitting2(true);
+
+    const formData = new FormData();
+    formData.append("file", file2);
+
+    const res = await fetch("/api/upload-business-promo", {
+      method: "POST",
+      body: formData,
+    });
+
+    const result = await res.json();
+    if (res.ok) {
+      setMessage2(`Uploaded successfully`);
+      setUploaded2(result.file);
+      if (fileInputRef2.current) {
+        fileInputRef2.current.value = null;
+      }
+    } else {
+      setMessage2(result.error || "Upload failed");
+    }
+    setIsSubmitting2(false);
+  };
+
 
   const fetchOrg = async () => {
       
@@ -97,6 +132,7 @@ export default function SetupBusiness() {
     setEmail(org.contact_email);
     setCountry(org.country);
     setUploaded({ url: org.logo});
+    setUploaded2({ url: org.promo_image});
   };
 
   useEffect(() => {
@@ -221,6 +257,62 @@ export default function SetupBusiness() {
                       </div>
                   </div>
                 )}
+
+                <br />
+
+                <form
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                    paddingBottom: "0.5em",
+                  }}
+                >
+                  <div className="form_group">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setFile2(e.target.files?.[0] || null)}
+                    ref={fileInputRef2}
+                    className="block mb-4"
+                  />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handlePromoImageSubmit}
+                    disabled={isSubmitting2}
+                    className="techwave_fn_button"
+                  >
+                    {isSubmitting2 ? "Uploading" : "Upload Business Promo Image"}
+                  </button>
+                </form>
+
+                {message2 && <p style={{ color: "red" }}>{message2}</p>}
+                <br />
+                {uploaded2 && (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                      paddingBottom: "0.5em",
+                    }}
+                  >
+                    <div>
+                        <img
+                          src={uploaded2.url}
+                          alt={`Uploaded logo`}
+                          className="w-full"
+                          width="200px"
+                        />
+                        <br />
+                    
+                      </div>
+                  </div>
+                )}
+
                 <p style={{ color: "red" }}>{error}</p>
                 <p style={{ color: "green" }}>{success}</p>
 

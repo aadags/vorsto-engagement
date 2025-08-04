@@ -36,11 +36,11 @@ export async function POST(req) {
 
     const products = await prisma.product.findMany({
       where: {
-        tags: {
-          array_contains: [uniqueTags[0]],
-        },
+        OR: uniqueTags.map(tag => ({
+          tags: { array_contains: [tag] }
+        })),
       },
-      take: 20
+      take: 5
     });
     
 
@@ -71,7 +71,7 @@ const getNearbyStores = async (lat, lng, radiusKm = 5) => {
       )
     ) AS distance_km
     FROM organizations
-    WHERE address_lat IS NOT NULL AND address_long IS NOT NULL
+    WHERE address_lat IS NOT NULL AND address_long IS NOT NULL AND type = 'Food'
     HAVING distance_km < ${radiusKm}
     ORDER BY distance_km ASC
     LIMIT 50;

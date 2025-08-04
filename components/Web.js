@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import SetupSiteMedia from './SetupSiteMedia';
+import SetupSiteDomain from './SetupSiteDomain';
 import WebTemplate from './WebTemplate';
 
 
@@ -28,6 +29,7 @@ export default function Web({ org }) {
                         <div className="container">
                             <div className="tab_in">
                                 <a className={activeIndex === 1 ? "active" : ""} onClick={() => handleOnClick(1)}>Templates</a>
+                                <a className={activeIndex === 2 ? "active" : ""} onClick={() => handleOnClick(2)}>Domain</a>
                                 {/* <a className={activeIndex === 2 ? "active" : ""} onClick={() => handleOnClick(2)}>Media</a>
                                 <a className={activeIndex === 3 ? "active" : ""} onClick={() => handleOnClick(3)}>Site Settings</a> */}
                             </div>
@@ -50,7 +52,7 @@ export default function Web({ org }) {
                                         {activeIndex === 1 && <WebTemplate org={org} />}
                                     </div>
                                     <div id="tab2" className={activeIndex === 2 ? "tab__item active" : "tab__item"}>
-                                        {activeIndex === 2 && <SetupSiteMedia org={org} />}
+                                        {activeIndex === 2 && <SetupSiteDomain org={org} />}
                                     </div>
                                     <div id="tab3" className={activeIndex === 3 ? "tab__item active" : "tab__item"}>
                                         {activeIndex === 3 && <WebTemplate org={org} />}
