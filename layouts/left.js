@@ -147,6 +147,22 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
         },
     ];
 
+    const conversations = [
+        {
+            title: "Text",
+            pathname: "/chat",
+            img: "/svg/chat.svg",
+            key: user.role_id > 0 ? "chat" : "allow",
+            counter: newLead
+        },
+        {
+            title: "Voice",
+            pathname: "/voice",
+            img: "/svg/phone-volume.svg",
+            key: user.role_id > 0 ? "call" : "allow",
+        },
+    ];
+
     const ticket = [
         {
             title: "Open Tickets",
@@ -420,28 +436,20 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
                             <li className={`menu-item-has-children ${isChatToggle ? "closed" : ""}`} >
                                 <a className="fn__tooltip menu__item" title="Chat" onClick={toggleChatHandle} >
                                     <span className="icon"><img src="/svg/chat.svg" alt="" className="fn__svg" /></span>
-                                    <span className="text">Chat</span>
+                                    <span className="text">Conversations</span>
                                     <span className="trigger"><img src="/svg/arrow.svg" alt="" className="fn__svg" /></span>
                                 </a>
                                 <ul className="sub-menu" style={{ display: `${isChatToggle ? "block" : "none"}` }}>
-                                    {chat.map((item, i) => (
+                                    {conversations.map((item, i) => (
                                         item.key && perms.includes(item.key) && <li key={i}>
                                             <Link href={`${item.pathname}`} className={`fn__tooltip menu__item ${item.pathname === pathname ? "active" : ""}`} title={item.title} >
                                                 <span className="text">{item.title}{item.counter && <span className="count">{item.counter}</span>}</span>
                                             </Link>
                                         </li>
                                     ))}
-                                    {chats.length > 0 && <li>------------------------------------</li>}
-                                    {chats && chats.map((chat, i) => (
-                                        <li key={i}>
-                                            <Link href={`/live/conversation/${chat.id}`} className={`fn__tooltip menu__item ${pathname.includes(chat.id) ? "active" : ""}`} title={chat.name} >
-                                                <span className="text">{chat.name}{chat.counter && <span className="count">{chat.counter}</span>}</span>
-                                            </Link>
-                                        </li>
-                                    ))}
                                 </ul>
                             </li>
-                            <li className={`menu-item-has-children ${isCallToggle ? "closed" : ""}`} >
+                            {/* <li className={`menu-item-has-children ${isCallToggle ? "closed" : ""}`} >
                                 <a className="fn__tooltip menu__item" title="Calls" onClick={toggleCallHandle} >
                                     <span className="icon"><img src="/svg/phone-volume.svg" alt="" className="fn__svg" /></span>
                                     <span className="text">Call</span>
@@ -461,7 +469,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
                                         </Link>
                                     </li>
                                     </ul>
-                            </li>
+                            </li> */}
                             {/* <li className={`menu-item-has-children ${isTicketToggle ? "closed" : ""}`} >
                                 <a className="fn__tooltip menu__item" title="Tickets" onClick={toggleTicketHandle} >
                                     <span className="icon"><img src="/svg/tickets.svg" alt="" className="fn__svg" /></span>

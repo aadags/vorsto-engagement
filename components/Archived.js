@@ -39,7 +39,7 @@ export default function Archived() {
       name: "Actions",
       cell: (row) => (
         <div>
-          <a href={`/conversation/${row.id}`}>
+          <a href={`/conversation/${row.id}`} target="_blank">
             <FontAwesomeIcon icon={faComment} /> Open
           </a>
           <br />

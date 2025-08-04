@@ -27,7 +27,7 @@ export default function AIConversations() {
       sortable: true,
     },
     {
-      name: "Agent",
+      name: "Staff",
       selector: (row) => (row.user)? row.user.name : "AI Agent",
       sortable: true,
     },
@@ -44,7 +44,7 @@ export default function AIConversations() {
       name: "Actions",
       cell: (row) => (
         <div>
-          <a href={`/conversation/${row.id}`}>
+          <a href={`/conversation/${row.id}`} target="_blank">
             <FontAwesomeIcon icon={faComment} /> Open
           </a>
           <br />
