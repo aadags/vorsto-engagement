@@ -4,11 +4,12 @@ import { useEffect, useState } from 'react'
 import Voice from '@/components/Voice'
 import VoiceLog from './VoiceLog';
 import Sip from './Sip';
+import CallMetric from './CallMetric';
 
 
 export default function Voices({ org }) {
 
-    const [activeIndex, setActiveIndex] = useState(1);
+    const [activeIndex, setActiveIndex] = useState(3);
 
     const handleOnClick = (index) => {
         setActiveIndex(index);
@@ -19,7 +20,7 @@ export default function Voices({ org }) {
             <div className="techwave_fn_models_page">
                 <div className="fn__title_holder">
                     <div className="container">
-                        <h1 className="title">Chats</h1>
+                        <h1 className="title">Voice</h1>
                     </div>
                 </div>
                 {/* Models */}
@@ -31,6 +32,7 @@ export default function Voices({ org }) {
                                 <a className={activeIndex === 3 ? "active" : ""} onClick={() => handleOnClick(3)}>Phone Device</a>
                                 <a className={activeIndex === 1 ? "active" : ""} onClick={() => handleOnClick(1)}>Queue</a>
                                 <a className={activeIndex === 2 ? "active" : ""} onClick={() => handleOnClick(2)}>Log</a>
+                                <a className={activeIndex === 4 ? "active" : ""} onClick={() => handleOnClick(4)}>Metrics</a>
                                 {/* <a className={activeIndex === 2 ? "active" : ""} onClick={() => handleOnClick(2)}>Media</a>
                                 <a className={activeIndex === 3 ? "active" : ""} onClick={() => handleOnClick(3)}>Site Settings</a> */}
                             </div>
@@ -57,6 +59,9 @@ export default function Voices({ org }) {
                                     </div>
                                     <div id="tab3" className={activeIndex === 3 ? "tab__item active" : "tab__item"}>
                                         {activeIndex === 3 && <Sip org={org} />}
+                                    </div>
+                                    <div id="tab3" className={activeIndex === 4 ? "tab__item active" : "tab__item"}>
+                                        {activeIndex === 4 && <CallMetric />}
                                     </div>
 
                                    

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Lead from '@/components/Lead'
 import AIConversation from '@/components/AIConversation'
 import Archived from '@/components/Archived'
+import ChatMetric from './ChatMetric'
 
 
 export default function Chats({ org }) {
@@ -28,9 +29,11 @@ export default function Chats({ org }) {
                     <div className="fn__tabs">
                         <div className="container">
                             <div className="tab_in">
+                                
                                 <a className={activeIndex === 1 ? "active" : ""} onClick={() => handleOnClick(1)}>Queue</a>
                                 <a className={activeIndex === 2 ? "active" : ""} onClick={() => handleOnClick(2)}>Ongoing</a>
                                 <a className={activeIndex === 3 ? "active" : ""} onClick={() => handleOnClick(3)}>Archived</a>
+                                <a className={activeIndex === 4 ? "active" : ""} onClick={() => handleOnClick(4)}>Metrics</a>
                                 {/* <a className={activeIndex === 2 ? "active" : ""} onClick={() => handleOnClick(2)}>Media</a>
                                 <a className={activeIndex === 3 ? "active" : ""} onClick={() => handleOnClick(3)}>Site Settings</a> */}
                             </div>
@@ -57,6 +60,9 @@ export default function Chats({ org }) {
                                     </div>
                                     <div id="tab3" className={activeIndex === 3 ? "tab__item active" : "tab__item"}>
                                         {activeIndex === 3 && <Archived org={org} />}
+                                    </div>
+                                    <div id="tab4" className={activeIndex === 4 ? "tab__item active" : "tab__item"}>
+                                        {activeIndex === 4 && <ChatMetric org={org} />}
                                     </div>
 
                                    

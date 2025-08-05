@@ -497,7 +497,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
                                     </Link>
                                 </li>
                             ))}
-                            <li className={`menu-item-has-children ${isReportToggle ? "closed" : ""}`} >
+                            {/* <li className={`menu-item-has-children ${isReportToggle ? "closed" : ""}`} >
                                 <a className="fn__tooltip menu__item" title="Reports" onClick={toggleReportHandle} >
                                     <span className="icon"><img src="/svg/chart.svg" alt="" className="fn__svg" /></span>
                                     <span className="text">Reports</span>
@@ -512,7 +512,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
                                         </li>
                                     ))}
                                 </ul>
-                            </li>
+                            </li> */}
                         </ul>
                     </div>
                     {/* !#1 navigation group */}
