@@ -26,6 +26,8 @@ export async function POST(req) {
       tagline,
       phone,
       commission,
+      subdomain,
+      tags,
       init = false,
       email } = body;
 
@@ -48,7 +50,9 @@ export async function POST(req) {
         contact_email: email,
         country,
         currency,
+        tags,
         onboarding: true,
+        subdomain
       }
     })
 
@@ -57,7 +61,7 @@ export async function POST(req) {
       const response = await fetch(`${process.env.SHIPPING_API}/api/create-company`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, address, lat, lng, commission: type==="Food"? 20 : 0, currency }),
+        body: JSON.stringify({ id: org.ship_org_id || "new", name, address, lat, lng, commission: Number(commission), currency }),
       });
       const data = await response.json();
       
@@ -67,7 +71,8 @@ export async function POST(req) {
         }, 
         data: {
           ship_org_id: data.company.id,
-
+          ship_org_info: data.company,
+          min_order: type==="Food"? 15 : 0
         }
       })
 

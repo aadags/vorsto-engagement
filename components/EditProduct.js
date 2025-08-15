@@ -11,7 +11,7 @@ const EditProduct = ({ productId, org, cat }) => {
   const [description, setDescription] = useState("");
   const [sku, setSku] = useState("");
   const [currency] = useState(org.currency);
-  const [outofstock, setOutofstock] = useState("");
+  const [outofstock, setOutofstock] = useState(false);
   const [display, setDisplay] = useState(true);
   const [tax, setTax] = useState(0);
   const [taxType, setTaxType] = useState("");
@@ -29,15 +29,23 @@ const EditProduct = ({ productId, org, cat }) => {
   const [newCategoryName, setNewCategoryName] = useState("");
   const [newCategoryDescription, setNewCategoryDescription] = useState("");
   const [comboOptions, setComboOptions] = useState([
-    { items: [{ inventory_id: '', extra_price: '' }] }
+    { required: true, items: [{ inventory_id: '', extra_price: '' }] }
   ]);
   const [organization, setOrganization] = useState('');
 
   const addOption = () => {
     setComboOptions([
       ...comboOptions,
-      { items: [{ inventory_id: '', extra_price: '' }] }
+      { required: true, items: [{ inventory_id: '', extra_price: '' }] }
     ]);
+  };
+
+  // update a field on a specific inventory slot
+  const handleOptionChange = (optIdx, field, value) => {
+    const next = comboOptions.map((opt, i) => {
+      return i === optIdx ? { ...opt, [field]: value } : opt
+    });
+    setComboOptions(next);
   };
   
   // remove an entire option
@@ -206,7 +214,7 @@ useEffect(() => {
         setType(product.type)
         setVarieties(product.inventories);
         setComboOptions(product.comboOptions);
-        setComboPrice(product.combo_price);
+        setComboPrice(product.combo_price / 100);
         setSelectedCategory(product.category_id);
         setStockImages(product.images);
       } catch (error) {
@@ -378,8 +386,10 @@ useEffect(() => {
         </div>
         <br />
 
-        {type === "combo" && <div className="currency-wrapper">
+        {type === "combo" && <>
         <label>Combo Price </label>
+        <br/>
+        <div className="currency-wrapper">
               <input
                 type="number"
                 className="currency-input"
@@ -389,10 +399,10 @@ useEffect(() => {
                 required
               />
               <span className="currency-suffix">{currency}</span>
-            </div>}
+            </div></>}
         <br /><br />
 
-        <div className="form_group"><label className="fn__toggle">
+        {organization.type !== "Food" &&<> <div className="form_group"><label className="fn__toggle">
                   <span className="t_in">
                     <input 
                       type="checkbox" 
@@ -406,7 +416,7 @@ useEffect(() => {
                   </span>
                   Continue Selling When Out of Stock
                 </label></div>
-                <br />  
+                <br /></>}  
                 
                 <div className="form_group"><label className="fn__toggle">
                   <span className="t_in">
@@ -552,6 +562,60 @@ useEffect(() => {
                     )}
                   </div>
                   <br/>
+
+                  <div className="form_group"><label className="fn__toggle">
+                    <span className="t_in">
+                      <input 
+                        type="checkbox" 
+                        checked={opt.required} 
+                        id="display" 
+                        onChange={(e) => handleOptionChange(optIdx, "required", e.target.checked)} 
+                      />
+
+                      <span className="t_slider" />
+                      <span className="t_content" />
+                    </span>
+                    Option is Required
+                  </label></div>
+                  <br />
+
+                  <div className="form_group">
+                    <label className="block text-xs text-gray-300 mb-1">Label </label>
+                    <input
+                      type="text"
+                      value={opt.label ?? ''}
+                      onChange={(e) => handleOptionChange(optIdx, 'label', e.target.value)}
+                      className="w-full border rounded px-3 py-2 bg-transparent"
+                      placeholder="e.g Main Dish / Add-ons"
+                    />
+                  </div><br/>
+
+                  <div className="form_group">
+                      <label className="block text-xs text-gray-300 mb-1">Min Selection </label>
+                      <input
+                        type="number"
+                        min={0}
+                        required
+                        value={opt.min ?? ''}
+                        onChange={(e) => handleOptionChange(optIdx, 'min', e.target.value === '' ? '' : Number(e.target.value))}
+                        className="w-full border rounded px-3 py-2 bg-transparent"
+                        placeholder={opt.required ? '1' : '0'}
+                      />
+                    </div><br/>
+
+                  <div className="form_group">
+                      <label className="block text-xs text-gray-300 mb-1">Max Selection </label>
+                      <input
+                        type="number"
+                        min={1}
+                        required
+                        value={opt.max ?? ''}
+                        onChange={(e) => handleOptionChange(optIdx, 'max', e.target.value === '' ? '' : Number(e.target.value))}
+                        className="w-full border rounded px-3 py-2 bg-transparent"
+                        placeholder="1 for single choice"
+                      />
+                    </div><br/>
+
 
                   {opt.items.map((item, itemIdx) => (
                     <div key={itemIdx} className="variety-row flex items-center mb-2">

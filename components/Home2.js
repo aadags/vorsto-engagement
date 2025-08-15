@@ -7,6 +7,7 @@ import { animationText } from '@/components/Utilities'
 import { useRouter } from 'next/navigation';
 import PhoneInput from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
+import TagMultiSelect from './TagMultiSelect';
 
 export default function Home2() {
 
@@ -26,6 +27,8 @@ export default function Home2() {
   const [lng, setLng] = useState(null)
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
+  const [tags, setTags] = useState([]);
+  const [commission, setCommission] = useState(20);
   const [error, setError] = useState(false);
 
   useEffect(() => {
@@ -35,6 +38,17 @@ export default function Home2() {
       const response = await axios.get(`/api/get-org-details`);
       const org = response.data;
       setOrganization(org);
+      setName(org.name)
+      setDBName(org.dba)
+      setNumber(org.number)
+      setType(org.type)
+      setCountry(org.country)
+      setTagline(org.tagline)
+      setDomain(org.subdomain)
+      setAddress(org.address)
+      setEmail(org.contact_email)
+      setPhone(org.contact_number)
+      setTags(org.tags)
 
       if(org.onboarding)
       {
@@ -67,10 +81,12 @@ export default function Home2() {
           lng,
           country,
           tagline,
-          domain,
+          subdomain: domain,
           phone,
           init: true,
-          email
+          email,
+          tags,
+          commission
         }),
       });
   
@@ -92,6 +108,44 @@ export default function Home2() {
       .replace(/[^\w\s]/g, '')
       .replace(/\s+/g, '');
   }
+
+  const POPULAR_FOOD_TAGS = [
+    // Core dishes
+    "Burgers","Pizza","Pasta","Steak","BBQ","Fried Chicken","Wings","Seafood",
+    "Tacos","Burritos","Nachos","Sandwiches","Subs","Wraps","Hot Dogs",
+    "Sushi","Sashimi","Ramen","Udon","Soba","Tempura","Katsu","Teriyaki",
+    "Pho","Banh Mi","Pad Thai","Curry","Biryani","Kebab","Shawarma","Falafel",
+    "Dumplings","Gyoza","Bao","Noodles","Fried Rice","Poke","Bibimbap",
+    "Pierogi","Kebab","Mezze","Tapas","Small Plates","Salad","Soup",
+    "Breakfast","Brunch","Pancakes","Waffles","Omelettes","Bowl","Grain Bowl",
+  
+    // Sides & snacks
+    "Fries","Poutine","Onion Rings","Garlic Bread","Mozzarella Sticks","Hummus","Chips","Salsa","Guacamole",
+  
+    // Desserts & sweets
+    "Desserts","Ice Cream","Gelato","Frozen Yogurt","Cake","Cheesecake","Brownies","Cookies","Donuts",
+    "Pastries","Bakery","Crepes","Churros","Tiramisu","Baklava",
+  
+    // Drinks
+    "Coffee","Espresso","Latte","Cold Brew","Tea","Chai","Bubble Tea","Boba","Smoothies","Juice","Milkshakes",
+  
+    // Cuisines by country/region
+    "Canadian","American","Latin American","Mexican","Caribbean","Jamaican","Cuban","Brazilian","Argentinian","Peruvian",
+    "Italian","French","Spanish","Portuguese","Greek","Turkish","Mediterranean",
+    "British","Irish","German","Polish","Hungarian","Czech","Swiss","Belgian","Dutch",
+    "Nordic","Swedish","Norwegian","Danish","Finnish",
+    "Middle Eastern","Lebanese","Israeli","Persian","Moroccan","Egyptian","Tunisian",
+    "Asian","Chinese","Japanese","Korean","Thai","Vietnamese","Filipino","Indonesian","Malaysian","Singaporean",
+    "South Asian","Indian","Pakistani","Bangladeshi","Sri Lankan",
+    "African","Ethiopian","Nigerian","Ghanaian","South African",
+  
+    // Dietary / lifestyle
+    "Vegan","Vegetarian","Pescatarian","Halal","Kosher","Gluten-Free","Dairy-Free","Nut-Free","Keto","Paleo","Low-Carb","Organic","Healthy",
+  
+    // Service / experience
+    "Family Style","Comfort Food","Street Food","Fast Food","Casual Dining","Fine Dining","Food Truck","Late Night","Kid Friendly",
+    "Pickup","Delivery","Catering","Meal Prep"
+  ];
 
   return (
     <>
@@ -179,6 +233,7 @@ export default function Home2() {
                                       setType(e.target.value)
                                     }>
                           <option value="Retail">Retail/Wholesale Store</option>
+                          <option value="Grocery">Grocery Store</option>
                           <option value="Food">Restaurant</option>
                       </select>
                   </div>
@@ -222,6 +277,32 @@ export default function Home2() {
                   />
                 </div>
                 <br/>
+
+                {type === "Food" && <><div className="form_group">
+                  <label>Tags</label>
+                  <TagMultiSelect
+                    value={tags}
+                    onChange={setTags}
+                    suggestions={POPULAR_FOOD_TAGS}  
+                    placeholder="Add tags (Enter, comma or Tab)"
+                    // max={10}
+                  />
+                </div>
+                <br/></>}
+                {type === "Food" && <>
+                <div className="form_group" >
+                  <label>Delivery Commission</label>
+                      <select
+                          value={commission}
+                          onChange={(e) =>
+                                      setCommission(e.target.value)
+                                    }>
+                          <option value="20">20%</option>
+                          <option value="30">30% (lower delivery fees)</option>
+                      </select>
+                  </div>
+                  <br/>
+                  </>}
 
                 <div className="currency-wrapper" style={{ width: "100%" }}>
                   <input

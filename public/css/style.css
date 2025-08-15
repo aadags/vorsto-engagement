@@ -7348,6 +7348,77 @@ a.fn__like.no_border .fn__svg{
     height: 5px;
 }
 
+.tag-field {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: .5rem;
+	padding: .5rem;
+	border: 2px solid #ddd;
+	border-radius: 20px;
+	position: relative;
+  }
+  
+  .tag-input {
+	flex: 1 0 160px;
+	min-width: 120px;
+	border: none;
+	outline: none;
+	background: transparent;
+	font-size: 14px;
+	padding: .25rem;
+  }
+  
+  .chip {
+	display: inline-flex;
+	align-items: center;
+	gap: .4rem;
+	padding: .25rem .5rem;
+	border-radius: 999px;
+	background: #e7e7e7;
+	color: #000;
+	font-size: 12px;
+	border: 1px solid #2a2a2a;
+  }
+  .chip-remove {
+	appearance: none;
+	border: 0;
+	background: transparent;
+	color: #aaa;
+	cursor: pointer;
+	font-size: 14px;
+	line-height: 1;
+  }
+  .chip-remove:hover { color: #fff; }
+  
+  .tag-suggestions {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: calc(30% + 6px);
+	background: #fff;
+	border: 2px solid #ddd;
+	border-radius: 8px;
+	padding: .25rem;
+	max-height: 220px;
+	overflow: auto;
+	z-index: 20;
+  }
+  .tag-suggestions li { list-style: none; }
+  .tag-suggestions button {
+	width: 100%;
+	text-align: left;
+	background: transparent;
+	color: #000;
+	border: 0;
+	padding: .5rem .75rem;
+	border-radius: 6px;
+	cursor: pointer;
+	font-size: 14px;
+  }
+  .tag-suggestions button:hover { background:#6c757d }
+  
+
 .currency-wrapper {
   position: relative;
   display: inline-block;
@@ -7523,4 +7594,6 @@ a.fn__like.no_border .fn__svg{
 	}
   
   }
+
+  
   

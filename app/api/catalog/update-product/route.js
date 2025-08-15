@@ -104,20 +104,58 @@ export async function POST(req) {
 
     if(type === "combo")
     {
-      const comboItemsPayload = comboOptions.flatMap((opt, optIdx) =>
-        opt.items.map((itm) => ({
+
+      const rulesData = comboOptions.map((opt, idx) => {
+        const min =
+          opt.min === '' || opt.min == null
+            ? (opt.required ? 1 : null)
+            : Number(opt.min);
+        const max =
+          opt.max === '' || opt.max == null
+            ? null
+            : Number(opt.max);
+    
+        if (min != null && max != null && min > max) {
+          throw new Error(`Option ${idx + 1}: min cannot be greater than max`);
+        }
+    
+        return {
           product_id: product.id,
-          inventory_id: itm.inventory_id,
-          extra_price: Number(itm.extra_price || 0) * 100, // back to cents
-          option_index: optIdx,
-        }))
-      );
-
-      await prisma.comboItem.deleteMany({ where: { product_id: product.id } });
-
-      await prisma.comboItem.createMany({
-        data: comboItemsPayload,
+          option_index: idx,
+          label: opt.label ?? null,
+          required: !!opt.required,
+          min, // can be null
+          max, // can be null
+        };
       });
+    
+      // Build items
+      const itemsData = comboOptions.flatMap((opt, idx) =>
+        (opt.items || [])
+          .filter((itm) => !!itm.inventory_id)
+          .map((itm) => ({
+            product_id: product.id,
+            inventory_id: itm.inventory_id,
+            extra_price: Math.round(Number(itm.extra_price || 0) * 100), // cents
+            option_index: idx,
+          }))
+      );
+    
+      // Transaction: wipe old, insert new
+      prisma.$transaction(async (tx) => {
+        await tx.comboItem.deleteMany({ where: { product_id: product.id } });
+        await tx.comboRule.deleteMany({ where: { product_id: product.id } });
+    
+        if (rulesData.length) {
+          await tx.comboRule.createMany({ data: rulesData });
+        }
+        if (itemsData.length) {
+          await tx.comboItem.createMany({ data: itemsData, skipDuplicates: true });
+        }
+    
+        return { ok: true, rules: rulesData.length, items: itemsData.length };
+      });
+    
 
     }
 

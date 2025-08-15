@@ -60,6 +60,8 @@ model Organization {
   country  String?
   currency  String?
   ship_org_id  String?
+  ship_org_info  Json?
+  min_order  Int?
   logo  String?
   promo_image  String?
   logo_id  String?
@@ -427,6 +429,7 @@ model Product {
   active      Boolean?  @default(true)   
   reviews      Review[]
   comboItems    ComboItem[]
+  comboRules    ComboRule[]
   combo_price           Int?
   tags  Json?   @db.Json
   created_at     DateTime @default(now())
@@ -538,6 +541,21 @@ model ComboItem {
   option_index  Int        @default(0)
   @@map("combo_items")
 }
+
+model ComboRule {
+  id           String   @id @default(cuid())
+  product      Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  product_id   String
+  option_index Int
+  label        String?
+  required     Boolean  @default(false)  
+  min          Int?                     
+  max          Int?                    
+
+  @@unique([product_id, option_index]) 
+  @@map("combo_rules")
+}
+
 
 model Image {
   id            String   @id @default(cuid())
