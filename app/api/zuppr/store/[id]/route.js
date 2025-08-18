@@ -1,4 +1,3 @@
-// app/api/stores/[id]/route.js
 "use server";
 
 import { NextResponse } from "next/server";
@@ -28,9 +27,16 @@ export async function GET(req, { params }) {
       include: {
         products: {
           where: { active: true, display: true },
-          include: { category: true, comboItems: true, inventories: {
-            where: { active: true }
-          } },
+          include: { category: true, comboRules: true, 
+            comboItems: {
+              include: {
+                inventory: true
+              }
+            },
+            inventories: {
+              where: { active: true }
+            } 
+          },
         },
       },
     });

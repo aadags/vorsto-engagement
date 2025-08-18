@@ -322,6 +322,8 @@ model Customer {
   id          String   @id @default(cuid())
   name        String?  
   email       String?  @unique
+  stripe_id       String?  @unique
+  square_id       String?  @unique
   phone       String?  @unique
   image       String?
   created_at  DateTime @default(now())
@@ -592,7 +594,7 @@ model Order {
   shipping_id   String?       @unique  
   tracking_id   String?       @unique  
   driver_info   String?       @db.LongText
-  driver_location   String?     @db.LongText
+  driver_location   Json?     
   reviewed       Boolean    @default(false)
   reviews      Review[]
   created_at     DateTime       @default(now())
