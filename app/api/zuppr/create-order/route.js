@@ -12,7 +12,7 @@ const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY, {
 
 export async function POST(req) {
   try {
-    const { items, amount, cartAmount, subCartAmount, subCartTaxAmount, deliveryAmount, deliverySubAmount, deliveryTaxAmount, tipAmount, customerId, orgId, intentId } = await req.json();
+    const { items, amount, cartAmount, subCartAmount, subCartTaxAmount, deliveryAmount, deliverySubAmount, deliveryTaxAmount, tipAmount, customerId, orgId, intentId, note } = await req.json();
 
     const org = await prisma.organization.findFirst({
       where: { id: Number(orgId) },
@@ -53,7 +53,7 @@ export async function POST(req) {
         sub_total_price: subCartAmount,
         tax_total: subCartTaxAmount,
         address: customer.address,
-        note: customer.note,
+        note,
         shipping_commission: shippingCommission,
         shipping_price: deliveryAmount,
         shipping_tip: tipAmount,
@@ -132,8 +132,6 @@ export async function POST(req) {
       }
     }
 
-
-    
     // 📲 Notify business
     if (org.contact_number && org.contact_number !== "" && org.ship_org_info.merchant_commission_rate > 20) {
       await sendBusinessOrderReceivedNotification(org.contact_number, org.name, order.id);
