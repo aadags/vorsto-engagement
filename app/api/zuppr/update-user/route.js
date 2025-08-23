@@ -22,11 +22,8 @@ export async function OPTIONS() {
 export async function POST(req) {
   try {
     const { id, name, email, phone, pictureUrl } = await req.json();
-    if (!id) {
-      return NextResponse.json(
-        { error: "id is required" },
-        { status: 400 }
-      );
+    if (!id || !name || !email || !phone) {
+      return NextResponse.json({ success: false, error: "All fields are required" }, { status: 400 });
     }
 
     const customer = await prisma.customer.update({

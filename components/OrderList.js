@@ -29,8 +29,8 @@ export default function OrderList({ viewOrder }) {
       sortable: true,
     },
     {
-      name: "Amount Paid",
-      selector: (row) => formatCurrency(row.total_price, org?.currency),
+      name: "Amount Received",
+      selector: (row) => formatCurrency(row.total_price - row.shipping_commission, org?.currency),
       sortable: true,
     },
     {

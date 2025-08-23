@@ -52,7 +52,7 @@ export default function StripeDashboard() {
               <li key={tx.id} className="list-item" onClick={() => setSelectedTx(tx)}>
                 <div className="list-item-row">
                   <span>{tx.description || 'No description'}</span>
-                  <span>${tx.amount / 100}</span>
+                  <span>${(tx.amount - tx.application_fee_amount) / 100}</span>
                 </div>
                 <div className="list-item-sub">
                   {new Date(tx.created * 1000).toLocaleString()}

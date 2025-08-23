@@ -46,19 +46,17 @@ export async function POST(req) {
       currency,
       customer: customer.id,
       payment_method: paymentMethodId,
-      confirm: false, // will confirm on client
-      // Money goes to the connected account:
+      confirm: true, 
+      off_session: true,
       transfer_data: { destination: connectedAccount },
-      // Optional: platform fee
-      application_fee_amount: appFee, // 10% fee, for example
-      // Optional: on_behalf_of for better reporting
+      application_fee_amount: appFee,
       on_behalf_of: connectedAccount,
-      setup_future_usage: save ? 'off_session' : undefined,
     });
 
-    return cors(NextResponse.json({ clientSecret: pi.client_secret }));
+    return cors(NextResponse.json(pi));
 
   } catch (e) {
+    console.log(e);
     return cors(NextResponse.json({ error: e.message }, { status: 500 }));
   }
 }

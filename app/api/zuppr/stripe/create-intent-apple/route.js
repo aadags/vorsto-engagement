@@ -7,7 +7,7 @@ const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY, { apiVersio
 
 function cors(res) {
   res.headers.set("Access-Control-Allow-Origin", "*");
-  res.headers.set("Access-Control-Allow-Methods", "GET, OPTIONS");
+  res.headers.set("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
   return res;
 }
@@ -16,21 +16,45 @@ export async function OPTIONS() {
   return cors(new NextResponse(null, { status: 204 }));
 }
 
-export async function GET(req) {
-  try {
-    const customerId = req.nextUrl.searchParams.get('customerId');
+export async function POST(req) {
+  try {     
+    const { amount, cartAmount, subCartAmount, subCartTaxAmount, deliveryAmount, tipAmount, currency, customerId, destinationAccountId, save } = await req.json();
+
+    const pp = await prisma.paymentProcessor.findUnique({
+      where: {
+        organization_id_name: {
+          organization_id: Number(destinationAccountId),
+          name: "VorstoPay",
+        },
+      }
+    })
+
+    const connectedAccount = pp.accountId
+
+    const org = await prisma.organization.findUnique({
+      where: {
+        id: Number(destinationAccountId)
+      }
+    })
+
     const customer = await ensureCustomer(customerId);
-    const list = await stripe.paymentMethods.list({ customer: customer.id, type: 'card' });
-    
-    const paymentMethods = list.data.map(pm => ({
-      id: pm.id,
-      brand: pm.card?.brand ?? 'card',
-      last4: pm.card?.last4 ?? '0000',
-      exp_month: pm.card?.exp_month ?? 0,
-      exp_year: pm.card?.exp_year ?? 0,
-    }));
-    return cors(NextResponse.json({ success: true, paymentMethods }));
+
+    const appFee = Math.round((subCartAmount * org.ship_org_info.merchant_commission_rate) / 100) + deliveryAmount + tipAmount
+
+    const pi = await stripe.paymentIntents.create({
+      amount: amount,
+      payment_method_types: ["card"],
+      currency,
+      customer: customer.id,
+      transfer_data: { destination: connectedAccount },
+      application_fee_amount: appFee,
+      on_behalf_of: connectedAccount,
+    });
+
+    return cors(NextResponse.json(pi));
+
   } catch (e) {
+    console.log(e);
     return cors(NextResponse.json({ error: e.message }, { status: 500 }));
   }
 }

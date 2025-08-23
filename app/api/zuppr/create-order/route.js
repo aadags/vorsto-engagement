@@ -12,36 +12,43 @@ const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY, {
 
 export async function POST(req) {
   try {
-    const { items, amount, cartAmount, subCartAmount, subCartTaxAmount, deliveryAmount, deliverySubAmount, deliveryTaxAmount, tipAmount, customerId, orgId, intentId, note } = await req.json();
+    const { items, amount, cartAmount, subCartAmount, subCartTaxAmount, deliveryAmount, deliverySubAmount, deliveryTaxAmount, tipAmount, customer, orgId, intentId, note } = await req.json();
 
     const org = await prisma.organization.findFirst({
       where: { id: Number(orgId) },
     });
 
-    const customer = await prisma.customer.findUnique({
+    let contact = await prisma.contact.findFirst({
       where: {
-        id: customerId
+        organization_id: orgId,
+        OR: [
+          { email: customer.email },
+          { phone: customer.phone },
+        ],
       },
-      include: {
-        contacts: {
-          where: {
-            organization_id: orgId
-          }
-        }
-      }
     });
-
-    let contact = customer.contacts.length > 0? customer.contacts[0] : null;
 
     if (!contact) {
       contact = await prisma.contact.create({
         data: {
-          name: customer.firstname + " " + customer.lastname,
+          name: customer.name,
           email: customer.email,
           phone: customer.phone,
-          organization_id: org.id,
+          organization_id: orgId,
         },
       });
+    }
+
+    if(!contact.customer_id)
+    {
+      await prisma.contact.update({
+        where: {
+          id: contact.id
+        },
+        data: {
+          customer_id: customer.id
+        }
+      })
     }
 
     const shippingCommission = Math.round((subCartAmount * org.ship_org_info.merchant_commission_rate) / 100)
@@ -137,10 +144,19 @@ export async function POST(req) {
       await sendBusinessOrderReceivedNotification(org.contact_number, org.name, order.id);
     }
 
-    await fetch(`${process.env.SHIPPING_API}/api/create-shipping`, {
+    const response = await fetch(`${process.env.SHIPPING_API}/api/create-shipping`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ companyId: org.ship_org_id, customer, pickupUid: order.id, totalCost: deliveryAmount, fare: deliverySubAmount, tax: deliveryTaxAmount, tip: tipAmount }),
+    });
+
+    const delivery = await response.json();
+
+    await prisma.order.update({
+      where: { id: order.id },
+      data: {
+        shipping_id: delivery.id
+      },
     });
 
     const client = await faktory.connect({ url: process.env.FAKTORY_URL || "" });

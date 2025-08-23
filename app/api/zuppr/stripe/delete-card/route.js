@@ -16,22 +16,28 @@ export async function OPTIONS() {
   return cors(new NextResponse(null, { status: 204 }));
 }
 
-export async function GET(req) {
+export async function POST(req) {
   try {
-    const customerId = req.nextUrl.searchParams.get('customerId');
-    const customer = await ensureCustomer(customerId);
-    const list = await stripe.paymentMethods.list({ customer: customer.id, type: 'card' });
-    
-    const paymentMethods = list.data.map(pm => ({
-      id: pm.id,
-      brand: pm.card?.brand ?? 'card',
-      last4: pm.card?.last4 ?? '0000',
-      exp_month: pm.card?.exp_month ?? 0,
-      exp_year: pm.card?.exp_year ?? 0,
-    }));
-    return cors(NextResponse.json({ success: true, paymentMethods }));
-  } catch (e) {
-    return cors(NextResponse.json({ error: e.message }, { status: 500 }));
+    const { userId, cardId } = await req.json();
+
+    if (!userId || !cardId) {
+      return NextResponse.json({ success: false, error: "Missing params" }, { status: 400 });
+    }
+
+    const customer = await ensureCustomer(userId);
+
+    console.log({ customer });
+
+    if (!customer || !customer.id) {
+      return cors(NextResponse.json({ success: false, error: "User not linked to Stripe" }, { status: 404 }));
+    }
+
+    await stripe.paymentMethods.detach(cardId);
+
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error("stripe/delete-card error:", err);
+    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }
 

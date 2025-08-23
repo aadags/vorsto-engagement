@@ -200,7 +200,7 @@ useEffect(() => {
           </div>
           <div style={{ flex: "1 1 200px" }}>
           <h6>
-              Order Total:{" "}
+              Order Sub Total:{" "}
               <b>{formatCurrency(order.sub_total_price, order.org.currency)} {" "}
             </b>
             </h6>
@@ -209,12 +209,16 @@ useEffect(() => {
               <b>{formatCurrency(order.tax_total, order.org.currency)}</b>
             </h6>
             <h6>
-              Shipping Total:{" "}
-              <b>{formatCurrency((order.shipping_price + order.shipping_tip), order.org.currency)}</b>
+              Order Total:{" "}
+              <b>{formatCurrency(order.total_price, order.org.currency)}</b>
             </h6>
             <h6>
-              Total Paid:{" "}
-              <b>{formatCurrency(order.total_price, order.org.currency)}</b>
+              Order Commission:{" "}
+              <b>- {formatCurrency(order.shipping_commission, order.org.currency)}</b>
+            </h6>
+            <h6>
+              Order Remittance:{" "}
+              <b>{formatCurrency(order.total_price - order.shipping_commission, order.org.currency)}</b>
             </h6>
           </div>
         </div>

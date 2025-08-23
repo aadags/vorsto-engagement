@@ -14,6 +14,9 @@ import EditCategory from './EditCategory';
 import ConfigureIngredientUsages from './IngredientUsage';
 import Ingredients from './Ingredients';
 import CostAnalysis from './CostAnalysis';
+import Deals from './Deals';
+import NewDeal from './NewDeal';
+import UpdateDeal from './UpdateDeal';
 
 
 export default function Catalog({ org, cat }) {
@@ -23,6 +26,7 @@ export default function Catalog({ org, cat }) {
     const [editProduct, setEditProduct] = useState();
     const [editProductIngredient, setEditProductIngredient] = useState();
     const [editCategory, setEditCategory] = useState();
+    const [editDeal, setEditDeal] = useState();
     const [paymentProcessors, setPaymentprocessors] = useState(org?.payment_processors);
 
     const handleOnClick = (index) => {
@@ -54,6 +58,15 @@ export default function Catalog({ org, cat }) {
         setActiveIndex(3)
     };
 
+    const handleEditDeal = async (id, title) => {
+        setEditDeal({id, title});
+        setActiveIndex(12)
+    };    
+    
+    const setShowAddForm = async (id) => {
+        setActiveIndex(13)
+    };
+
 
     return (
         <>
@@ -65,6 +78,7 @@ export default function Catalog({ org, cat }) {
                         {paymentProcessors && paymentProcessors.length > 0 &&<button className="techwave_fn_button" onClick={() => handleOnClick(6)} style={{ float: "right", marginRight: "5px" }}>Categories</button>}
                         {org.type === "Food" && paymentProcessors && paymentProcessors.length > 0 &&<button className="techwave_fn_button" onClick={() => handleOnClick(9)} style={{ float: "right", marginRight: "5px" }}>Ingredients</button>}
                         {org.type === "Food" && paymentProcessors && paymentProcessors.length > 0 &&<button className="techwave_fn_button" onClick={() => handleOnClick(10)} style={{ float: "right", marginRight: "5px" }}>Costing Analysis</button>}
+                        {org.type === "Food" && paymentProcessors && paymentProcessors.length > 0 &&<button className="techwave_fn_button" onClick={() => handleOnClick(11)} style={{ float: "right", marginRight: "5px" }}>Deals</button>}
                     </div>
                 </div>
                 {/* Models */}
@@ -89,6 +103,9 @@ export default function Catalog({ org, cat }) {
                                 {activeIndex === 9 && <a className={activeIndex === 9 ? "active" : ""} onClick={() => handleOnClick(9)}>All Ingredients</a>}
                                 {editProductIngredient && <a className={activeIndex === 8 ? "active" : ""} onClick={() => handleOnClick(8)}>Ingredients - {editProductIngredient.name}</a>}
                                 {activeIndex === 10 && <a className={activeIndex === 10 ? "active" : ""} onClick={() => handleOnClick(10)}>Cost Analysis</a>}
+                                {activeIndex === 11 && <a className={activeIndex === 11 ? "active" : ""} onClick={() => handleOnClick(11)}>Deals</a>}
+                                {activeIndex === 13 && <a className={activeIndex === 13 ? "active" : ""} onClick={() => handleOnClick(13)}>New Deal</a>}
+                                {activeIndex === 12 && <a className={activeIndex === 12 ? "active" : ""} onClick={() => handleOnClick(12)}>Edit Deal - {editDeal.title}</a>}
                             </div>
                         </div>
                     </div>
@@ -134,6 +151,15 @@ export default function Catalog({ org, cat }) {
                                     </div>
                                     <div id="tab10" className={activeIndex === 10 ? "tab__item active" : "tab__item"}>
                                         <CostAnalysis org={org} />
+                                    </div>
+                                    <div id="tab11" className={activeIndex === 11 ? "tab__item active" : "tab__item"}>
+                                        <Deals org={org} handleEditDeal={handleEditDeal} setShowAddForm={setShowAddForm} />
+                                    </div>
+                                    <div id="tab12" className={activeIndex === 12 ? "tab__item active" : "tab__item"}>
+                                        {editDeal && <UpdateDeal org={org} editDeal={editDeal} handleOnClick={handleOnClick} />}
+                                    </div>
+                                    <div id="tab13" className={activeIndex === 13 ? "tab__item active" : "tab__item"}>
+                                        <NewDeal org={org} handleOnClick={handleOnClick} />
                                     </div>
 
                                    

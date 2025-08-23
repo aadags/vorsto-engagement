@@ -86,6 +86,7 @@ model Organization {
   membership_plans MembershipPlan[]
   devices Device[]
   terminals Terminal[]
+  deals Deal[]
   reviews      Review[]
   ingredients      Ingredient[]
   tags  Json?   @db.Json
@@ -432,6 +433,7 @@ model Product {
   reviews      Review[]
   comboItems    ComboItem[]
   comboRules    ComboRule[]
+  dealProducts      DealProduct[]
   combo_price           Int?
   tags  Json?   @db.Json
   created_at     DateTime @default(now())
@@ -471,6 +473,7 @@ model Inventory {
   order_items     OrderItem[]
   cart_items      CartItem[]
   comboItems      ComboItem[]
+  dealInventories      DealInventory[]
   active          Boolean?  @default(true)
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
@@ -764,5 +767,79 @@ model Terminal {
 
   @@map("terminals")
 }
+
+model Deal {
+  id              String   @id @default(cuid())
+  title           String
+  description     String?
+  imageUrl        String?
+  type            DealType   // ONE_OFF or RECURRING
+
+  // Timing
+  startDate       DateTime?
+  endDate         DateTime?
+  recurrenceRule  Json?       // { frequency: "WEEKLY", days: ["FRI"], timeStart: "17:00", timeEnd: "19:00" }
+
+  // Default Discount / Pricing
+  discountType    DiscountType?  // PERCENTAGE, FIXED, or FLAT_PRICE
+  discountValue   Float?         // 20% off OR $5 off OR flat price value
+
+  isActive        Boolean   @default(true)
+
+  organization    Organization @relation(fields: [organization_id], references: [id])
+  organization_id Int
+
+  inventories     DealInventory[]   // link to inventory items
+  products        DealProduct[]
+
+  created_at       DateTime       @default(now())
+  updated_at       DateTime       @updatedAt
+
+  @@map("deals")
+}
+
+model DealInventory {
+  id              String   @id @default(cuid())
+
+  dealId          String
+  deal            Deal     @relation(fields: [dealId], references: [id])
+
+  inventoryId     String
+  inventory       Inventory @relation(fields: [inventoryId], references: [id])
+
+  // Per-inventory overrides
+  customPrice     Float?        // flat price override for this SKU
+  discountType    DiscountType? // can override deal-level rule
+  discountValue   Float?        // override amount
+
+  @@map("deal_inventories")
+}
+
+model DealProduct {
+  id            String   @id @default(cuid())
+  dealId        String
+  deal          Deal     @relation(fields: [dealId], references: [id])
+
+  productId     String
+  product       Product  @relation(fields: [productId], references: [id])
+
+  customPrice   Float?
+  discountType  DiscountType?
+  discountValue Float?
+
+  @@map("deal_products")
+}
+
+enum DealType {
+  ONE_OFF
+  RECURRING
+}
+
+enum DiscountType {
+  PERCENTAGE   // 20% off
+  FIXED        // $5 off
+  FLAT_PRICE   // Set SKU price to a fixed number
+}
+
 
 
