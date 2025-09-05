@@ -79,7 +79,7 @@ export default function Home2() {
           address,
           lat,
           lng,
-          country,
+          country: country,
           tagline,
           subdomain: domain,
           phone,

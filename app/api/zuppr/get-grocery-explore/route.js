@@ -19,8 +19,8 @@ export async function OPTIONS() {
 
 export async function POST(req) {
   try {
-    const { lat, lng, userId } = await req.json();
-    if (lat == null || lng == null || userId == null) {
+    const { lat, lng } = await req.json();
+    if (lat == null || lng == null) {
       return NextResponse.json({ error: "Lat and Lng are required" }, { status: 400 });
     }
 
@@ -75,54 +75,10 @@ export async function POST(req) {
       };
     });
 
-    // 7) Find orders for "Order Again"
-    const customer = await prisma.customer.findUnique({
-      where: { id: userId },
-      include: { contacts: true },
-    });
-
-    const contactIds = customer.contacts.map((c) => c.id);
-
-    const orders = await prisma.order.findMany({
-      where: {
-        contact_id: { in: contactIds },
-        status: "Delivered"
-      },
-      include: {
-        organization: { select: { id: true } }
-      },
-      orderBy: { created_at: "desc" },
-    });
-
-    const orgIdsFromOrders = orders.map(o => o.organization_id);
-
-    const seen = new Set();
-    const orgsWithOrders = orgIdsFromOrders
-      .filter(id => {
-        if (seen.has(id)) return false; // skip duplicates
-        seen.add(id);
-        return true;
-      })
-      .map(id => orgsWithRatings.find(org => org.id === id))
-      .filter(Boolean); // remove nulls if any
-
-    // 8) Popular Near You (top 10 highest rated)
-    const popularNearYou = [...orgsWithRatings]
-      .sort((a, b) => (b.avgRating ?? 0) - (a.avgRating ?? 0))
-      .slice(0, 10);
-
-    // 9) Under $5 Delivery Fee (500 cents)
-    const underFiveDelivery = orgsWithRatings.filter(org => org.delivery_fee < 500);
-
     return NextResponse.json({
       success: true,
       orgs: orgsWithRatings,
       tags: ["All", ...uniqueTags],
-      slides: [
-        { "Popular Near You": popularNearYou },
-        { "Under $5 Delivery Fee": underFiveDelivery },
-        { "Order Again": orgsWithOrders }
-      ]
     });
   } catch (err) {
     console.error("GET EXPLORE ERROR:", err);
@@ -145,7 +101,7 @@ const getNearbyStores = async (lat, lng, radiusKm = 5) => {
     FROM organizations
     WHERE address_lat IS NOT NULL
       AND address_long IS NOT NULL
-      AND type = 'Food'
+      AND type = 'Grocery'
     HAVING distance_km < ${radiusKm}
     ORDER BY distance_km ASC
     LIMIT 50;

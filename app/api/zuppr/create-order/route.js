@@ -12,7 +12,7 @@ const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY, {
 
 export async function POST(req) {
   try {
-    const { items, amount, cartAmount, subCartAmount, subCartTaxAmount, deliveryAmount, deliverySubAmount, deliveryTaxAmount, tipAmount, customer, orgId, intentId, note } = await req.json();
+    const { items, amount, cartAmount, subCartAmount, subCartTaxAmount, deliveryAmount, deliverySubAmount, deliveryTaxAmount, tipAmount, dealCommissionAmount, customer, orgId, intentId, note } = await req.json();
 
     const org = await prisma.organization.findFirst({
       where: { id: Number(orgId) },
@@ -51,7 +51,16 @@ export async function POST(req) {
       })
     }
 
-    const shippingCommission = Math.round((subCartAmount * org.ship_org_info.merchant_commission_rate) / 100)
+    const nonDealItems = items.filter(r => !r.isDeal);
+
+    // Subtotal for non-deal items only
+    const nonDealSub = nonDealItems.reduce((sum, r) => sum + lineSubCents(r), 0);
+
+    // Commission applies only to non-deal items
+    const commissionFee = Math.round((nonDealSub * org.ship_org_info.merchant_commission_rate) / 100);
+
+    // App fee = commission on non-deal items + delivery + tip + deal commission
+    const shippingCommission = commissionFee;
 
     const order = await prisma.order.create({
       data: {
@@ -61,6 +70,7 @@ export async function POST(req) {
         tax_total: subCartTaxAmount,
         address: customer.address,
         note,
+        deal_commission: dealCommissionAmount,
         shipping_commission: shippingCommission,
         shipping_price: deliveryAmount,
         shipping_tip: tipAmount,
@@ -178,8 +188,11 @@ export async function POST(req) {
 }
 
 function lineSubCents(r) {
+  const ignoreWeight = r.organizationType === 'Food';
+  const isWeight = !ignoreWeight && r.price_unit !== 'unit';
+
   const price = Number(r.price_cents ?? 0);
-  const qty = Number(r.quantity ?? 1); // guard
+  const qty = isWeight? Number(r.quantity / r.step) : Number(r.quantity ?? 1); // guard
   return Math.round(price * qty);
 }
 

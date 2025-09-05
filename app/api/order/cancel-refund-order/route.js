@@ -52,48 +52,49 @@ export async function GET(req) {
       order.sub_total_price +
       order.tax_total +
       order.shipping_price +
+      order.deal_commission +
       order.shipping_tip;
 
-    const channelFee = org.channel_fee / 100;
-    const appFee = Math.ceil(
-      channelFee * order.sub_total_price +
-        order.shipping_price +
-        order.shipping_commission +
-        order.shipping_tip
-    );
+    // const channelFee = org.channel_fee / 100;
+    // const appFee = Math.ceil(
+    //   channelFee * order.sub_total_price +
+    //     order.shipping_price +
+    //     order.shipping_commission +
+    //     order.shipping_tip
+    // );
 
     const pp = await prisma.paymentProcessor.findFirstOrThrow({
       where: { organization_id: organizationId },
     });
 
-    if (pp.name === "Square") {
-      const client = new SquareClient({
-        token: pp.access_token,
-        environment: process.env.NEXT_PUBLIC_SQUARE_BASE,
-      });
+    // if (pp.name === "Square") {
+    //   const client = new SquareClient({
+    //     token: pp.access_token,
+    //     environment: process.env.NEXT_PUBLIC_SQUARE_BASE,
+    //   });
 
-      await client.refunds.refundPayment({
-        idempotencyKey: randomUUID(),
-        paymentId: order.transactionId,
-        amountMoney: {
-          amount: BigInt(total),
-          currency: org.currency.toUpperCase(),
-        },
-        appFeeMoney: {
-          amount: BigInt(appFee),
-          currency: org.currency.toUpperCase(),
-        },
-        reason: "Cancel & refund at customer request.",
-      });
+    //   await client.refunds.refundPayment({
+    //     idempotencyKey: randomUUID(),
+    //     paymentId: order.transactionId,
+    //     amountMoney: {
+    //       amount: BigInt(total),
+    //       currency: org.currency.toUpperCase(),
+    //     },
+    //     appFeeMoney: {
+    //       amount: BigInt(appFee),
+    //       currency: org.currency.toUpperCase(),
+    //     },
+    //     reason: "Cancel & refund at customer request.",
+    //   });
 
-    } else if (pp.name === "VorstoPay") {
+    // } else 
+    if (pp.name === "VorstoPay") {
       // Stripe refund flow
       await stripe.refunds.create({
         payment_intent: order.transactionId,
         amount: total,
-        reason: "requested_by_customer",
-      }, {
-        stripeAccount: pp.accountId, // Connected Account ID
+        refund_application_fee: true,
+        reverse_transfer: true,  
       });
     }
 

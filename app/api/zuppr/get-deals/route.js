@@ -16,7 +16,7 @@ export async function OPTIONS() {
 
 export async function POST(req) {
   try {
-    const { lat, lng, radiusKm = 20 } = await req.json();
+    const { lat, lng, radiusKm = 16 } = await req.json();
     if (lat == null || lng == null) {
       return NextResponse.json({ error: "Lat and Lng are required" }, { status: 400 });
     }
@@ -133,7 +133,6 @@ const getNearbyStores = async (lat, lng, radiusKm) => {
     FROM organizations
     WHERE address_lat IS NOT NULL
       AND address_long IS NOT NULL
-      AND type = 'Food'
     HAVING distance_km < ${radiusKm}
     ORDER BY distance_km ASC
     LIMIT 50;

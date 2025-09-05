@@ -18,7 +18,7 @@ export async function OPTIONS() {
 
 export async function POST(req) {
   try {     
-    const { amount, cartAmount, subCartAmount, subCartTaxAmount, deliveryAmount, tipAmount, currency, customerId, destinationAccountId, save } = await req.json();
+    const { items, amount, cartAmount, subCartAmount, subCartTaxAmount, deliveryAmount, tipAmount, dealCommissionAmount, currency, customerId, destinationAccountId, save } = await req.json();
 
     const pp = await prisma.paymentProcessor.findUnique({
       where: {
@@ -39,7 +39,16 @@ export async function POST(req) {
 
     const customer = await ensureCustomer(customerId);
 
-    const appFee = Math.round((subCartAmount * org.ship_org_info.merchant_commission_rate) / 100) + deliveryAmount + tipAmount
+    const nonDealItems = items.filter(r => !r.isDeal);
+
+    // Subtotal for non-deal items only
+    const nonDealSub = nonDealItems.reduce((sum, r) => sum + lineSubCents(r), 0);
+
+    // Commission applies only to non-deal items
+    const commissionFee = Math.round((nonDealSub * org.ship_org_info.merchant_commission_rate) / 100);
+
+    // App fee = commission on non-deal items + delivery + tip + deal commission
+    const appFee = commissionFee + deliveryAmount + tipAmount + dealCommissionAmount;
 
     const pi = await stripe.paymentIntents.create({
       amount: amount,
@@ -77,4 +86,13 @@ async function ensureCustomer(userId) {
     }
   })
   return c;
+}
+
+function lineSubCents(r) {
+  const ignoreWeight = r.organizationType === 'Food';
+  const isWeight = !ignoreWeight && r.price_unit !== 'unit';
+
+  const price = Number(r.price_cents ?? 0);
+  const qty = isWeight? Number(r.quantity / r.step) : Number(r.quantity ?? 1); // guard
+  return Math.round(price * qty);
 }

@@ -325,6 +325,8 @@ model Customer {
   email       String?  @unique
   stripe_id       String?  @unique
   square_id       String?  @unique
+  apple_id       String?  @unique
+  google_id       String?  @unique
   phone       String?  @unique
   image       String?
   created_at  DateTime @default(now())
@@ -580,6 +582,7 @@ model Order {
   total_price           Int          
   sub_total_price           Int?          
   shipping_commission           Int?          
+  deal_commission           Int?          
   shipping_price           Int?          
   shipping_tip           Int?          
   tax_total           Int?          

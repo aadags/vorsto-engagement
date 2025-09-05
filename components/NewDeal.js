@@ -340,7 +340,7 @@ const NewDeal = ({ org, handleOnClick }) => {
         <hr/>
 
         {/* Products */}
-        <h6 className="mb-2">Apply to Combo Products</h6>
+        {org.type === "Food" && <><h6 className="mb-2">Apply to Combo Products</h6>
         <div className="space-y-3 mb-6">
           {selectedProducts.map((prod, idx) => (
             <div key={idx} className="flex items-center gap-3">
@@ -387,7 +387,7 @@ const NewDeal = ({ org, handleOnClick }) => {
         <button type="button" className="techwave_fn_button mb-6" onClick={addProduct}>
           + Add Product
         </button>
-        <br/>
+        <br/></>}
 
         {/* Status Toggle */}
         <div className="form_group">

@@ -78,7 +78,7 @@ export default function Catalog({ org, cat }) {
                         {paymentProcessors && paymentProcessors.length > 0 &&<button className="techwave_fn_button" onClick={() => handleOnClick(6)} style={{ float: "right", marginRight: "5px" }}>Categories</button>}
                         {org.type === "Food" && paymentProcessors && paymentProcessors.length > 0 &&<button className="techwave_fn_button" onClick={() => handleOnClick(9)} style={{ float: "right", marginRight: "5px" }}>Ingredients</button>}
                         {org.type === "Food" && paymentProcessors && paymentProcessors.length > 0 &&<button className="techwave_fn_button" onClick={() => handleOnClick(10)} style={{ float: "right", marginRight: "5px" }}>Costing Analysis</button>}
-                        {org.type === "Food" && paymentProcessors && paymentProcessors.length > 0 &&<button className="techwave_fn_button" onClick={() => handleOnClick(11)} style={{ float: "right", marginRight: "5px" }}>Deals</button>}
+                        {paymentProcessors && paymentProcessors.length > 0 &&<button className="techwave_fn_button" onClick={() => handleOnClick(11)} style={{ float: "right", marginRight: "5px" }}>Deals</button>}
                     </div>
                 </div>
                 {/* Models */}
