@@ -328,6 +328,7 @@ model Customer {
   apple_id       String?  @unique
   google_id       String?  @unique
   phone       String?  @unique
+  device_token       String?
   image       String?
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
@@ -335,6 +336,17 @@ model Customer {
   contacts  Contact[]
 
   @@map("customers")
+}
+
+model AppleLog {
+  id          String   @id @default(cuid())
+  name        String?  
+  apple_id       String?  @unique
+  email       String?  @unique
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@map("apple_log")
 }
 
 model Form {
@@ -603,6 +615,7 @@ model Order {
   driver_location   Json?     
   reviewed       Boolean    @default(false)
   reviews      Review[]
+  chat_log     Json?    @default("[]")
   created_at     DateTime       @default(now())
   updated_at     DateTime       @updatedAt
 
@@ -727,8 +740,8 @@ model LoyaltyTransaction {
 
 model Review {
   id          String   @id @default(cuid())
-  product     Product  @relation(fields: [product_id], references: [id])
-  product_id  String
+  product         Product?      @relation(fields: [product_id], references: [id])
+  product_id      String?       // now optional
   order       Order    @relation(fields: [order_id], references: [id])
   order_id    String
   contact     Contact? @relation(fields: [contact_id], references: [id])

@@ -30,7 +30,7 @@ export async function GET(req) {
       });
 
       if (!customer) {
-        return NextResponse.json({ error: "Customer not found" }, { status: 404 });
+        return cors(NextResponse.json({ error: "Customer not found" }, { status: 404 }));
       }
 
       contactIds = customer.contacts.map((c) => c.id);
@@ -69,9 +69,9 @@ export async function GET(req) {
       normalizedOrders = normalizedOrders.filter((o) => o.status === "Pending");
     }
 
-    return NextResponse.json(normalizedOrders);
+    return cors(NextResponse.json(normalizedOrders));
   } catch (error) {
     console.error("Error fetching orders:", error);
-    return NextResponse.json({ error: "Failed to fetch orders" }, { status: 500 });
+    return cors(NextResponse.json({ error: "Failed to fetch orders" }, { status: 500 }));
   }
 }
