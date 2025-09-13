@@ -29,7 +29,7 @@ export async function GET(req) {
     await prisma.order.update({
       where: { id },
       data: {
-        status: order.pickup? "Ready For Pickup" : "Ready For Shipping"
+        status: "Delivered"
       }
     });
 
@@ -38,20 +38,11 @@ export async function GET(req) {
       await prisma.orderItem.update({
         where: { id: item.id },
         data: {
-          status: order.pickup? "Ready For Pickup" : "Ready For Shipping"
+          status: "Delivered"
         }
       });
 
     })
-
-    if(!order.pickup){
-      const response = await fetch(`${process.env.SHIPPING_API}/api/delivery-ready`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ deliveryId: order.shipping_id }),
-      });
-      const data = await response.json();
-    }
 
     return NextResponse.json({ status: true });
   } catch (error) {

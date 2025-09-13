@@ -595,6 +595,7 @@ model Order {
   sub_total_price           Int?          
   shipping_commission           Int?          
   deal_commission           Int?          
+  service_fee           Int?          
   shipping_price           Int?          
   shipping_tip           Int?          
   tax_total           Int?          
@@ -606,6 +607,7 @@ model Order {
   channel      String? 
   address      String? 
   note      String? 
+  pickup    Boolean     @default(false)
   order_items  OrderItem[]
   loyalty_transactions LoyaltyTransaction[]
   status        String        @default("Pending")
@@ -743,7 +745,7 @@ model Review {
   product         Product?      @relation(fields: [product_id], references: [id])
   product_id      String?       // now optional
   order       Order    @relation(fields: [order_id], references: [id])
-  order_id    String
+  order_id    String   @unique
   contact     Contact? @relation(fields: [contact_id], references: [id])
   contact_id  String?
   organization     Organization? @relation(fields: [organization_id], references: [id])
@@ -753,7 +755,6 @@ model Review {
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 
-  @@unique([order_id, product_id]) // prevent duplicate reviews per product in an order
   @@map("reviews")
 }
 

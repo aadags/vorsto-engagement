@@ -12,7 +12,7 @@ const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY, {
 
 export async function POST(req) {
   try {
-    const { items, amount, cartAmount, subCartAmount, subCartTaxAmount, deliveryAmount, deliverySubAmount, deliveryTaxAmount, tipAmount, dealCommissionAmount, customer, orgId, intentId, note } = await req.json();
+    const { items, amount, cartAmount, subCartAmount, subCartTaxAmount, deliveryAmount, deliverySubAmount, deliveryTaxAmount, tipAmount, dealCommissionAmount, serviceFeeAmount, customer, orgId, intentId, note, pickup } = await req.json();
 
     const org = await prisma.organization.findFirst({
       where: { id: Number(orgId) },
@@ -74,6 +74,8 @@ export async function POST(req) {
         shipping_commission: shippingCommission,
         shipping_price: deliveryAmount,
         shipping_tip: tipAmount,
+        service_fee: serviceFeeAmount,
+        pickup,
         status: "Pending",
         channel: 'Zuppr',
         transactionId: intentId,
@@ -154,20 +156,23 @@ export async function POST(req) {
       await sendBusinessOrderReceivedNotification(org.contact_number, org.name, order.id);
     }
 
-    const response = await fetch(`${process.env.SHIPPING_API}/api/create-shipping`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ companyId: org.ship_org_id, customer, pickupUid: order.id, totalCost: deliveryAmount, fare: deliverySubAmount, tax: deliveryTaxAmount, tip: tipAmount }),
-    });
+    
+    if(!pickup){
+      const response = await fetch(`${process.env.SHIPPING_API}/api/create-shipping`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ companyId: org.ship_org_id, customer, pickupUid: order.id, totalCost: deliveryAmount, fare: deliverySubAmount, tax: deliveryTaxAmount, tip: tipAmount }),
+      });
 
-    const delivery = await response.json();
+      const delivery = await response.json();
 
-    await prisma.order.update({
-      where: { id: order.id },
-      data: {
-        shipping_id: delivery.id
-      },
-    });
+      await prisma.order.update({
+        where: { id: order.id },
+        data: {
+          shipping_id: delivery.id
+        },
+      });
+    }
 
     const client = await faktory.connect({ url: process.env.FAKTORY_URL || "" });
 

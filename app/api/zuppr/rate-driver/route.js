@@ -13,30 +13,16 @@ export async function POST(req) {
       );
     }
 
-    const order = await prisma.order.findFirst({
-        where: {
-          id: orderId
-        },
+    const response = await fetch(`${process.env.SHIPPING_API}/api/rate-driver`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ rating, comment, orderId }),
     });
 
-    const review = await prisma.review.upsert({
-      where: {
-        order_id: orderId
-      },
-      update: {
-        rating,
-        message: comment || "",
-      },
-      create: {
-        order_id: order.id,
-        contact_id: order.contact_id,
-        organization_id: order.organization_id,
-        rating,
-        message: comment || "",
-      },
-    });
+    await response.json();
+  
 
-    return NextResponse.json({ success: true, review });
+    return NextResponse.json({ success: true });
   } catch (err) {
     console.error("Order rating error", err);
     return NextResponse.json(

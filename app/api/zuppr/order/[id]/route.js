@@ -39,8 +39,8 @@ export async function GET(req, { params }) {
       headers: { 'Content-Type': 'application/json' }
     });
     const { delivery } = await response.json(); 
-    console.log({ delivery })
-    return cors(NextResponse.json({ success: true, order, delivery }));
+    
+    return cors(NextResponse.json({ success: true, order: { ...order, status: order.status.toLowerCase() }, delivery }));
   } catch (err) {
     console.error("GET STORE ERROR:", err);
     return cors(

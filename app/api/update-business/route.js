@@ -44,8 +44,8 @@ export async function POST(req) {
         number,
         type,
         address,
-        address_lat: String(lat),
-        address_long: String(lng), 
+        address_lat: `${lat}`,
+        address_long: `${lng}`, 
         dba,
         tagline,
         contact_number: phone,
@@ -54,7 +54,7 @@ export async function POST(req) {
         currency,
         tags,
         onboarding: true,
-        subdomain
+        subdomain: `${subdomain}.vorsto.shop`
       }
     })
 

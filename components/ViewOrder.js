@@ -64,6 +64,22 @@ const shipOrder = async (id) => {
   };
 };
 
+const deliverOrder = async (id) => {
+
+  if (!window.confirm('Do you want to proceed to marking this order as delivered?')) {
+    return
+  }
+    
+  const response = await axios.get(
+  `/api/order/pickup-order?id=${id}`
+  );
+
+  if(response.data.status){
+      const order = await fetchOrder(orderId);
+      setOrder(order);
+  };
+};
+
 const cancelRefundOrder = async (id) => {
 
   if (!window.confirm('Do you want to proceed with canceling and refunding this order?')) {
@@ -147,8 +163,11 @@ useEffect(() => {
             <h6>
               Phone: <b>{order?.contact?.phone}</b>
             </h6>
-            {order?.address && <h6>
+            {!order.pickup && order?.address && <h6>
               Delivery Address: <b>{order?.address}</b>
+            </h6>}
+            {order.pickup && <h6>
+              Delivery: <b>Pickup in Store</b>
             </h6>}
             <h6>
               Note: <b>{order.note}</b>
@@ -194,6 +213,9 @@ useEffect(() => {
           </button>}
           {order.status == "Preparing" && <button type="button" onClick={() => shipOrder(order.id)} className="techwave_fn_button">
               Ready For Shipping
+          </button>}
+          {order.status == "Ready For Pickup" && <button type="button" onClick={() => deliverOrder(order.id)} className="techwave_fn_button">
+              Mark Order as Delivered
           </button>}
           {order.status == "Ready For Shipping" && <h6><b>To be picked up by delivery driver</b><br/><b>Pick up code is <b style={{ color: "red" }}>{order.shipping_id.slice(-5)}</b></b></h6>}
 

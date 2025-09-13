@@ -36,6 +36,14 @@ export async function POST(req) {
       data: { chat_log: [...prevLog, newMessage] },
     });
 
+    const response = await fetch(`${process.env.SHIPPING_API}/api/new-chat-notification`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ orderId }),
+    });
+
+    await response.json();
+
     return cors(NextResponse.json({ success: true, chat_log: updated.chat_log }));
   } catch (err) {
     console.error("Chat API error:", err);

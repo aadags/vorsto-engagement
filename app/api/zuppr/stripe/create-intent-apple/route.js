@@ -18,7 +18,7 @@ export async function OPTIONS() {
 
 export async function POST(req) {
   try {     
-    const { items, amount, cartAmount, subCartAmount, subCartTaxAmount, deliveryAmount, tipAmount, dealCommissionAmount, currency, customerId, destinationAccountId, save } = await req.json();
+    const { items, amount, cartAmount, subCartAmount, subCartTaxAmount, deliveryAmount, tipAmount, dealCommissionAmount, serviceFeeAmount, currency, customerId, destinationAccountId, save } = await req.json();
 
     const pp = await prisma.paymentProcessor.findUnique({
       where: {
@@ -48,7 +48,7 @@ export async function POST(req) {
     const commissionFee = Math.round((nonDealSub * org.ship_org_info.merchant_commission_rate) / 100);
 
     // App fee = commission on non-deal items + delivery + tip + deal commission
-    const appFee = commissionFee + deliveryAmount + tipAmount + dealCommissionAmount;
+    const appFee = commissionFee + deliveryAmount + tipAmount + dealCommissionAmount + serviceFeeAmount;
 
     const pi = await stripe.paymentIntents.create({
       amount: amount,
