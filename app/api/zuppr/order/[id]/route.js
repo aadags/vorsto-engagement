@@ -27,9 +27,16 @@ export async function GET(req, { params }) {
       include: {
         order_items: {
           include: {
-            inventory: true
+            inventory: {
+              include: {
+                product: {
+                  select: { name: true }
+                }
+              }
+            }
           }
         },
+        promo_usages: true,
         organization: true
       },
     });

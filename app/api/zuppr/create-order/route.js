@@ -12,7 +12,7 @@ const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY, {
 
 export async function POST(req) {
   try {
-    const { items, amount, cartAmount, subCartAmount, subCartTaxAmount, deliveryAmount, deliverySubAmount, deliveryTaxAmount, tipAmount, dealCommissionAmount, serviceFeeAmount, customer, orgId, intentId, note, pickup } = await req.json();
+    const { items, amount, cartAmount, subCartAmount, subCartTaxAmount, deliveryAmount, deliverySubAmount, deliveryTaxAmount, tipAmount, dealCommissionAmount, serviceFeeAmount, customer, orgId, intentId, note, pickup, promoId, promoApplied, promoDiscount } = await req.json();
 
     const org = await prisma.organization.findFirst({
       where: { id: Number(orgId) },
@@ -150,6 +150,18 @@ export async function POST(req) {
 
       }
     }
+
+    if (promoId && promoApplied) {
+      await prisma.promoUsage.create({
+        data: {
+          promo_id: promoId,
+          customer_id: customer.id,
+          order_id: order.id,
+          discount_applied: promoDiscount ?? 0,
+        }
+      });
+    }
+    
 
     // 📲 Notify business
     if (org.contact_number && org.contact_number !== "" && org.ship_org_info.merchant_commission_rate > 20) {

@@ -46,9 +46,10 @@ export async function GET(req) {
       },
       include: {
         organization: { select: { id: true, name: true, logo: true, currency: true } },
+        promo_usages: true,
         order_items: {
           include: {
-            inventory: { select: { id: true, name: true, price: true, price_unit: true } },
+            inventory: { include: { product: { select: { name: true } } } },
           },
         },
       },

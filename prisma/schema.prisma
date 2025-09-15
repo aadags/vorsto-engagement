@@ -617,6 +617,7 @@ model Order {
   driver_location   Json?     
   reviewed       Boolean    @default(false)
   reviews      Review[]
+  promo_usages        PromoUsage[]
   chat_log     Json?    @default("[]")
   created_at     DateTime       @default(now())
   updated_at     DateTime       @updatedAt
@@ -856,6 +857,44 @@ enum DiscountType {
   PERCENTAGE   // 20% off
   FIXED        // $5 off
   FLAT_PRICE   // Set SKU price to a fixed number
+}
+
+model Promo {
+  id            String      @id @default(cuid())
+  code          String?     @unique
+  description   String
+  type          String      // e.g. "percent", "flat", "free_delivery"
+  value         Int         // percent (20) or flat discount in cents
+  min_order_cents Int?      // minimum subtotal to apply
+  max_uses_per_user Int?    // e.g. 3 for "first 3 orders"
+  orgs_json     Json?       // JSON list of orgs eligible
+  active        Boolean     @default(true)
+  starts_at     DateTime?   
+  ends_at       DateTime?   
+
+  usages        PromoUsage[]
+
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  @@map("promos")
+}
+
+model PromoUsage {
+  id            String   @id @default(cuid())
+  promo_id      String
+  promo         Promo    @relation(fields: [promo_id], references: [id])
+
+  customer_id   String
+  order_id      String?  // linked after order creation
+  order         Order?   @relation(fields: [order_id], references: [id])
+
+  discount_applied Int   @default(0)
+
+  created_at    DateTime @default(now())
+
+  @@index([customer_id])
+  @@unique([promo_id, order_id])
 }
 
 

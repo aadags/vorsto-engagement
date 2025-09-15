@@ -18,7 +18,7 @@ export async function OPTIONS() {
 
 export async function POST(req) {
   try {     
-    const { items, amount, cartAmount, subCartAmount, subCartTaxAmount, deliveryAmount, tipAmount, dealCommissionAmount, serviceFeeAmount, currency, customerId, paymentMethodId, destinationAccountId, save } = await req.json();
+    const { items, amount, cartAmount, subCartAmount, subCartTaxAmount, deliveryAmount, tipAmount, dealCommissionAmount, serviceFeeAmount, currency, customerId, paymentMethodId, destinationAccountId, pickup, promoId, promoApplied, promoDiscount } = await req.json();
 
     const pp = await prisma.paymentProcessor.findUnique({
       where: {
@@ -45,10 +45,13 @@ export async function POST(req) {
     const nonDealSub = nonDealItems.reduce((sum, r) => sum + lineSubCents(r), 0);
 
     // Commission applies only to non-deal items
-    const commissionFee = Math.round((nonDealSub * org.ship_org_info.merchant_commission_rate) / 100);
+    const commissionFee = Math.round((nonDealSub * (pickup? 5 : org.ship_org_info.merchant_commission_rate)) / 100);
 
-    // App fee = commission on non-deal items + delivery + tip + deal commission
-    const appFee = commissionFee + deliveryAmount + tipAmount + dealCommissionAmount + serviceFeeAmount;
+    let appFee = commissionFee + deliveryAmount + tipAmount + dealCommissionAmount + serviceFeeAmount;
+
+    if (promoApplied && promoDiscount > 0) {
+      appFee = Math.max(0, appFee - promoDiscount);
+    }
 
     const pi = await stripe.paymentIntents.create({
       amount: amount,
