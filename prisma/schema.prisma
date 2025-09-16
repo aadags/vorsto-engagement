@@ -600,6 +600,7 @@ model Order {
   shipping_tip           Int?          
   tax_total           Int?          
   transactionId   String?       @unique  
+  transactionAmount   Int?         
   organization     Organization   @relation(fields: [organization_id], references: [id])
   organization_id   Int    
   contact         Contact?       @relation(fields: [contact_id], references: [id])

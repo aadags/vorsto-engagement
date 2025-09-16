@@ -79,6 +79,7 @@ export async function POST(req) {
         status: "Pending",
         channel: 'Zuppr',
         transactionId: intentId,
+        transactionAmount: amount,
         organization_id: orgId,
         order_items: {
           create: items.map((r) => ({

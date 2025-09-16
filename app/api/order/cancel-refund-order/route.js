@@ -48,12 +48,7 @@ export async function GET(req) {
       });
     }
 
-    const total =
-      order.sub_total_price +
-      order.tax_total +
-      order.shipping_price +
-      order.deal_commission +
-      order.shipping_tip;
+    const total = order.transactionAmount;
 
     // const channelFee = org.channel_fee / 100;
     // const appFee = Math.ceil(

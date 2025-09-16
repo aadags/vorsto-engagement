@@ -4,6 +4,7 @@
 import { NextResponse } from "next/server";
 import Redis from "ioredis";
 import prisma from "@/db/prisma";
+import { signAccessToken, signRefreshToken } from "@/jwt/jwt"; 
 
 const redis = new Redis(process.env.REDIS);
 
@@ -53,8 +54,13 @@ export async function POST(req) {
       },
     });
 
+    const accessToken = signAccessToken({ sub: customer.id });
+    const refreshToken = signRefreshToken({ sub: customer.id });
+
     return NextResponse.json({
       success: true,
+      accessToken,
+      refreshToken,
       customer,
     });
   } catch (err) {

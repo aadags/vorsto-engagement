@@ -3,6 +3,7 @@
 
 import { NextResponse } from "next/server";
 import prisma from "@/db/prisma";
+import { signAccessToken, signRefreshToken } from "@/jwt/jwt";  
 
 export async function OPTIONS() {
   return new NextResponse(null, {
@@ -53,9 +54,13 @@ export async function POST(req) {
       });
     }
 
+    const accessToken = signAccessToken({ sub: customer.id });
+    const refreshToken = signRefreshToken({ sub: customer.id });
 
     return NextResponse.json({
       success: true,
+      accessToken,
+      refreshToken,
       customer
     });
   } catch (err) {
