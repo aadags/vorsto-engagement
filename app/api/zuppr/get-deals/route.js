@@ -133,6 +133,7 @@ const getNearbyStores = async (lat, lng, radiusKm) => {
     FROM organizations
     WHERE address_lat IS NOT NULL
       AND address_long IS NOT NULL
+      AND zuppr_active = true
     HAVING distance_km < ${radiusKm}
     ORDER BY distance_km ASC
     LIMIT 50;
