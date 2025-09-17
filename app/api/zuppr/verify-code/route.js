@@ -53,7 +53,7 @@ export async function POST(req) {
         phone,
       },
     });
-
+    
     const accessToken = signAccessToken({ sub: customer.id });
     const refreshToken = signRefreshToken({ sub: customer.id });
 
