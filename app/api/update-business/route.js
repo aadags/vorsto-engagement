@@ -35,30 +35,30 @@ export async function POST(req) {
 
     const currency = localeCurrency.getCurrency(country.toUpperCase()) || 'USD';
 
-    await prisma.organization.update({
-      where:{
-        id: org.id
-      }, 
-      data: {
-        name,
-        number,
-        type,
-        address,
-        address_lat: `${lat}`,
-        address_long: `${lng}`, 
-        dba,
-        tagline,
-        contact_number: phone,
-        contact_email: email,
-        country,
-        currency,
-        tags,
-        onboarding: true,
-        subdomain: `${subdomain}.vorsto.shop`
-      }
-    })
-
     if(init){
+
+      await prisma.organization.update({
+        where:{
+          id: org.id
+        }, 
+        data: {
+          name,
+          number,
+          type,
+          address,
+          address_lat: `${lat}`,
+          address_long: `${lng}`, 
+          dba,
+          tagline,
+          contact_number: phone,
+          contact_email: email,
+          country,
+          currency,
+          tags,
+          onboarding: true,
+          subdomain: `${subdomain}.vorsto.shop`
+        }
+      })
 
       const response = await fetch(`${process.env.SHIPPING_API}/api/create-company`, {
         method: 'POST',
@@ -78,6 +78,18 @@ export async function POST(req) {
         }
       })
 
+    } else {
+      await prisma.organization.update({
+        where:{
+          id: org.id
+        }, 
+        data: {
+          name,
+          tagline,
+          contact_number: phone,
+          contact_email: email
+        }
+      })
     }
     
     return NextResponse.json({
