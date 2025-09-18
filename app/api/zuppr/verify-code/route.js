@@ -35,7 +35,7 @@ export async function POST(req) {
     let valid = false;
 
     // ✅ Master code shortcut
-    if (code === MASTER_CODE) {
+    if (code === MASTER_CODE && phone === "+16049064701") {
       valid = true;
     } else {
       const saved = await redis.get(`otp:${phone}`);
