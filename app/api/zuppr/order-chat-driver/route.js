@@ -15,16 +15,19 @@ export async function POST(req) {
     } = await req.json();
 
     if (!orderId || !message || !senderType) {
+      console.log({orderId, message, senderType})
       return cors(NextResponse.json({ error: "Invalid payload" }, { status: 400 }));
     }
 
     const order = await prisma.order.findUnique({ where: { id: orderId } });
     if (!order) {
+      console.log({order})
       return cors(NextResponse.json({ error: "Order not found" }, { status: 404 }));
     }
 
     const customer = await prisma.customer.findUnique({ where: { id: chat_id } });
     if (!customer) {
+      console.log({customer})
       return cors(NextResponse.json({ error: "Customer not found" }, { status: 404 }));
     }
 
