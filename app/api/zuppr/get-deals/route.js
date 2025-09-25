@@ -111,6 +111,8 @@ export async function POST(req) {
       return 0;
     });
 
+    console.log({sorted})
+
     return NextResponse.json({ success: true, deals: sorted });
   } catch (err) {
     console.error("GET DEALS ERROR:", err);
