@@ -39,7 +39,7 @@ export async function POST(req) {
     const response = await fetch(`${process.env.SHIPPING_API}/api/new-chat-notification`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ orderId }),
+      body: JSON.stringify({ shippingId: order.shipping_id }),
     });
 
     await response.json();
