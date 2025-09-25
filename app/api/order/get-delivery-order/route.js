@@ -23,7 +23,11 @@ export async function GET(req) {
             }
           }
         },
-        contact: true
+        contact: {
+          include: {
+            customer: true
+          }
+        }
       }
     });
 
