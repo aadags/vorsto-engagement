@@ -9,7 +9,7 @@ export async function middleware(req) {
     const { pathname } = req.nextUrl;
 
   // Skip auth for login/refresh endpoints
-  if (pathname.startsWith("/api/zuppr/promos-guest") || pathname.startsWith("/api/zuppr/store") || pathname.startsWith("/api/zuppr/get-explore-guest") || pathname.startsWith("/api/zuppr/get-deals") || pathname.startsWith("/api/zuppr/apple-login") || pathname.startsWith("/api/zuppr/google-login") || pathname.startsWith("/api/zuppr/send-code") || pathname.startsWith("/api/zuppr/verify-code") || pathname.startsWith("/api/zuppr/refresh-token") ) {
+  if (pathname.startsWith("/api/zuppr/promos-guest") || pathname.startsWith("/api/zuppr/store") || pathname.startsWith("/api/zuppr/get-grocery-guest") || pathname.startsWith("/api/zuppr/get-explore-guest") || pathname.startsWith("/api/zuppr/get-deals") || pathname.startsWith("/api/zuppr/apple-login") || pathname.startsWith("/api/zuppr/google-login") || pathname.startsWith("/api/zuppr/send-code") || pathname.startsWith("/api/zuppr/verify-code") || pathname.startsWith("/api/zuppr/refresh-token") ) {
     return NextResponse.next();
   }
   
