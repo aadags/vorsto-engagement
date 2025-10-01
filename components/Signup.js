@@ -45,52 +45,90 @@ function SignupPage() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      auth.onAuthStateChanged(async (currentUser) => {
-        if (currentUser) {
+      const isApple = localStorage.getItem("appleLogin") || null;
+
+      if(isApple){
+
+        const userData = JSON.parse(isApple);
+        (async () => {
+          if (!isApple) return;
+      
           try {
-            const response = await fetch('/api/verify-user', {
+            const userData = JSON.parse(isApple);
+      
+            const response = await fetch('/api/get-user', {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                name: currentUser.displayName,
-                email: currentUser.email,
-                uid: currentUser.uid,
-              }),
-            });
-
-            const res = await response.json();
-            if (!res.is_validated) {
-              router.push('/validate');
-            } else {
-              router.push('/launch');
-            }
-          } catch (err) {
-            console.error('Error verifying user:', err);
-          }
-        } else if (!isZuppr) {
-          // FirebaseUI only when NOT zuppr.ca
-          const firebaseui = require('firebaseui');
-          const ui = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(auth);
-
-          const uiConfig = {
-            callbacks: {
-              signInSuccessWithAuthResult: () => true,
-              uiShown: () => {
-                const loader = document.getElementById('loader');
-                if (loader) loader.style.display = 'none';
+              headers: {
+                'Content-Type': 'application/json',
               },
-            },
-            signInFlow: 'popup',
-            signInSuccessUrl: 'https://engage.vorsto.io/login',
-            signInOptions: [googleProvider.providerId],
-            tosUrl: 'https://vorsto.io/terms-policy',
-            privacyPolicyUrl: 'https://vorsto.io/privacy-policy',
-          };
+              body: JSON.stringify({ email: userData.email }),
+            });
+      
+            if (response.ok) {
+              const res = await response.json();
+      
+              if (!res.data.is_validated) {
+                router.push('/validate');
+              } else {
+                router.push('/launch');
+              } 
+            }
+          } catch (error) {
+            console.log(error);
+            localStorage.removeItem('appleLogin')
+            router.push('/login');
+          }
+        })();
 
-          ui.start('#firebaseui-auth-container', uiConfig);
-          ui.disableAutoSignIn();
-        }
-      });
+      } else {
+
+        auth.onAuthStateChanged(async (currentUser) => {
+          if (currentUser) {
+            try {
+              const response = await fetch('/api/verify-user', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  name: currentUser.displayName,
+                  email: currentUser.email,
+                  uid: currentUser.uid,
+                }),
+              });
+
+              const res = await response.json();
+              if (!res.is_validated) {
+                router.push('/validate');
+              } else {
+                router.push('/launch');
+              }
+            } catch (err) {
+              console.error('Error verifying user:', err);
+            }
+          } else if (!isZuppr) {
+            // FirebaseUI only when NOT zuppr.ca
+            const firebaseui = require('firebaseui');
+            const ui = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(auth);
+
+            const uiConfig = {
+              callbacks: {
+                signInSuccessWithAuthResult: () => true,
+                uiShown: () => {
+                  const loader = document.getElementById('loader');
+                  if (loader) loader.style.display = 'none';
+                },
+              },
+              signInFlow: 'popup',
+              signInSuccessUrl: 'https://engage.vorsto.io/login',
+              signInOptions: [googleProvider.providerId],
+              tosUrl: 'https://vorsto.io/terms-policy',
+              privacyPolicyUrl: 'https://vorsto.io/privacy-policy',
+            };
+
+            ui.start('#firebaseui-auth-container', uiConfig);
+            ui.disableAutoSignIn();
+          }
+        });
+      }
     }
   }, [router, isZuppr]);
 

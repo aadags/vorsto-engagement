@@ -18,30 +18,63 @@ export default function Layout({ children, leftMenu }) {
     const [user, setUser] = useState();
       
   useEffect(() => {
-    auth.onAuthStateChanged(async (currentUser) => {
-      console.log({currentUser})
-      if (!currentUser) {
-        router.push('/login'); 
-      } else {
-        try {
+    const isApple = localStorage.getItem("appleLogin") || null;
 
-            const response = await fetch('/api/get-user', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ email: currentUser.email })
-            });
-      
-            if (response.ok) {
-              const res = await response.json();
-              setUser(res.data);
-            } 
-          } catch (error) {
-            console.log(error)
+    if(isApple){
+
+      (async () => {
+        if (!isApple) return;
+    
+        try {
+          const userData = JSON.parse(isApple);
+    
+          const response = await fetch('/api/get-user', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email: userData.email }),
+          });
+    
+          if (response.ok) {
+            const res = await response.json();
+            setUser(res.data);
           }
-      }
-    });
+        } catch (error) {
+          console.log(error);
+          localStorage.removeItem('appleLogin')
+          router.push('/login');
+        }
+      })();
+
+    } else {
+
+      auth.onAuthStateChanged(async (currentUser) => {
+        console.log({currentUser})
+        if (!currentUser) {
+          router.push('/login'); 
+        } else {
+          try {
+
+              const response = await fetch('/api/get-user', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: currentUser.email })
+              });
+        
+              if (response.ok) {
+                const res = await response.json();
+                setUser(res.data);
+              } 
+            } catch (error) {
+              console.log(error)
+            }
+        }
+      });
+
+    }
 
   }, [router])
 

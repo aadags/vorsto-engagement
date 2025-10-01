@@ -13,6 +13,18 @@ export default function Signin() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isZuppr, setIsZuppr] = useState(false);
+  const [isAppleEnv, setIsAppleEnv] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // 👈 loading state
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const ua = navigator.userAgent.toLowerCase();
+      const appleDevice =
+        /iphone|ipad|ipod|macintosh/.test(ua) && !/windows/.test(ua);
+      setIsAppleEnv(appleDevice);
+    }
+  }, []);
+
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -21,7 +33,7 @@ export default function Signin() {
       const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
         if (currentUser) {
           try {
-          
+            setIsLoading(true); // start loading
             const response = await fetch('/api/verify-user', {
               method: 'POST',
               headers: {
@@ -37,11 +49,12 @@ export default function Signin() {
             if (response.ok) {
               await response.json();
               handleUserId(currentUser.email);
-
               router.push('/validate');
             }
           } catch (error) {
             console.error('Verification failed:', error);
+          } finally {
+            setIsLoading(false); // stop loading
           }
         } else if (!isZuppr) {
           // Only load FirebaseUI if NOT zuppr.ca
@@ -80,19 +93,24 @@ export default function Signin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setIsLoading(true); // start loading
     try {
       await signInWithEmailAndPassword(auth, email, password);
       router.push('/login');
     } catch (err) {
       setError(err.message);
+    } finally {
+      setIsLoading(false); // stop loading
     }
   };
 
   const handleGoogleLogin = () => {
+    setIsLoading(true); // start loading
     if (window.ReactNativeWebView?.postMessage) {
       window.ReactNativeWebView.postMessage(JSON.stringify({ action: "startGoogleLogin" }));
     } else {
       setError("Google login not available in this environment.");
+      setIsLoading(false);
     }
   };
 
@@ -108,7 +126,8 @@ export default function Signin() {
     const handleMessage = async (event) => {
       try {
         const data = JSON.parse(event.data);
-        if (data.token) {
+        if (data.provider === "google") {
+          setIsLoading(true);
           const credential = GoogleAuthProvider.credential(data.token);
           const result = await signInWithCredential(auth, credential);
           
@@ -129,11 +148,36 @@ export default function Signin() {
             handleUserId(result.user.email);
             router.push('/validate');
           }
+          setIsLoading(false);
+        }
 
+        if (data.provider === "apple") {
+          setIsLoading(true);
+          const response = await fetch('/api/verify-apple-user', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              name: (data.name?.givenName && data.name?.familyName)
+                ? `${data.name.givenName} ${data.name.familyName}`
+                : undefined,
+              email: data.email,
+              uid: data.user,
+            }),
+          });
 
+          if (response.ok) {
+            const res = await response.json();
+            handleUserId(res.data.email);
+            localStorage.setItem("appleLogin", JSON.stringify(res.data))
+            router.push('/validate');
+          }
+          setIsLoading(false);
         }
       } catch (err) {
         console.error("Error handling token message:", err);
+        setIsLoading(false);
       }
     };
 
@@ -177,6 +221,11 @@ export default function Signin() {
                 {!error.includes('user-not-found') && !error.includes('wrong-password') && error}
               </p>
             )}
+
+            {isLoading && (
+              <p style={{ color: "#7c5fe3", fontWeight: "bold" }}>Loading...</p>
+            )}
+
             <div className="form__username">
               <div className="pass_lab">
                 <label htmlFor="user_login">Email</label>
@@ -188,6 +237,7 @@ export default function Signin() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                disabled={isLoading}
               />
             </div>
             <div className="form__pass">
@@ -201,11 +251,12 @@ export default function Signin() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                disabled={isLoading}
               />
             </div>
             <div className="form__submit">
               <label className="fn__submit">
-                <input type="submit" name="submit" defaultValue="Sign In" />
+                <input type="submit" name="submit" defaultValue="Sign In" disabled={isLoading} />
               </label>
             </div>
 
@@ -217,9 +268,11 @@ export default function Signin() {
               </div>
 
               {isZuppr ? (
+                <>
                 <button
                   type="button"
                   onClick={handleGoogleLogin}
+                  disabled={isLoading}
                   style={{
                     display: "inline-block",
                     padding: "10px 20px",
@@ -228,11 +281,39 @@ export default function Signin() {
                     border: "none",
                     borderRadius: "4px",
                     fontWeight: "bold",
-                    cursor: "pointer",
+                    cursor: isLoading ? "not-allowed" : "pointer",
                   }}
                 >
-                  Login with Google
+                  {isLoading ? "Processing..." : "Login with Google"}
                 </button>
+                <br/><br/>
+
+                {isAppleEnv && (
+                  <button
+                    type="button"
+                    disabled={isLoading}
+                    onClick={() => {
+                      if (window.ReactNativeWebView?.postMessage) {
+                        window.ReactNativeWebView.postMessage(
+                          JSON.stringify({ action: "startAppleLogin" })
+                        );
+                      }
+                    }}
+                    style={{
+                      display: "inline-block",
+                      padding: "10px 20px",
+                      backgroundColor: "#000", // Apple style
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "4px",
+                      fontWeight: "bold",
+                      cursor: isLoading ? "not-allowed" : "pointer",
+                    }}
+                  >
+                    {isLoading ? "Processing..." : " Login with Apple"}
+                  </button>
+                )}
+                </>
               ) : (
                 <div id="firebaseui-auth-container">
                   <div id="loader">Loading...</div>

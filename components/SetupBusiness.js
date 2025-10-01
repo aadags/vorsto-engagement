@@ -5,15 +5,23 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSpinner } from '@fortawesome/free-solid-svg-icons'
 import PhoneInput from 'react-phone-number-input'
 import axios from "axios";
+import Script from "next/script";
 import 'react-phone-number-input/style.css'
+import TagMultiSelect from './TagMultiSelect';
 
 
 export default function SetupBusiness() {
   const [name, setName] = useState('');
   const [tagline, setTagline] = useState('');
+  const [tags, setTags] = useState([]);
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
-  const [country, setCountry] = useState('');
+  const [type, setType] = useState('');
+  const [number, setNumber] = useState('');
+  const [country, setCountry] = useState('CA');
+  const [address, setAddress] = useState('')
+  const [lat, setLat] = useState(null)
+  const [lng, setLng] = useState(null)
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
@@ -27,6 +35,7 @@ export default function SetupBusiness() {
   const [isSubmitting2, setIsSubmitting2] = useState(false);
   const fileInputRef = useRef(null);
   const fileInputRef2 = useRef(null);
+  const inputRef = useRef(null)
 
   const router = useRouter();
 
@@ -127,8 +136,12 @@ export default function SetupBusiness() {
     const response = await axios.get(`/api/get-org-details`);
     const org = response.data;
     setName(org.name);
+    setTags(org.tags);
     setTagline(org.tagline);
+    setAddress(org.address);
     setPhone(org.contact_number);
+    setNumber(org.number);
+    setType(org.type);
     setEmail(org.contact_email);
     setCountry(org.country);
     setUploaded({ url: org.logo});
@@ -140,6 +153,44 @@ export default function SetupBusiness() {
     fetchOrg();
 
   }, []);
+
+  const POPULAR_FOOD_TAGS = [
+    // Core dishes
+    "Burgers","Pizza","Pasta","Steak","BBQ","Fried Chicken","Wings","Seafood",
+    "Tacos","Burritos","Nachos","Sandwiches","Subs","Wraps","Hot Dogs",
+    "Sushi","Sashimi","Ramen","Udon","Soba","Tempura","Katsu","Teriyaki",
+    "Pho","Banh Mi","Pad Thai","Curry","Biryani","Kebab","Shawarma","Falafel",
+    "Dumplings","Gyoza","Bao","Noodles","Fried Rice","Poke","Bibimbap",
+    "Pierogi","Kebab","Mezze","Tapas","Small Plates","Salad","Soup",
+    "Breakfast","Brunch","Pancakes","Waffles","Omelettes","Bowl","Grain Bowl",
+  
+    // Sides & snacks
+    "Fries","Poutine","Onion Rings","Garlic Bread","Mozzarella Sticks","Hummus","Chips","Salsa","Guacamole",
+  
+    // Desserts & sweets
+    "Desserts","Ice Cream","Gelato","Frozen Yogurt","Cake","Cheesecake","Brownies","Cookies","Donuts",
+    "Pastries","Bakery","Crepes","Churros","Tiramisu","Baklava",
+  
+    // Drinks
+    "Coffee","Espresso","Latte","Cold Brew","Tea","Chai","Bubble Tea","Boba","Smoothies","Juice","Milkshakes",
+  
+    // Cuisines by country/region
+    "Canadian","American","Latin American","Mexican","Caribbean","Jamaican","Cuban","Brazilian","Argentinian","Peruvian",
+    "Italian","French","Spanish","Portuguese","Greek","Turkish","Mediterranean",
+    "British","Irish","German","Polish","Hungarian","Czech","Swiss","Belgian","Dutch",
+    "Nordic","Swedish","Norwegian","Danish","Finnish",
+    "Middle Eastern","Lebanese","Israeli","Persian","Moroccan","Egyptian","Tunisian",
+    "Asian","Chinese","Japanese","Korean","Thai","Vietnamese","Filipino","Indonesian","Malaysian","Singaporean",
+    "South Asian","Indian","Pakistani","Bangladeshi","Sri Lankan",
+    "African","Ethiopian","Nigerian","Ghanaian","South African",
+  
+    // Dietary / lifestyle
+    "Vegan","Vegetarian","Pescatarian","Halal","Kosher","Gluten-Free","Dairy-Free","Nut-Free","Keto","Paleo","Low-Carb","Organic","Healthy",
+  
+    // Service / experience
+    "Family Style","Comfort Food","Street Food","Fast Food","Casual Dining","Fine Dining","Food Truck","Late Night","Kid Friendly",
+    "Pickup","Delivery","Catering","Meal Prep"
+  ];
 
   return (
     <>
@@ -203,6 +254,59 @@ export default function SetupBusiness() {
                   />
                 </div>
                 <br/>
+                <div className="form_group"  >
+                  <label>Business Number</label>
+                    <input
+                      type="text"
+                      id="b_name"
+                      className="full_width"
+                      placeholder="Business Number"
+                      value={number}
+                      onChange={(e) => setNumber(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <br />
+                  <div className="form_group" >
+                  <label>Business Address (Orders & Pickups will be routed to this location)</label>
+                  <input
+                    type="text"
+                    id="address"
+                    className="full_width"
+                    placeholder="Address"
+                    value={address}
+                    ref={inputRef}
+                    onChange={(e) => setAddress(e.target.value)}
+                    required
+                  />
+                </div>
+                <br/>
+
+                <div className="form_group" >
+                  <label>Tagline</label>
+                  <input
+                    type="text"
+                    id="tagline"
+                    className="full_width"
+                    placeholder="Tagline"
+                    value={tagline}
+                    onChange={(e) => setTagline(e.target.value)}
+                    required
+                  />
+                </div>
+                <br/>
+
+                {type === "Food" && <><div className="form_group">
+                  <label>Tags</label>
+                  <TagMultiSelect
+                    value={tags}
+                    onChange={setTags}
+                    suggestions={POPULAR_FOOD_TAGS}  
+                    placeholder="Add tags (Enter, comma or Tab)"
+                    // max={10}
+                  />
+                </div>
+                <br/></>}
           
                 <span style={{ color: "green" }}>800kb max per image</span>
                 <form
@@ -326,6 +430,24 @@ export default function SetupBusiness() {
           {/* !Generation Header */}
         </div>
       </div>
+      <Script
+        src={`https://maps.googleapis.com/maps/api/js?key=AIzaSyCzZUtpoLjBKa5hFrvqCAP_9zBQFPVcXy8&libraries=places`}
+        strategy="afterInteractive"
+        onLoad={() => {
+          const autocomplete = new window.google.maps.places.Autocomplete(
+            inputRef.current,
+            { types: ["address"], componentRestrictions: { country: `${country}` }, },
+          );
+
+          autocomplete.addListener("place_changed", () => {
+            const place = autocomplete.getPlace();
+            const location = place.geometry?.location;
+            setAddress(place.formatted_address)
+            setLat(location?.lat())
+            setLng(location?.lng())
+          });
+        }}
+      />
     </>
   );
 }

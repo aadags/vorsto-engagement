@@ -19,7 +19,7 @@ export default function page() {
     if(org.onboarding){
       router.push('/');
     }
-    setLoading(true)
+    setLoading(false)
   };
 
   useEffect(() => {
