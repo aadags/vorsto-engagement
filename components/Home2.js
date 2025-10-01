@@ -49,6 +49,8 @@ export default function Home2() {
       setEmail(org.contact_email)
       setPhone(org.contact_number)
       setTags(org.tags)
+      setLat(org.address_lat)
+      setLng(org.address_long)
 
       if(org.onboarding)
       {

@@ -42,7 +42,7 @@ export default function SetupBusiness() {
   const handleSubmit = async (e) => {
     setLoading(true);
     e.preventDefault();
-    const data = { name, tagline, phone, email, country };
+    const data = { name, tagline, phone, email, tags, address, lat, lng, number, country };
 
     try {
       const response = await fetch('/api/update-business', {
@@ -139,6 +139,8 @@ export default function SetupBusiness() {
     setTags(org.tags);
     setTagline(org.tagline);
     setAddress(org.address);
+    setLat(org.address_lat)
+    setLng(org.address_long)
     setPhone(org.contact_number);
     setNumber(org.number);
     setType(org.type);
