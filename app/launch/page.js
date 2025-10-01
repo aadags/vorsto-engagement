@@ -1,21 +1,34 @@
-import React from 'react'
+"use client"
+import React, { useEffect, useState } from 'react'
+import { useRouter } from "next/navigation";
 import Home2 from '@/components/Home2'
 import Layout from '@/layouts/layout3'
+import axios from 'axios';
 
-
-export const metadata = {
-  title:'Vorsto AI - LaunchPad',
-  content:'text/html',
-  openGraph: {
-    title:'Vorsto AI - LaunchPad',
-    content:'text/html',
-  },
-}
 
 export default function page() {
-  return (
-    <Layout>
+  const [loading, setLoading] = useState(true);
+
+  const router = useRouter();
+
+  const fetchOrg = async () => {
+    setLoading(true)
+      
+    const response = await axios.get(`/api/get-org-details`);
+    const org = response.data;
+    if(org.onboarding){
+      router.push('/');
+    }
+    setLoading(true)
+  };
+
+  useEffect(() => {
+    fetchOrg();
+  }, []);
+
+  return (<>
+    {!loading && (<Layout>
       <Home2 />
-    </Layout>
-  )
+    </Layout>)}
+  </>)
 }

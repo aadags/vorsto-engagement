@@ -5,35 +5,54 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDeleteLeft, faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 export default function Roles() {
+  const isZuppr = window.location.hostname.includes(process.env.NEXT_PUBLIC_ZUPPR_API);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [totalRows, setTotalRows] = useState(0);
   const [perPage, setPerPage] = useState(10);
   const [title, setTitle] = useState("");
-  const [checkboxes, setCheckboxes] = useState({
+  const [checkboxes, setCheckboxes] = useState(isZuppr?
+    {
+      
+      manageBusinessInformation: false,
+      manageBusinessHours: false,
+      customers: false,
+      viewUsers: false,
+      viewRoles: false,
+      orders: false,
+      catalog: false,
+      paymentProviders: false,
+    }
+    :{
+    customers: false,
+    loyalty: false,
+    coupons: false,
     archivedChats: false,
-    archivedTickets: false,
     callQueue: false,
     callLog: false,
-    contacts: false,
-    manageAiAgent: false,
-    createUsers: false,
-    viewUsers: false,
-    createRoles: false,
-    viewRoles: false,
-    manageBilling: false,
-    manageWorkflow: false,
+    chat: false,
+    call: false,
+    openTickets: false,
+    archivedTickets: false,
     callMetrics: false,
     chatMetrics: false,
-    agentMetrics: false,
-    configureWebChat: false,
-    configureWebForm: false,
+    manageBusinessInformation: false,
+    manageBusinessHours: false,
+    manageAiAgent: false,
+    manageLoyalty: false,
+    viewUsers: false,
+    viewRoles: false,
+    configureWeb: false,
     configureWhatsapp: false,
     configureInstagram: false,
     configureEmail: false,
     configureVoice: false,
+    configureWebChat: false,
+    configureWebForm: false,
+    orders: false,
+    catalog: false,
     paymentProviders: false,
-  });
+  });  
 
   const columns = [
     {

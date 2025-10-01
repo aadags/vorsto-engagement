@@ -14,6 +14,7 @@ export default function Users() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState(0);
+  const [isZuppr] = useState(window.location.hostname.includes(process.env.NEXT_PUBLIC_ZUPPR_API));
 
   const columns = [
     {
@@ -36,9 +37,9 @@ export default function Users() {
       cell: (row) =>
         row.role_id? (
           <div>
-            <a target="_blank" href={`/metrics/agent/${row.id}`}>
+            {!isZuppr && <a target="_blank" href={`/metrics/agent/${row.id}`}>
               <FontAwesomeIcon icon={faChartPie} /> KPI
-            </a>
+            </a>}
             <br />
             <a href onClick={() => deleteUser(row.id)}>
               <FontAwesomeIcon icon={faDeleteLeft} /> Deactivate
@@ -48,9 +49,9 @@ export default function Users() {
         ) : 
         (
           <div>
-            <a target="_blank" href={`/metrics/agent/${row.id}`}>
+            {!isZuppr && <a target="_blank" href={`/metrics/agent/${row.id}`}>
               <FontAwesomeIcon icon={faChartPie} /> KPI
-            </a>
+            </a>}
             <br />
           </div>
         ),

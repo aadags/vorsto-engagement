@@ -9,6 +9,7 @@ export default function CustomersList({ viewCustomer }) {
   const [loading, setLoading] = useState(false);
   const [totalRows, setTotalRows] = useState(0);
   const [perPage, setPerPage] = useState(10);
+  const [isZuppr] = useState(window.location.hostname.includes(process.env.NEXT_PUBLIC_ZUPPR_API));
 
   const columns = [
     {
@@ -40,9 +41,9 @@ export default function CustomersList({ viewCustomer }) {
       name: "Actions",
       cell: (row) => (
         <div>
-          <button onClick={() => viewCustomer(row.id)}>
+          {!isZuppr && <button onClick={() => viewCustomer(row.id)}>
             <FontAwesomeIcon icon={faBinoculars} /> Manage
-          </button>
+          </button>}
           <br />
         </div>
       ),

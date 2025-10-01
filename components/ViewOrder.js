@@ -133,7 +133,7 @@ useEffect(() => {
           {/* Left Column */}
           <div style={{ flex: "1 1 300px", minWidth: "250px" }}>
             <h6>
-              <code>Order {order.id}</code>
+              <code>Order {order.id.slice(-6)}</code>
             </h6>
             <br/>
             <h6>

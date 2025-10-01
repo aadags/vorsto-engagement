@@ -18,7 +18,7 @@ export default function Home2() {
   const [dba, setDBName] = useState('');
   const [number, setNumber] = useState('');
   const [type, setType] = useState('');
-  const [country, setCountry] = useState('CA');
+  const [country, setCountry] = useState('');
   const [loading, setLoading] = useState(false);
   const [tagline, setTagline] = useState('');
   const [domain, setDomain] = useState('');
@@ -164,6 +164,7 @@ export default function Home2() {
                           onChange={(e) =>
                                       setCountry(e.target.value)
                                     }>
+                          <option value="">Select Country</option>
                           <option value="CA">Canada</option>
                           <option value="US">United States of America</option>
                       </select>

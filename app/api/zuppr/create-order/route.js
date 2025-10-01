@@ -46,7 +46,8 @@ export async function POST(req) {
           id: contact.id
         },
         data: {
-          customer_id: customer.id
+          customer_id: customer.id,
+          name: customer.name,
         }
       })
     }

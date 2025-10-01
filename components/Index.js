@@ -20,21 +20,16 @@ ChartJS.register(
   Legend
 );
 
-
 export default function Index() {
-
   const [allConv, setAllConv] = useState([]);
   const [leads, setLeads] = useState([]);
   const [closed, setClosed] = useState([]);
   const [ongoing, setOngoing] = useState([]);
   const [iframeUrl, setIframeUrl] = useState();
+  const [showOverlay, setShowOverlay] = useState(true); // 👈 overlay state
 
   const fetchData = async (page) => {
-  
-    const response = await axios.get(
-      `/api/get-dashboard`
-    );
-  
+    const response = await axios.get(`/api/get-dashboard`);
     setAllConv(response.data.allConv);
     setLeads(response.data.leads);
     setClosed(response.data.closed);
@@ -42,7 +37,6 @@ export default function Index() {
   };
 
   const fetchOrg = async () => {
-      
     const response = await axios.get(`/api/get-org-details`);
     const org = response.data;
   };
@@ -136,76 +130,73 @@ export default function Index() {
       },
     },
   };
-  
 
   useEffect(() => {
-    fetchData(); // fetch page 1 of users
-    const getMetric = async () => {
-        const response = await fetch('/api/get-dashboard-metric', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        });
+    fetchData();
 
-        if (response.ok) {
-          const res = await response.json();
-          setIframeUrl(res.iframeUrl);
-        } 
+    const getMetric = async () => {
+      const response = await fetch("/api/get-dashboard-metric", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        const res = await response.json();
+        setIframeUrl(res.iframeUrl);
+      }
     };
 
     getMetric();
 
+    // 👇 Show overlay only when page is at the very top
+    const handleScroll = () => {
+      if (window.scrollY <= 0) {
+        setShowOverlay(true);
+      } else {
+        setShowOverlay(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  
 
   return (
     <>
       <div className="techwave_fn_user_profile_page">
         {/* !Page Title */}
-        {iframeUrl && <iframe
-            src={iframeUrl}
-            ref={(iframe) => {
-              if (!iframe) return;
-              iframe.onload = () => {
-                const doc = iframe.contentDocument || iframe.contentWindow?.document;
-                const exportBtn = [...doc.querySelectorAll("button")]
-                  .find(btn => btn.textContent.includes("Export as PDF"));
-                if (exportBtn) exportBtn.style.display = "none";
-              };
-            }}
-            style={{ border: "none", width: "100%", height: "100vh" }}
-          />
-          }
+        <div style={{ position: "relative", width: "100%", height: "100vh" }}>
+          {showOverlay && (
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "60px", // adjust to match Metabase toolbar height
+                backgroundColor: "white",
+                zIndex: 10,
+              }}
+            />
+          )}
+
+          {iframeUrl && (
+            <iframe
+              src={iframeUrl}
+              frameBorder="0"
+              allowTransparency="true"
+              style={{ border: "none", width: "100%", height: "100%" }}
+            />
+          )}
+        </div>
+
         <div className="container">
           <div className="techwave_fn_user_profile">
-
-            {/* <div className="user__profile">
-              <div
-                className="user_details"
-                style={{ display: "flex", justifyContent: "center", width: "100%" }}
-              >
-                <div style={{ width: "50%", margin: "0" }}>
-                  <Line data={data} options={options} />
-                </div>
-                <div style={{ width: "50%", margin: "0" }}>
-                  <Line data={leadData} options={options} />
-                </div>
-              </div>
-            </div> */}
-
-            {/* <div className="user__profile">
-              <div
-                className="user_details"
-                style={{ display: "flex", justifyContent: "center", width: "100%" }}
-              >
-                <div style={{ width: "50%", margin: "0" }}>
-                  <Line data={closedData} options={options} />
-                </div>
-                <div style={{ width: "50%", margin: "0" }}>
-                  <Line data={ongoingData} options={options} />
-                </div>
-              </div>
-            </div> */}
+            {/* Your chart sections are still commented out here */}
           </div>
         </div>
       </div>

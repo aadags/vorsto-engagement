@@ -15,7 +15,7 @@ export default function OrderList({ viewOrder }) {
   const columns = [
     {
       name: "Order Id",
-      selector: (row) => row.id,
+      selector: (row) => row.id.slice(-6),
       sortable: true,
     },
     {

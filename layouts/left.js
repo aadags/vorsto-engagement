@@ -11,7 +11,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
     const [chats, setChats] = useState([]);
     const [perms, setPerms] = useState([]);
     const [notify, setNotify] = useState(null);
-    const [isZuppr, setIsZuppr] = useState(false);
+    const [isZuppr, setIsZuppr] = useState(window.location.hostname.includes(process.env.NEXT_PUBLIC_ZUPPR_API));
 
     const getChats = async () => {
     

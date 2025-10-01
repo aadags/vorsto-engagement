@@ -84,14 +84,14 @@ export default function Header({ searchToggle, user }) {
             <header className="techwave_fn_header">
                 {/* Header left: token information */}
                 <div className="header__left">
-                    <div className="fn__token_info">
+                    {user?.organizations.onboarding && <div className="fn__token_info">
                        <span className="token_summary">
                             <span className="count">{user?.organizations.name}</span>
                             <span className="text">{user?.organizations.address}</span>
                         </span>
-                        {isZuppr &&<Link href="/sales/ordertracker" className="token_upgrade techwave_fn_button"><span>Order Tracker</span></Link>}
+                        {isZuppr && user?.organizations.onboarding &&<Link href="/sales/ordertracker" className="token_upgrade techwave_fn_button"><span>Order Tracker</span></Link>}
     
-                    </div>
+                    </div>}
                 </div>
                 {/* /Header left: token information */}
                 {/* Header right: navigation bar */}

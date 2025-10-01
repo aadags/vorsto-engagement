@@ -10,8 +10,10 @@ export default function PaymentIntegration({ org }) {
 
   // Initialize your component state
   const [activeIndex, setActiveIndex] = useState(1);
+  const [loading, setLoading] = useState(false);
   const [selectedTag, setSelectedTag] = useState("");
   const [paymentProcessors] = useState(org.payment_processors);
+  const [isZuppr] = useState(window.location.hostname.includes(process.env.NEXT_PUBLIC_ZUPPR_API));
 
   const paymentProviders = [
     {
@@ -61,9 +63,25 @@ export default function PaymentIntegration({ org }) {
 
   const getStripeConnectLink = async () => {
     try {
+      setLoading(true)
       const response = await axios.get(`/api/connect-stripe-link`);
       if (response.data) {
-        router.push(response.data.url);
+        setLoading(false);
+        if(isZuppr)
+        {
+          if (window.ReactNativeWebView?.postMessage) {
+            // when inside your React Native WebView
+            window.ReactNativeWebView.postMessage(
+                JSON.stringify({ action: "openExternal", url: response.data.url })
+            );
+            } else {
+            // normal web browser
+            window.open(response.data.url, "_blank");
+            }
+
+        } else {
+          router.push(response.data.url);
+        }
       }
     } catch (error) {
       console.error("Error getting payments:", error);
