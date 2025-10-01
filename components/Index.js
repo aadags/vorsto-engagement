@@ -163,11 +163,19 @@ export default function Index() {
       <div className="techwave_fn_user_profile_page">
         {/* !Page Title */}
         {iframeUrl && <iframe
-              src={iframeUrl}
-              frameBorder="0"
-              allowTransparency="true"
-              style={{ border: 'none', width: "100%", height: "100vh" }}
-            />}
+            src={iframeUrl}
+            ref={(iframe) => {
+              if (!iframe) return;
+              iframe.onload = () => {
+                const doc = iframe.contentDocument || iframe.contentWindow?.document;
+                const exportBtn = [...doc.querySelectorAll("button")]
+                  .find(btn => btn.textContent.includes("Export as PDF"));
+                if (exportBtn) exportBtn.style.display = "none";
+              };
+            }}
+            style={{ border: "none", width: "100%", height: "100vh" }}
+          />
+          }
         <div className="container">
           <div className="techwave_fn_user_profile">
 

@@ -12,10 +12,13 @@ export default function Header({ searchToggle, user }) {
     // Light/Dark switcher
     const [skin, setSkin] = useState('light');
     const [isFullscreen, setIsFullscreen] = useState(false);
+    const [isZuppr, setIsZuppr] = useState(false);
+
     const router = useRouter();
 
 
     useEffect(() => {
+        setIsZuppr(window.location.hostname.includes(process.env.NEXT_PUBLIC_ZUPPR_API));
         // Check if running in the browser (client side)
         if (typeof window !== 'undefined') {
             const storedSkin = localStorage.getItem('frenify_skin');
@@ -82,7 +85,12 @@ export default function Header({ searchToggle, user }) {
                 {/* Header left: token information */}
                 <div className="header__left">
                     <div className="fn__token_info">
-                       
+                       <span className="token_summary">
+                            <span className="count">{user?.organizations.name}</span>
+                            <span className="text">{user?.organizations.address}</span>
+                        </span>
+                        {isZuppr &&<Link href="/sales/ordertracker" className="token_upgrade techwave_fn_button"><span>Order Tracker</span></Link>}
+    
                     </div>
                 </div>
                 {/* /Header left: token information */}

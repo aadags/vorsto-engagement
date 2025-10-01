@@ -13,6 +13,7 @@ export default function Order({org}) {
     const [activeIndex, setActiveIndex] = useState(1);
     const [viewOrder, setViewOrder] = useState();
     const [paymentProcessors, setPaymentprocessors] = useState(org?.payment_processors);
+    const [isZuppr] = useState(window.location.hostname.includes(process.env.NEXT_PUBLIC_ZUPPR_API));
 
     const handleOnClick = (index) => {
         setActiveIndex(index);
@@ -36,8 +37,8 @@ export default function Order({org}) {
                     <div className="fn__tabs">
                         <div className="container">
                             <div className="tab_in">
-                                <a className={activeIndex === 1 ? "active" : ""} onClick={() => handleOnClick(1)}>Online Orders</a>
-                                <a className={activeIndex === 3 ? "active" : ""} onClick={() => handleOnClick(3)}>In-Person Orders</a>
+                                <a className={activeIndex === 1 ? "active" : ""} onClick={() => handleOnClick(1)}>{isZuppr? 'All Orders' : 'Online Orders'}</a>
+                                {!isZuppr && <a className={activeIndex === 3 ? "active" : ""} onClick={() => handleOnClick(3)}>In-Person Orders</a>}
                                 {viewOrder && <a className={activeIndex === 2 ? "active" : ""} onClick={() => handleOnClick(2)}>Order Id: {viewOrder.id}</a>}
                             </div>
                         </div>

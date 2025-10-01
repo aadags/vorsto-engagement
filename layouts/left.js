@@ -11,6 +11,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
     const [chats, setChats] = useState([]);
     const [perms, setPerms] = useState([]);
     const [notify, setNotify] = useState(null);
+    const [isZuppr, setIsZuppr] = useState(false);
 
     const getChats = async () => {
     
@@ -39,6 +40,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
 	};
 
     useEffect(() => {
+        setIsZuppr(window.location.hostname.includes(process.env.NEXT_PUBLIC_ZUPPR_API));
 
         const prms = JSON.parse(user.role?.permissions||"[]");
         const result = Object.entries(prms)
@@ -195,7 +197,22 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
         },
     ];
 
-    const admin = [
+    const admin = isZuppr? [
+        {
+            title: "Business Information", 
+            pathname: "/information",
+            img: "/svg/info2.svg",
+            key: user.role_id > 0 ? "manageBusinessInformation" : "allow"
+    
+        },
+        {
+            title: "Business Hours", 
+            pathname: "/hours",
+            img: "/svg/clock.svg",
+            key: user.role_id > 0 ? "manageBusinessHours" : "allow"
+    
+        }
+    ] : [
         {
             title: "Artificial Intelligence",
             pathname: "/agent",
@@ -390,13 +407,18 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
                 {/* logo (left panel) */}
                 <div className="leftpanel_logo">
                     <Link href="/" className="fn_logo">
+                        {isZuppr?
                         <span className="full_logo">
+                            <img src="/zuppr-merchant.png" alt="" className="desktop_logo" width={100} />
+                            <img src="/zuppr-merchant.png" alt="" className="retina_logo" width={100} />
+                        </span>
+                        :<span className="full_logo">
                             <img src="/vorsto-dark.png" alt="" className="desktop_logo" />
                             <img src="/vorsto-dark.png" alt="" className="retina_logo" />
-                        </span>
+                        </span>}
                         <span className="short_logo">
-                            <img src="/logo_only_black.png" alt="" className="desktop_logo" />
-                            <img src="/logo_only_black.png" alt="" className="retina_logo" />
+                            <img src="/zuppr-merchant.png" alt="" className="desktop_logo" width={50} />
+                            <img src="/zuppr-merchant.png" alt="" className="retina_logo" width={50} />
                         </span>
                     </Link>
                     <a className="fn__closer fn__icon_button desktop_closer" onClick={activeTrueFalse}>
@@ -433,7 +455,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
                                 </li>
                             ))}
                 
-                            <li className={`menu-item-has-children ${isChatToggle ? "closed" : ""}`} >
+                            {!isZuppr && <li className={`menu-item-has-children ${isChatToggle ? "closed" : ""}`} >
                                 <a className="fn__tooltip menu__item" title="Chat" onClick={toggleChatHandle} >
                                     <span className="icon"><img src="/svg/chat.svg" alt="" className="fn__svg" /></span>
                                     <span className="text">Conversations</span>
@@ -448,7 +470,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
                                         </li>
                                     ))}
                                 </ul>
-                            </li>
+                            </li>}
                             {/* <li className={`menu-item-has-children ${isCallToggle ? "closed" : ""}`} >
                                 <a className="fn__tooltip menu__item" title="Calls" onClick={toggleCallHandle} >
                                     <span className="icon"><img src="/svg/phone-volume.svg" alt="" className="fn__svg" /></span>
@@ -547,7 +569,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
                                     ))}
                                 </ul>
                             </li>
-                            <li className={`menu-item-has-children ${isChannelToggle ? "closed" : ""}`} >
+                            {!isZuppr && <li className={`menu-item-has-children ${isChannelToggle ? "closed" : ""}`} >
                                 <a className="fn__tooltip menu__item" title="Channels" onClick={toggleChannelHandle} >
                                     <span className="icon"><img src="/svg/setting.svg" alt="" className="fn__svg" /></span>
                                     <span className="text">Channels</span>
@@ -562,7 +584,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
                                         </li>
                                     ))}
                                 </ul>
-                            </li>
+                            </li>}
                         </ul>
                     </div>
                     {/* !#3 navigation group */}

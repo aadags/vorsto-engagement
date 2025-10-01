@@ -19,15 +19,15 @@ const worksans = Work_Sans({
 
 export const viewport = {
   title: {
-    template:'Vorsto AI | %s',
+    template:'Vorsto | %s',
     // content:'text/html',
-    default:'Vorsto | Build AI agents, Integrate With no code', // a default is required when creating a template
+    default:'Vorsto | Ecommerce', // a default is required when creating a template
   },
   name: "description",
-  content:"Vorsto Console",
+  content:"Vorsto Ecommerce",
   openGraph: {
-    title: 'Vorsto Console',
-    description: 'Vorsto Console'
+    title: 'Vorsto Ecommerce',
+    description: 'Vorsto Ecommerce'
   },
   viewport:'width=device-width, initial-scale=1, maximum-scale=1',
   httpEquiv:'Content-Type',
