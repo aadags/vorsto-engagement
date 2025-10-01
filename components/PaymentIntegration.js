@@ -85,6 +85,7 @@ export default function PaymentIntegration({ org }) {
       }
     } catch (error) {
       console.error("Error getting payments:", error);
+      setLoading(false)
     }
   };
 
@@ -116,8 +117,8 @@ export default function PaymentIntegration({ org }) {
                             Activated
                           </a>
                         )  : (
-                          <button className="techwave_fn_button" onClick={product.onclick}>
-                            Activate
+                          <button className="techwave_fn_button" onClick={product.onclick} disabled={loading}>
+                            {loading? 'Activating...' :'Activate'}
                           </button>
                         )}
                       </div>
