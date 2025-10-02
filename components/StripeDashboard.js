@@ -85,7 +85,7 @@ export default function StripeDashboard() {
           <div className="modal" onClick={e => e.stopPropagation()}>
             <h2>Transaction Details</h2>
             <p><strong>ID:</strong> {selectedTx.id}</p>
-            <p><strong>Amount:</strong> ${(selectedTx.amount / 100).toFixed(2)}</p>
+            <p><strong>Amount:</strong> ${(selectedTx.application_fee_amount / 100).toFixed(2)}</p>
             <p><strong>Status:</strong> {selectedTx.status}</p>
             <p><strong>Description:</strong> {selectedTx.description || 'N/A'}</p>
             <p><strong>Created:</strong> {new Date(selectedTx.created * 1000).toLocaleString()}</p>

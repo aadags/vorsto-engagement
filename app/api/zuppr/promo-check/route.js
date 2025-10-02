@@ -41,7 +41,7 @@ export async function POST(req) {
       // --- check per-user usage ---
       if (promo.max_uses_per_user) {
         const usageCount = await prisma.promoUsage.count({
-          where: { promo_id: promo.id, customer_id: customerId }
+          where: { promo_id: promo.id, customer_id: customerId } 
         });
         if (usageCount >= promo.max_uses_per_user) {
           continue;
