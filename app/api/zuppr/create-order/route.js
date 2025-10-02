@@ -3,6 +3,7 @@ import prisma from "@/db/prisma";
 import faktory from "faktory-worker";
 import Stripe from "stripe";
 import { sendBusinessOrderReceivedNotification } from "@/services/whatsapp";
+import { Expo } from "expo-server-sdk";
 
 export const dynamic = "force-dynamic";
 
@@ -10,12 +11,17 @@ const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY, {
   apiVersion: '2024-12-18.acacia',
 });
 
+const expo = new Expo();
+
 export async function POST(req) {
   try {
     const { items, amount, cartAmount, subCartAmount, subCartTaxAmount, deliveryAmount, deliverySubAmount, deliveryTaxAmount, tipAmount, dealCommissionAmount, serviceFeeAmount, customer, orgId, intentId, note, pickup, promoId, promoApplied, promoDiscount } = await req.json();
 
     const org = await prisma.organization.findFirst({
       where: { id: Number(orgId) },
+      include: {
+        devices: true
+      }
     });
 
     let contact = await prisma.contact.findFirst({
@@ -188,16 +194,34 @@ export async function POST(req) {
       });
     }
 
-    const client = await faktory.connect({ url: process.env.FAKTORY_URL || "" });
+    try {
 
-    await client.push({
-      jobtype: "SendOrderNotification",
-      args: [{ order, contact, org }],
-      queue: "default",
-      at: new Date(Date.now()),
-    });
+        const client = await faktory.connect({ url: process.env.FAKTORY_URL || "" });
 
-    await client.close();
+        await client.push({
+          jobtype: "SendOrderNotification",
+          args: [{ order, contact, org }],
+          queue: "default",
+          at: new Date(Date.now()),
+        });
+
+        await client.close();
+
+        const messages = org?.devices.map((device) => ({
+          to: device.token, 
+          title: `New Order`,
+          body: `You have a new order!`,
+          sound: "default",
+          data: { "type": "new_order", "orderId": order.id }, 
+        }));
+
+        if(messages.length > 0) { 
+          await expo.sendPushNotificationsAsync(messages);
+        }
+        
+    } catch (error) {
+      console.error(error);
+    }
 
     return NextResponse.json(order);
   } catch (error) {

@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import prisma from "@/db/prisma";
 import faktory from "faktory-worker";
-import { Pridi } from "next/font/google";
+import { Expo } from "expo-server-sdk";
 
 export const dynamic = "force-dynamic";
 
+const expo = new Expo();
 
 export async function POST(req) {
   try {
@@ -55,7 +56,7 @@ export async function POST(req) {
   
     await client.close();
 
-    if(status == 1)
+    if(status == 1 && order.channel==="web")
     {
       const client2 = await faktory.connect({
         url: process.env.FAKTORY_URL  || ""
@@ -71,6 +72,28 @@ export async function POST(req) {
       await client2.close();
   
     }
+
+    if(status == 2) {
+
+      const devices = await prisma.device.findMany({
+        where: {
+          organization_id: order.organization_id
+        }
+      });
+
+        const messages = devices.map((device) => ({
+          to: device.token, 
+          title: `Order Update`,
+          body: `Order ${order.id} is in transit`,
+          sound: "default",
+          data: { "type": "order_update", "orderId": order.id }, 
+        }));
+
+        if(messages.length > 0) { 
+          await expo.sendPushNotificationsAsync(messages);
+        }
+        
+    } 
 
     return NextResponse.json(
       { message: "Order updated" },
