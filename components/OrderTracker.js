@@ -18,9 +18,26 @@ export default function OrderTracker({ org }) {
 
   useEffect(() => {
     fetchOrders();
-    // ⏱️ Auto-refresh every 5 minutes
     const interval = setInterval(fetchOrders, 5 * 60 * 1000);
-    return () => clearInterval(interval);
+
+    const handleMessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+
+        if (data.notification) {
+          fetchOrders();
+        }
+      } catch (err) {
+        console.warn("Bad message from native:", event.data);
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("message", handleMessage);
+    };
   }, []);
 
   const updateOrder = async (url, id) => {
