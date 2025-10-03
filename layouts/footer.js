@@ -14,7 +14,7 @@ export default function Footer() {
                     <div className="menu_items">
                         {isZuppr? <ul>
                             <li><a onClick={() => {
-                                const signupUrl = "https://www.zuppr.ca/terms.html";
+                                const signupUrl = "https://merchants.zuppr.ca/terms.html";
                                 if (window.ReactNativeWebView?.postMessage) {
                                 // when inside your React Native WebView
                                 window.ReactNativeWebView.postMessage(
@@ -26,7 +26,7 @@ export default function Footer() {
                                 }
                             }}>Terms of Service</a></li>
                             <li><a onClick={() => {
-                                const signupUrl = "https://www.zuppr.ca/privacy.html";
+                                const signupUrl = "https://merchants.zuppr.ca/privacy.html";
                                 if (window.ReactNativeWebView?.postMessage) {
                                 // when inside your React Native WebView
                                 window.ReactNativeWebView.postMessage(
