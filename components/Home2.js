@@ -31,35 +31,35 @@ export default function Home2() {
   const [commission, setCommission] = useState(20);
   const [error, setError] = useState(false);
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    const fetchOrg = async () => {
+  //   const fetchOrg = async () => {
       
-      const response = await axios.get(`/api/get-org-details`);
-      const org = response.data;
-      setOrganization(org);
-      setName(org.name)
-      setDBName(org.dba)
-      setNumber(org.number)
-      setType(org.type)
-      setCountry(org.country)
-      setTagline(org.tagline)
-      setDomain(org.subdomain)
-      setAddress(org.address)
-      setEmail(org.contact_email)
-      setPhone(org.contact_number)
-      setTags(org.tags)
-      setLat(org.address_lat)
-      setLng(org.address_long)
+  //     const response = await axios.get(`/api/get-org-details`);
+  //     const org = response.data;
+  //     setOrganization(org);
+  //     setName(org.name)
+  //     setDBName(org.dba)
+  //     setNumber(org.number)
+  //     setType(org.type)
+  //     setCountry(org.country)
+  //     setTagline(org.tagline)
+  //     setDomain(org.subdomain)
+  //     setAddress(org.address)
+  //     setEmail(org.contact_email)
+  //     setPhone(org.contact_number)
+  //     setTags(org.tags)
+  //     setLat(org.address_lat)
+  //     setLng(org.address_long)
 
-      if(org.onboarding)
-      {
-        router.push('/');
-      }
-    };
-    fetchOrg();
-    animationText()
-  }, [])
+  //     if(org.onboarding)
+  //     {
+  //       router.push('/');
+  //     }
+  //   };
+  //   fetchOrg();
+  //   animationText()
+  // }, [])
 
   const inputRef = useRef(null)
 
@@ -338,7 +338,7 @@ export default function Home2() {
         onLoad={() => {
           const autocomplete = new window.google.maps.places.Autocomplete(
             inputRef.current,
-            { types: ["address"], componentRestrictions: { country: `${country}` }, },
+            { types: ["address"] },
           );
 
           autocomplete.addListener("place_changed", () => {

@@ -115,7 +115,7 @@ export default function CustomersList({ viewCustomer }) {
   return (
             <div style={{ width: "100%", margin: "0 auto" }}>
               {/* Export Button */}
-              <div
+              {!isZuppr &&<div
                 style={{
                   display: "flex",
                   justifyContent: "flex-end",
@@ -135,7 +135,7 @@ export default function CustomersList({ viewCustomer }) {
                 >
                   Download Contacts
                 </button>
-              </div>
+              </div>}
               {/* Data Table */}
               <DataTable
                 title="Contacts"

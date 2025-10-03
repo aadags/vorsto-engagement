@@ -438,7 +438,7 @@ export default function SetupBusiness() {
         onLoad={() => {
           const autocomplete = new window.google.maps.places.Autocomplete(
             inputRef.current,
-            { types: ["address"], componentRestrictions: { country: `${country}` }, },
+            { types: ["address"] },
           );
 
           autocomplete.addListener("place_changed", () => {
