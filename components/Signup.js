@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { auth, googleProvider } from "../firebaseConfig/FirebaseClient";
-import { createUserWithEmailAndPassword, updateProfile, signInWithPopup } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithEmailAndPassword, signInWithCredential, createUserWithEmailAndPassword, updateProfile, signInWithPopup } from "firebase/auth";
 import { GoogleReCaptchaProvider, useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 
 // import 'firebaseui/dist/firebaseui.css'; // intentionally left out
@@ -27,6 +27,17 @@ function SignupPage() {
   const [error, setError] = useState('');
   const [recaptchaToken, setRecaptchaToken] = useState("");
   const [isZuppr, setIsZuppr] = useState(false);
+  const [isAppleEnv, setIsAppleEnv] = useState(false);
+
+  
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const ua = navigator.userAgent.toLowerCase();
+      const appleDevice =
+        /iphone|ipad|ipod|macintosh/.test(ua) && !/windows/.test(ua);
+      setIsAppleEnv(appleDevice);
+    }
+  }, []);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -49,21 +60,23 @@ function SignupPage() {
 
       if(isApple){
 
-        const userData = JSON.parse(isApple);
         (async () => {
           if (!isApple) return;
       
           try {
             const userData = JSON.parse(isApple);
       
-            const response = await fetch('/api/get-user', {
+            const response = await fetch('/api/verify-apple-user', {
               method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ email: userData.email }),
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                name: userData.name,
+                email: userData.email,
+                uid: userData.apple_id,
+              }),
             });
-      
+
+            const res = await response.json();
             if (response.ok) {
               const res = await response.json();
       
@@ -173,14 +186,79 @@ function SignupPage() {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    try {
-      await signInWithPopup(auth, googleProvider);
-      router.push('/validate');
-    } catch (err) {
-      setError(err.message);
+  const handleGoogleLogin = () => {
+    if (window.ReactNativeWebView?.postMessage) {
+      window.ReactNativeWebView.postMessage(JSON.stringify({ action: "startGoogleLogin" }));
+    } else {
+      setError("Google login not available in this environment.");
     }
   };
+
+  const handleUserId = (userId) => {
+    if (window.ReactNativeWebView?.postMessage && isZuppr) {
+      window.ReactNativeWebView.postMessage(JSON.stringify({ instruction: "userId", id: userId }));
+    } else {
+      console.log("Unable to set user Id.");
+    }
+  };
+
+  useEffect(() => {
+    const handleMessage = async (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.provider === "google") {
+          const credential = GoogleAuthProvider.credential(data.token);
+          const result = await signInWithCredential(auth, credential);
+          
+          const response = await fetch('/api/verify-user', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              name: result.user.displayName,
+              email: result.user.email,
+              uid: result.user.uid,
+            }),
+          });
+
+          if (response.ok) {
+            await response.json();
+            handleUserId(result.user.email);
+            router.push('/validate');
+          }
+        }
+
+        if (data.provider === "apple") {
+          const response = await fetch('/api/verify-apple-user', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              name: (data.name?.givenName && data.name?.familyName)
+                ? `${data.name.givenName} ${data.name.familyName}`
+                : undefined,
+              email: data.email,
+              uid: data.user,
+            }),
+          });
+
+          if (response.ok) {
+            const res = await response.json();
+            handleUserId(res.data.email);
+            localStorage.setItem("appleLogin", JSON.stringify(res.data))
+            router.push('/validate');
+          }
+        }
+      } catch (err) {
+        console.error("Error handling token message:", err);
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, [router]);
 
   return (
     <div
@@ -278,7 +356,7 @@ function SignupPage() {
                 <div className="line" />
               </div>
 
-              {isZuppr ? (
+              {isZuppr ? (<>
                 <button
                   type="button"
                   onClick={handleGoogleLogin}
@@ -295,6 +373,32 @@ function SignupPage() {
                 >
                   Sign up with Google
                 </button>
+                <br/><br/>
+
+                {isAppleEnv && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (window.ReactNativeWebView?.postMessage) {
+                        window.ReactNativeWebView.postMessage(
+                          JSON.stringify({ action: "startAppleLogin" })
+                        );
+                      }
+                    }}
+                    style={{
+                      display: "inline-block",
+                      padding: "10px 20px",
+                      backgroundColor: "#000", // Apple style
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "4px",
+                      fontWeight: "bold"
+                    }}
+                  >
+                    {" Login with Apple"}
+                  </button>
+                )}
+                </>
               ) : (
                 <div id="firebaseui-auth-container">
                   <div id="loader">Loading...</div>

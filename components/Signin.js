@@ -25,7 +25,6 @@ export default function Signin() {
     }
   }, []);
 
-
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setIsZuppr(window.location.hostname.includes(process.env.NEXT_PUBLIC_ZUPPR_API));
