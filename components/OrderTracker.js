@@ -65,6 +65,9 @@ export default function OrderTracker({ org }) {
       </div>
 
       {loading && <p className="loading">Loading orders...</p>}
+      {!loading && orders.length === 0 && (
+        <p className="no-orders">🚫 No new orders</p>
+      )}
 
       <div className="orders-grid">
         {orders.map((order) => (
@@ -341,6 +344,13 @@ export default function OrderTracker({ org }) {
         .pickup-code {
           color: red;
           font-size: 1rem;
+        }
+        .no-orders {
+          grid-column: 1 / -1; /* span across grid */
+          text-align: center;
+          font-size: 1.2rem;
+          color: #aaa;
+          padding: 2rem 0;
         }
         @media (max-width: 500px) {
           .order-card {
