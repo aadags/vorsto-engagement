@@ -319,12 +319,12 @@ export default function Signin() {
                 </div>
               )}
               <br/><br/>
-              <p>
+              {!isAppleEnv && <p>
                 Don&apos;t have an account yet?{" "}
                 <Link href="/signup" style={{ color: "#7c5fe3" }}>
                   Sign Up
                 </Link>
-              </p>
+              </p>}
             </div>
           </div>
         </form>
