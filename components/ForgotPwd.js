@@ -72,7 +72,7 @@ export default function ForgotPwd() {
             </div>
           </form>
           <div className="sign__desc">
-            <p> <Link href="/login">Log In</Link> or <Link href="/signup">Sign Up</Link></p>
+            <p> <Link href="/login">Log In</Link></p>
           </div>
         </div>
       </div>
