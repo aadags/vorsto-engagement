@@ -114,6 +114,12 @@ export default function Header({ searchToggle, user }) {
                                 <div className="user_nav">
                                     <ul>
                                         <li>
+                                            <Link href="/myaccount">
+                                                <span className="icon"><img src="/svg/person.svg" alt="" className="fn__svg" /></span>
+                                                <span className="text">My Account</span>
+                                            </Link>
+                                        </li>
+                                        <li>
                                             <Link href="/logout" onClick={handleLogout}>
                                                 <span className="icon"><img src="/svg/logout.svg" alt="" className="fn__svg" /></span>
                                                 <span className="text">Log Out</span>

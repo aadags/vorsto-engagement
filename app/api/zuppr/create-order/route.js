@@ -58,13 +58,13 @@ export async function POST(req) {
       })
     }
 
-    const nonDealItems = items.filter(r => !r.isDeal);
+    // const nonDealItems = items.filter(r => !r.isDeal);
 
     // Subtotal for non-deal items only
-    const nonDealSub = nonDealItems.reduce((sum, r) => sum + lineSubCents(r), 0);
+    // const subTotal = items.reduce((sum, r) => sum + lineSubCents(r), 0);
 
     // Commission applies only to non-deal items
-    const commissionFee = Math.round((nonDealSub * org.ship_org_info.merchant_commission_rate) / 100);
+    const commissionFee = Math.round((subCartAmount * org.ship_org_info.merchant_commission_rate) / 100);
 
     // App fee = commission on non-deal items + delivery + tip + deal commission
     const shippingCommission = commissionFee;
@@ -94,7 +94,7 @@ export async function POST(req) {
             status: 'Pending',
             quantity: Number(r.quantity),
             price: lineSubCents(r),               // line subtotal (cents, before tax)
-            tax: lineTaxCents(r),                 // tax (cents)
+            tax:  lineTaxCents(r),                 // tax (cents)
             price_unit: (r.price_unit || 'unit'), // keep what you stored in cart
           }))
         },
