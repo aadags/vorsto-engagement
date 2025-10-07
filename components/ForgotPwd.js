@@ -12,6 +12,7 @@ export default function ForgotPwd() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [isZuppr] = useState(window.location.hostname.includes(process.env.NEXT_PUBLIC_ZUPPR_API));
 
   const handlePasswordReset = async (e) => {
     e.preventDefault(); // Prevent page refresh
@@ -45,7 +46,19 @@ export default function ForgotPwd() {
         height: "100vh",
       }}>
         <div className="sign__content" style={{ textAlign: "center" }}>
-          <img src="/white_logo.png" className="logo2" alt="logo" style={{ width: "30% !important" }} />
+        {isZuppr?
+        <img
+          src="/zuppr-merchant-w.png"
+          alt="logo"
+          width={100}
+        />
+        :
+        <img
+          src="/vorsto-logo.png"
+          className="logo2"
+          alt="logo"
+          style={{ width: "30% !important" }}
+        />}
           {/* <h1>Sign In</h1> */}
           <form className="login"  onSubmit={handlePasswordReset}>
             <div className="form__content">
