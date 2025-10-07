@@ -3,6 +3,8 @@
 import { NextResponse } from "next/server";
 import prisma from "@/db/prisma";
 import formatCurrency from "@/utils/formatCurrency";
+import { formatInTimeZone } from "date-fns-tz";
+
 
 function cors(res) {
   res.headers.set("Access-Control-Allow-Origin", "*");
@@ -13,8 +15,12 @@ function cors(res) {
 
 // ---------------- Helpers ---------------- //
 
-function isDealActive(deal, now) {
+function isDealActive(deal, now, timezone = "America/Vancouver") {
   if (!deal.isActive) return false;
+
+  // Get current day and time in merchant's timezone
+  const dayName = formatInTimeZone(now, timezone, "EEE"); // e.g. Mon, Tue, Wed
+  const timeNow = formatInTimeZone(now, timezone, "HH:mm"); // e.g. 14:35
 
   if (deal.type === "ONE_OFF") {
     const start = deal.startDate ? new Date(deal.startDate) : null;
@@ -25,13 +31,13 @@ function isDealActive(deal, now) {
   }
 
   if (deal.type === "RECURRING" && Array.isArray(deal.recurrenceRule)) {
-    const dayName = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][now.getDay()];
-    const todayRule = deal.recurrenceRule.find((r) => r.day === dayName && r.enabled);
+    const todayRule = deal.recurrenceRule.find(
+      (r) => r.day.startsWith(dayName) && r.enabled
+    );
     if (!todayRule) return false;
 
     if (todayRule.timeStart && todayRule.timeEnd) {
-      const nowStr = now.toTimeString().slice(0,5);
-      return nowStr >= todayRule.timeStart && nowStr <= todayRule.timeEnd;
+      return timeNow >= todayRule.timeStart && timeNow <= todayRule.timeEnd;
     }
     return true;
   }
@@ -194,7 +200,7 @@ export async function GET(req, { params }) {
     });
 
     const now = new Date();
-    const validDeals = allDeals.filter((d) => isDealActive(d, now));
+    const validDeals = allDeals.filter((d) => isDealActive(d, now, org.timezone || "America/Vancouver"));
 
     // 5) Map products
     const products = org.products.map((p) => {
