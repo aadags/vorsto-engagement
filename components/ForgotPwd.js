@@ -12,7 +12,13 @@ export default function ForgotPwd() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-  const [isZuppr] = useState(window.location.hostname.includes(process.env.NEXT_PUBLIC_ZUPPR_API));
+  const [isZuppr, setIsZuppr] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsZuppr(window.location.hostname.includes(process.env.NEXT_PUBLIC_ZUPPR_API));
+    }
+  }, []);
 
   const handlePasswordReset = async (e) => {
     e.preventDefault(); // Prevent page refresh
