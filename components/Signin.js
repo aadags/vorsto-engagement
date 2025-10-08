@@ -14,6 +14,7 @@ export default function Signin() {
   const [error, setError] = useState("");
   const [isZuppr, setIsZuppr] = useState(false);
   const [isAppleEnv, setIsAppleEnv] = useState(false);
+  const [isWebEnv, setIsWebEnv] = useState(false);
   const [isLoading, setIsLoading] = useState(false); // 👈 loading state
 
   useEffect(() => {
@@ -22,6 +23,10 @@ export default function Signin() {
       const appleDevice =
         /iphone|ipad|ipod|macintosh/.test(ua) && !/windows/.test(ua);
       setIsAppleEnv(appleDevice);
+
+      const isWeb =
+        !/iphone|ipad|ipod|android/.test(ua) && /chrome|safari|firefox|edge/.test(ua);
+      setIsWebEnv(isWeb);
     }
   }, []);
 
@@ -266,7 +271,7 @@ export default function Signin() {
                 <div className="line" />
               </div>
 
-              {isZuppr ? (
+              {isZuppr && !isWebEnv ? (
                 <>
                 <button
                   type="button"

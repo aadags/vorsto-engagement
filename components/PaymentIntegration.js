@@ -13,7 +13,8 @@ export default function PaymentIntegration({ org }) {
   const [loading, setLoading] = useState(false);
   const [selectedTag, setSelectedTag] = useState("");
   const [paymentProcessors] = useState(org.payment_processors);
-  const [isZuppr] = useState(window.location.hostname.includes(process.env.NEXT_PUBLIC_ZUPPR_API));
+  const [isZuppr, setIsZuppr] = useState(false);
+  const [isWebEnv, setIsWebEnv] = useState(false);
 
   const paymentProviders = [
     {
@@ -67,7 +68,7 @@ export default function PaymentIntegration({ org }) {
       const response = await axios.get(`/api/connect-stripe-link`);
       if (response.data) {
         setLoading(false);
-        if(isZuppr)
+        if(isZuppr && !isWebEnv)
         {
           if (window.ReactNativeWebView?.postMessage) {
             // when inside your React Native WebView
@@ -88,6 +89,18 @@ export default function PaymentIntegration({ org }) {
       setLoading(false)
     }
   };
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+
+      setIsZuppr(window.location.hostname.includes(process.env.NEXT_PUBLIC_ZUPPR_API))
+      const ua = navigator.userAgent.toLowerCase();
+      
+      const isWeb =
+        !/iphone|ipad|ipod|android/.test(ua) && /chrome|safari|firefox|edge/.test(ua);
+      setIsWebEnv(isWeb);
+    }
+  }, []);
 
   return (
     <>
