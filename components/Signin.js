@@ -82,10 +82,10 @@ export default function Signin() {
               },
             },
             signInFlow: 'popup',
-            signInSuccessUrl: 'https://engage.vorsto.io/login',
+            signInSuccessUrl: isZuppr? 'https://merchant.zuppr.ca/login' : 'https://engage.vorsto.io/login',
             signInOptions: [googleProvider.providerId],
-            tosUrl: 'https://vorsto.io/terms-policy',
-            privacyPolicyUrl: 'https://vorsto.io/privacy-policy',
+            tosUrl: isZuppr? 'https://merchants.zuppr.ca/terms.html' : 'https://vorsto.io/terms-policy',
+            privacyPolicyUrl: isZuppr? 'https://merchants.zuppr.ca/privacy.html' : 'https://vorsto.io/privacy-policy',
           };
 
           ui.start('#firebaseui-auth-container', uiConfig);
