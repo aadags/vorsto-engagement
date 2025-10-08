@@ -28,6 +28,7 @@ function SignupPage() {
   const [recaptchaToken, setRecaptchaToken] = useState("");
   const [isZuppr, setIsZuppr] = useState(false);
   const [isAppleEnv, setIsAppleEnv] = useState(false);
+  const [isWebEnv, setIsWebEnv] = useState(false);
 
   
   useEffect(() => {
@@ -36,6 +37,9 @@ function SignupPage() {
       const appleDevice =
         /iphone|ipad|ipod|macintosh/.test(ua) && !/windows/.test(ua);
       setIsAppleEnv(appleDevice);
+      const isWeb =
+        !/iphone|ipad|ipod|android/.test(ua) && /chrome|safari|firefox|edge/.test(ua);
+      setIsWebEnv(isWeb);
     }
   }, []);
 
@@ -356,7 +360,7 @@ function SignupPage() {
                 <div className="line" />
               </div>
 
-              {isZuppr ? (<>
+              {isZuppr && !isWebEnv ? (<>
                 <button
                   type="button"
                   onClick={handleGoogleLogin}
