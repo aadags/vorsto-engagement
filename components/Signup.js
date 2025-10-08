@@ -264,6 +264,92 @@ function SignupPage() {
     return () => window.removeEventListener("message", handleMessage);
   }, [router]);
 
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src =
+      "https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js";
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
+
+  const initializeApple = () => {
+    if (!window.AppleID) return;
+
+    try {
+      window.AppleID.auth.init({
+        clientId: "com.zuppr.merchant-web", // ✅ your Service ID
+        scope: "name email",
+        redirectURI: window.location.origin+"/api/verify-apple-callback", // ✅ match Apple dashboard
+        usePopup: true,
+      });
+      window.AppleID.auth._initialized = true;
+      console.log("✅ AppleID.auth initialized");
+    } catch (err) {
+      console.error("AppleID init error:", err);
+    }
+  };
+
+  // inside SignupPage component
+useEffect(() => {
+  if (typeof window === "undefined") return;
+
+  // If already loaded and initialized, skip
+  if (window.AppleID?.auth?._initialized) return;
+
+  // Load SDK only once
+  if (!window._appleScriptLoaded) {
+    const script = document.createElement("script");
+    script.src =
+      "https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js";
+    script.async = true;
+    script.onload = () => {
+      window._appleScriptLoaded = true;
+      initializeApple();
+    };
+    document.body.appendChild(script);
+  } else {
+    initializeApple();
+  }
+}, []);
+
+const handleAppleSignup = async () => {
+  try {
+    if (!window.AppleID?.auth?._initialized) {
+      initializeApple();
+    }
+
+    const res = await window.AppleID.auth.signIn();
+    const { authorization, user } = res;
+
+    const idToken = authorization.id_token;
+    const appleData = {
+      email: user?.email,
+      name: user?.name
+        ? `${user.name.firstName || ""} ${user.name.lastName || ""}`.trim()
+        : "",
+      apple_id: authorization.user,
+      id_token: idToken,
+    };
+
+    const verify = await fetch("/api/verify-apple-user", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(appleData),
+    });
+
+    const result = await verify.json();
+    if (verify.ok) {
+      localStorage.setItem("appleLogin", JSON.stringify(result?.data));
+      router.push(result?.data?.is_validated ? "/launch" : "/validate");
+    } else {
+      console.error("Apple verification failed", result);
+    }
+  } catch (err) {
+    console.error("Apple sign-in failed:", err);
+  }
+};
+
+
   return (
     <div
       className="techwave_fn_sign"
@@ -399,14 +485,37 @@ function SignupPage() {
                       fontWeight: "bold"
                     }}
                   >
-                    {" Login with Apple"}
+                    {" Signup with Apple"}
                   </button>
                 )}
                 </>
               ) : (
+                <>
+                <div>
+                {isAppleEnv && (
+                  <>
+                  <button
+                    type="button"
+                    onClick={handleAppleSignup}
+                    style={{
+                      display: "inline-block",
+                      padding: "10px 20px",
+                      backgroundColor: "#000",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "4px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {" Signup with Apple"}
+                  </button>
+                  </>
+                )}
+                </div>
                 <div id="firebaseui-auth-container">
                   <div id="loader">Loading...</div>
                 </div>
+                </>
               )}
               <br/><br/>
               <p>
