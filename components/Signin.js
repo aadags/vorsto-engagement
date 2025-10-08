@@ -38,7 +38,7 @@ export default function Signin() {
         if (currentUser) {
           try {
             setIsLoading(true); // start loading
-            const response = await fetch('/api/verify-user', {
+            const response = await fetch('/api/verify-user2', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -54,6 +54,9 @@ export default function Signin() {
               await response.json();
               handleUserId(currentUser.email);
               router.push('/validate');
+            } else {
+              const res = await response.json();
+              setError(res.error)
             }
           } catch (error) {
             console.error('Verification failed:', error);
@@ -135,7 +138,7 @@ export default function Signin() {
           const credential = GoogleAuthProvider.credential(data.token);
           const result = await signInWithCredential(auth, credential);
           
-          const response = await fetch('/api/verify-user', {
+          const response = await fetch('/api/verify-user2', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -151,13 +154,16 @@ export default function Signin() {
             await response.json();
             handleUserId(result.user.email);
             router.push('/validate');
+          } else {
+            const res = await response.json();
+            setError(res.error)
           }
           setIsLoading(false);
         }
 
         if (data.provider === "apple") {
           setIsLoading(true);
-          const response = await fetch('/api/verify-apple-user', {
+          const response = await fetch('/api/verify-apple-user2', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -176,6 +182,9 @@ export default function Signin() {
             handleUserId(res.data.email);
             localStorage.setItem("appleLogin", JSON.stringify(res.data))
             router.push('/validate');
+          } else {
+            const res = await response.json();
+            setError(res.error)
           }
           setIsLoading(false);
         }

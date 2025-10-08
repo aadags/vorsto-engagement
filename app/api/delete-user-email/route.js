@@ -14,7 +14,8 @@ export async function POST(req) {
     const user = await prisma.user.update({
       data: {
         is_deleted: true,
-        email: id+"_deleted"+new Date().getTime()
+        email: id+"_deleted"+new Date().getTime(),
+        apple_id: null
       },
       where: {
         email: id,
