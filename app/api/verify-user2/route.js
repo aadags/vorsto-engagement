@@ -67,7 +67,7 @@ export async function POST(req) {
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: "Failed to create user" },
+      { error: "There is no account by this user" },
       { status: 500 }
     );
   }

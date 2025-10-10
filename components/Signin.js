@@ -265,7 +265,7 @@ const handleAppleSignup = async () => {
         ? `${user.name.firstName || ""} ${user.name.lastName || ""}`.trim()
         : "",
       apple_id: authorization.user,
-      id_token: idToken,
+      uid: idToken,
     };
 
     const verify = await fetch("/api/verify-apple-user2", {
