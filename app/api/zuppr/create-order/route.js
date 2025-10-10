@@ -24,6 +24,64 @@ export async function POST(req) {
       }
     });
 
+    const intent = await stripe.paymentIntents.retrieve(intentId);
+
+    if (!intent) {
+      return NextResponse.json(
+        { error: "Payment intent not found" },
+        { status: 400 }
+      );
+    }
+
+    // ✅ Check intent status
+    const validStatuses = ["succeeded", "requires_capture", "processing"];
+    if (!validStatuses.includes(intent.status)) {
+      return NextResponse.json(
+        { error: `Invalid payment intent status: ${intent.status}` },
+        { status: 400 }
+      );
+    }
+
+    // ✅ Verify transaction amount (in cents)
+    const expectedAmount = amount;
+    const intentAmount = intent.amount;
+
+    if (intentAmount !== expectedAmount) {
+      // allow a few cents diff for rounding / tip
+      return NextResponse.json(
+        {
+          error: `Payment amount mismatch. Expected ${expectedAmount}, got ${intentAmount}.`,
+        },
+        { status: 400 }
+      );
+    }
+
+    // ✅ Optional: confirm currency match
+    if (
+      intent.currency &&
+      org.currency &&
+      intent.currency.toLowerCase() !== org.currency.toLowerCase()
+    ) {
+      return NextResponse.json(
+        { error: "Payment currency mismatch" },
+        { status: 400 }
+      );
+    }
+
+    // ✅ If not yet captured (manual capture flow), capture it now
+    if (intent.status === "requires_capture") {
+      try {
+        await stripe.paymentIntents.capture(intent.id);
+      } catch (err) {
+        console.error("Failed to capture payment:", err);
+        return NextResponse.json(
+          { error: "Failed to capture payment" },
+          { status: 500 }
+        );
+      }
+    }        
+    
+
     let contact = await prisma.contact.findFirst({
       where: {
         organization_id: orgId,
@@ -193,6 +251,25 @@ export async function POST(req) {
         },
       });
     }
+
+    if (intent.status === "processing") {
+      try {
+       
+        const client = await faktory.connect({ url: process.env.FAKTORY_URL || "" });
+
+        await client.push({
+          jobtype: "QueryIntent",
+          args: [{ intentId, orderId: order.id }],
+          queue: "default",
+          at: new Date(Date.now() + 30000),
+        });
+
+        await client.close();
+
+      } catch (err) {
+        console.error("Failed to log:", err);
+      }
+    }    
 
     try {
 

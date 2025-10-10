@@ -93,6 +93,15 @@ export async function GET(req) {
       });
     }
 
+    if(order.shipping_id){
+      const response = await fetch(`${process.env.SHIPPING_API}/api/delivery-cancel`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deliveryId: order.shipping_id }),
+      });
+      const data = await response.json();
+    }
+
     return NextResponse.json({ status: true });
   } catch (error) {
     console.error(error);
