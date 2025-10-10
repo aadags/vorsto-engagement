@@ -600,7 +600,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
                     </div>
                     {/* !#3 navigation group */}
 
-                    {isZuppr && user?.organizations.onboarding && user?.organizations.zuppr_active &&<button type="button" onClick={activateStore} className="techwave_fn_button" style={{ marginLeft: "10px"}}><span>Activate Store</span></button>}
+                    {isZuppr && user?.organizations.onboarding && !user?.organizations.zuppr_active &&<button type="button" onClick={activateStore} className="techwave_fn_button" style={{ marginLeft: "10px"}}><span>Activate Store</span></button>}
                     
         
                 </div>}
