@@ -28,24 +28,21 @@ function SignupPage() {
   const [recaptchaToken, setRecaptchaToken] = useState("");
   const [isZuppr, setIsZuppr] = useState(false);
   const [isAppleEnv, setIsAppleEnv] = useState(false);
-  const [isWebEnv, setIsWebEnv] = useState(false);
+  const [isZupprApp, setIsZupprApp] = useState(false);
 
   
   useEffect(() => {
     if (typeof window !== "undefined") {
       const ua = navigator.userAgent.toLowerCase();
-      const appleDevice =
-        /iphone|ipad|ipod|macintosh/.test(ua) && !/windows/.test(ua);
-      setIsAppleEnv(appleDevice);
-      const isWeb =
-        !/iphone|ipad|ipod|android/.test(ua) && /chrome|safari|firefox|edge/.test(ua);
-      setIsWebEnv(isWeb);
-    }
-  }, []);
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
+      const isZupprApp = /zupprmerchantapp(apple|android)/.test(ua);
+      setIsZupprApp(isZupprApp)
+  
+      // ✅ Apple environment (iPhone, iPad, Mac)
+      const appleDevice = /iphone|ipad|ipod|macintosh|zupprmerchantappapple/.test(ua);
+      setIsAppleEnv(appleDevice);
       setIsZuppr(window.location.hostname.includes(process.env.NEXT_PUBLIC_ZUPPR_API));
+  
     }
   }, []);
 
@@ -137,8 +134,8 @@ function SignupPage() {
               signInFlow: 'popup',
               signInSuccessUrl: isZuppr? 'https://merchant.zuppr.ca/login' : 'https://engage.vorsto.io/login',
               signInOptions: [googleProvider.providerId],
-              tosUrl: isZuppr? 'https://merchants.zuppr.ca/terms.html' : 'https://vorsto.io/terms-policy',
-              privacyPolicyUrl: isZuppr? 'https://merchants.zuppr.ca/privacy.html' : 'https://vorsto.io/privacy-policy',
+              tosUrl: isZuppr? 'https://merchants.zuppr.ca/terms.html' : 'https://dev.vorsto.io/terms-policy',
+              privacyPolicyUrl: isZuppr? 'https://merchants.zuppr.ca/privacy.html' : 'https://dev.vorsto.io/privacy-policy',
             };
 
             ui.start('#firebaseui-auth-container', uiConfig);
@@ -446,7 +443,7 @@ const handleAppleSignup = async () => {
                 <div className="line" />
               </div>
 
-              {isZuppr && !isWebEnv ? (<>
+              {isZupprApp ? (<>
                 <button
                   type="button"
                   onClick={handleGoogleLogin}
