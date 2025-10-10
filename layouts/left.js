@@ -39,6 +39,17 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
 		setNewLead(response.data.total);
 	};
 
+    const activateStore = async () => {
+        if(!user?.organizations.logo || !user?.organizations.promo_image)
+        {
+            alert("A logo and promo image is required for your store before activating your store.");
+            window.location.href = "/information";
+        }
+		const response = await axios.post(`/api/activate-zuppr`);
+
+        alert("We have received your request. We will review your account and activate your store. You will be notified when your store is active.");
+	};
+
     useEffect(() => {
         setIsZuppr(window.location.hostname.includes(process.env.NEXT_PUBLIC_ZUPPR_API));
 
@@ -588,6 +599,8 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
                         </ul>
                     </div>
                     {/* !#3 navigation group */}
+
+                    {isZuppr && user?.organizations.onboarding && user?.organizations.zuppr_active &&<button type="button" onClick={activateStore} className="techwave_fn_button" style={{ marginLeft: "10px"}}><span>Activate Store</span></button>}
                     
         
                 </div>}

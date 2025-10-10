@@ -900,5 +900,11 @@ model PromoUsage {
   @@unique([promo_id, order_id])
 }
 
+model ActivateZuppr {
+  id            String   @id @default(cuid())
+  org_id      Int
+  created_at    DateTime @default(now())
+}
+
 
 

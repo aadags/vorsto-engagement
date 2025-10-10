@@ -89,7 +89,6 @@ export default function Header({ searchToggle, user }) {
                             <span className="count">{user?.organizations.name}</span>
                             <span className="text">{user?.organizations.address}</span>
                         </span>
-                        {isZuppr && user?.organizations.onboarding &&<Link href="/sales/ordertracker" className="token_upgrade techwave_fn_button"><span>Order Tracker</span></Link>}
     
                     </div>}
                 </div>

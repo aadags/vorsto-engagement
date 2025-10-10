@@ -30,6 +30,7 @@ export default function Order({org}) {
                 <div className="fn__title_holder">
                     <div className="container">
                         <h1 className="title">Orders</h1>
+                        <Link href="/sales/ordertracker" className="token_upgrade techwave_fn_button" style={{ float: "right" }}><span>Order Tracker</span></Link>
                     </div>
                 </div>
                 {/* Models */}
