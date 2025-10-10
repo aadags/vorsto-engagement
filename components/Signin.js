@@ -14,25 +14,27 @@ export default function Signin() {
   const [error, setError] = useState("");
   const [isZuppr, setIsZuppr] = useState(false);
   const [isAppleEnv, setIsAppleEnv] = useState(false);
-  const [isWebEnv, setIsWebEnv] = useState(false);
+  const [isZupprApp, setIsZupprApp] = useState(false);
   const [isLoading, setIsLoading] = useState(false); // 👈 loading state
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const ua = navigator.userAgent.toLowerCase();
-      const appleDevice =
-        /iphone|ipad|ipod|macintosh/.test(ua) && !/windows/.test(ua);
-      setIsAppleEnv(appleDevice);
 
-      const isWeb =
-        !/iphone|ipad|ipod|android/.test(ua) && /chrome|safari|firefox|edge/.test(ua);
-      setIsWebEnv(isWeb);
+      const isZupprApp = /zupprmerchantapp(apple|android)/.test(ua);
+      setIsZupprApp(isZupprApp)
+  
+      // ✅ Apple environment (iPhone, iPad, Mac)
+      const appleDevice = /iphone|ipad|ipod|macintosh|zupprmerchantappapple/.test(ua);
+      setIsAppleEnv(appleDevice);
+      setIsZuppr(window.location.hostname.includes(process.env.NEXT_PUBLIC_ZUPPR_API));
+  
     }
   }, []);
+  
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      setIsZuppr(window.location.hostname.includes(process.env.NEXT_PUBLIC_ZUPPR_API));
 
       const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
         if (currentUser) {
@@ -51,9 +53,9 @@ export default function Signin() {
             });
 
             if (response.ok) {
-              await response.json();
+              const res = await response.json();
               handleUserId(currentUser.email);
-              router.push('/validate');
+              router.push(res.data.is_validated ? "/launch" : "/validate");
             } else {
               const res = await response.json();
               setError(res.error)
@@ -63,7 +65,7 @@ export default function Signin() {
           } finally {
             setIsLoading(false); // stop loading
           }
-        } else if (!isZuppr) {
+        } else if (!isZupprApp) {
           // Only load FirebaseUI if NOT zuppr.ca
           const firebaseui = require('firebaseui');
           const ui =
@@ -84,8 +86,8 @@ export default function Signin() {
             signInFlow: 'popup',
             signInSuccessUrl: isZuppr? 'https://merchant.zuppr.ca/login' : 'https://engage.vorsto.io/login',
             signInOptions: [googleProvider.providerId],
-            tosUrl: isZuppr? 'https://merchants.zuppr.ca/terms.html' : 'https://vorsto.io/terms-policy',
-            privacyPolicyUrl: isZuppr? 'https://merchants.zuppr.ca/privacy.html' : 'https://vorsto.io/privacy-policy',
+            tosUrl: isZuppr? 'https://merchants.zuppr.ca/terms.html' : 'https://dev.vorsto.io/terms-policy',
+            privacyPolicyUrl: isZuppr? 'https://merchants.zuppr.ca/privacy.html' : 'https://dev.vorsto.io/privacy-policy',
           };
 
           ui.start('#firebaseui-auth-container', uiConfig);
@@ -95,7 +97,7 @@ export default function Signin() {
 
       return () => unsubscribe();
     }
-  }, [router, isZuppr]);
+  }, [router, isZupprApp]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -122,7 +124,7 @@ export default function Signin() {
   };
 
   const handleUserId = (userId) => {
-    if (window.ReactNativeWebView?.postMessage && isZuppr) {
+    if (window.ReactNativeWebView?.postMessage && isZupprApp) {
       window.ReactNativeWebView.postMessage(JSON.stringify({ instruction: "userId", id: userId }));
     } else {
       console.log("Unable to set user Id.");
@@ -151,9 +153,9 @@ export default function Signin() {
           });
 
           if (response.ok) {
-            await response.json();
+            const res = await response.json();
             handleUserId(result.user.email);
-            router.push('/validate');
+            router.push(res.data.is_validated ? "/launch" : "/validate");
           } else {
             const res = await response.json();
             setError(res.error)
@@ -181,7 +183,7 @@ export default function Signin() {
             const res = await response.json();
             handleUserId(res.data.email);
             localStorage.setItem("appleLogin", JSON.stringify(res.data))
-            router.push('/validate');
+            router.push(res?.data?.is_validated ? "/launch" : "/validate");
           } else {
             const res = await response.json();
             setError(res.error)
@@ -368,27 +370,8 @@ const handleAppleSignup = async () => {
                 <div className="line" />
               </div>
 
-              {isZuppr && !isWebEnv ? (
+              {isZupprApp ? (
                 <>
-                <button
-                  type="button"
-                  onClick={handleGoogleLogin}
-                  disabled={isLoading}
-                  style={{
-                    display: "inline-block",
-                    padding: "10px 20px",
-                    backgroundColor: "#4285F4",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "4px",
-                    fontWeight: "bold",
-                    cursor: isLoading ? "not-allowed" : "pointer",
-                  }}
-                >
-                  {isLoading ? "Processing..." : "Login with Google"}
-                </button>
-                <br/><br/>
-
                 {isAppleEnv && (
                   <button
                     type="button"
@@ -414,6 +397,27 @@ const handleAppleSignup = async () => {
                     {isLoading ? "Processing..." : " Login with Apple"}
                   </button>
                 )}
+                <br/><br/>
+                <button
+                  type="button"
+                  onClick={handleGoogleLogin}
+                  disabled={isLoading}
+                  style={{
+                    display: "inline-block",
+                    padding: "10px 20px",
+                    backgroundColor: "#4285F4",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "4px",
+                    fontWeight: "bold",
+                    cursor: isLoading ? "not-allowed" : "pointer",
+                  }}
+                >
+                  {isLoading ? "Processing..." : "Login with Google"}
+                </button>
+                
+
+                
                 </>
               ) : (
                 <>
@@ -444,7 +448,7 @@ const handleAppleSignup = async () => {
                 </>
               )}
               <br/><br/>
-              {isWebEnv && <p>
+              {!isZupprApp && <p>
                 Don&apos;t have an account yet?{" "}
                 <Link href="/signup" style={{ color: "#7c5fe3" }}>
                   Sign Up

@@ -6,7 +6,36 @@ import faktory from "faktory-worker"
 export async function POST(req) {
   try {
     const body = await req.json();
-    const { name, email, uid } = body;
+    let { name, email, uid } = body;
+
+    if (email) {
+      await prisma.appleLog.upsert({
+        where: { apple_id: uid },
+        update: {
+          email,
+          name: (name?.givenName && name?.familyName)
+            ? `${name.givenName} ${name.familyName}`
+            : undefined,
+        },
+        create: {
+          apple_id: uid,
+          email,
+          name: (name?.givenName && name?.familyName)
+            ? `${name.givenName} ${name.familyName}`
+            : null,
+        },
+      });
+    }
+
+    // If no email, try to pull from AppleLog
+    if (!email) {
+      const savedLog = await prisma.appleLog.findUnique({
+        where: { apple_id: uid },
+      });
+      if (savedLog?.email) {
+        email = savedLog.email;
+      }
+    }
 
     let user = await prisma.user.findUnique({
       where: { apple_id: uid, is_deleted: false },
