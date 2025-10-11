@@ -85,12 +85,26 @@ export async function GET(req) {
     // } else 
     if (pp.name === "VorstoPay") {
       // Stripe refund flow
-      await stripe.refunds.create({
-        payment_intent: order.transactionId,
-        amount: total,
-        refund_application_fee: true,
-        reverse_transfer: true,  
-      });
+      if(order.channel === "web")
+      {
+        await stripe.refunds.create(
+          {
+            payment_intent: order.transactionId,
+            reason: "cancelled by merchant",
+          },
+          {
+            stripeAccount: pp.accountId
+          }
+        );
+        
+      } else {
+        await stripe.refunds.create({
+          payment_intent: order.transactionId,
+          amount: total,
+          refund_application_fee: true,
+          reverse_transfer: true,  
+        });
+      }
     }
 
     if(order.shipping_id){
