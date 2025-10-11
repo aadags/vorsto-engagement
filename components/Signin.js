@@ -84,7 +84,7 @@ export default function Signin() {
               },
             },
             signInFlow: 'popup',
-            signInSuccessUrl: isZuppr? 'https://merchant.zuppr.ca/login' : 'https://engage.vorsto.io/login',
+            signInSuccessUrl: 'https://merchant.zuppr.ca/login',
             signInOptions: [googleProvider.providerId],
             tosUrl: isZuppr? 'https://merchants.zuppr.ca/terms.html' : 'https://dev.vorsto.io/terms-policy',
             privacyPolicyUrl: isZuppr? 'https://merchants.zuppr.ca/privacy.html' : 'https://dev.vorsto.io/privacy-policy',
