@@ -301,7 +301,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
             key: user.role_id > 0 ? "configureEmail": "allow"
         },
         {
-            title: "Voice & SMS",
+            title: "Voice (BETA)",
             pathname: "/channel/voice",
             img: "/svg/tty.svg",
             key: user.role_id > 0 ? "configureVoice": "allow"

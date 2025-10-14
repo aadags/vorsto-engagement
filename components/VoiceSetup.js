@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faShoppingCart, faCheck, faCancel, } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faShoppingCart, faCheck, faCancel, faMobile, } from '@fortawesome/free-solid-svg-icons'
 import DataTable, { createTheme } from "react-data-table-component";
 import { getUser } from '@/services/userService';
 import ActiveNumbers from './ActiveNumbers';
@@ -112,6 +112,14 @@ export default function VoiceSetup() {
       setAddPhone(true);
       handleOnClick(2);
       
+    };
+
+    const addPhoneDevice=  async () => {
+      const response = await axios.get(
+        `/api/get-phone-device`
+      );
+      
+      alert("We have received your request. A sales personnel will reach out shortly ")
     };
 
     createTheme("dark", {
@@ -234,11 +242,12 @@ export default function VoiceSetup() {
                                           marginBottom: "10px",
                                         }}
                                       >
-                                        {numberPlans && (numberPlans.plan=="free" || numberPlans.free > 0)?
+                                        {/* {numberPlans && (numberPlans.plan=="free" || numberPlans.free > 0)? */}
                                         <Link href="#" onClick={addPhoneNumber} className="techwave_fn_button"><span><FontAwesomeIcon icon={faPlus} /> Buy Phone Number</span></Link>
-                                        :
-                                        <Link href="#" onClick={addPhoneNumber} className="techwave_fn_button"><span><FontAwesomeIcon icon={faPlus} /> Get Free Phone Number</span></Link>
-                                        }
+                                        <Link href="#" onClick={addPhoneDevice} className="techwave_fn_button"><span><FontAwesomeIcon icon={faMobile} /> Request Phone Device</span></Link>
+                                        
+                                        {/* <Link href="#" onClick={addPhoneNumber} className="techwave_fn_button"><span><FontAwesomeIcon icon={faPlus} /> Get Free Phone Number</span></Link> */}
+                                        
                                       </div>
 
                                       <ActiveNumbers />

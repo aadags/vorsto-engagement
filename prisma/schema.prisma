@@ -906,5 +906,11 @@ model ActivateZuppr {
   created_at    DateTime @default(now())
 }
 
+model ActivatePhone {
+  id            String   @id @default(cuid())
+  org_id      Int
+  created_at    DateTime @default(now())
+}
+
 
 
