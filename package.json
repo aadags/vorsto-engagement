@@ -24,6 +24,7 @@
     "@tinymce/tinymce-react": "^5.1.1",
     "@twilio/voice-sdk": "^2.12.3",
     "@uiw/react-color": "^2.3.2",
+    "@vercel/sdk": "^1.13.8",
     "@xyflow/react": "^12.3.6",
     "axios": "^1.7.7",
     "body-parser": "^1.20.2",

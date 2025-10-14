@@ -72,7 +72,7 @@ model Organization {
   google_verification_code   String?
   subdomain  String?    @unique()
   channel_fee  Int    @default(2)
-  shop_template  String?    @default("simple")
+  shop_template  String?    @default("simple-res")
   quarterly_revenue_target             Int?    @default(2500000)
   ai_human_take_over   Boolean   @default(false)
   ai_system_bio        String?   @db.LongText
