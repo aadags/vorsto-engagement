@@ -20,7 +20,7 @@ export default function WebTemplate({ org }) {
       img: "/simple.jpg",
       title: "Simple Market",
       slug: "simple",
-      desc: "Simple ecommerce store template",
+      desc: "Simple Grocery Market template",
       category: "Simple",
       onclick: () => getStripeConnectLink("simple")
 

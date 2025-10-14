@@ -8,7 +8,7 @@ import WebTemplate from './WebTemplate';
 
 export default function Web({ org }) {
 
-    const [activeIndex, setActiveIndex] = useState(1);
+    const [activeIndex, setActiveIndex] = useState(2);
 
     const handleOnClick = (index) => {
         setActiveIndex(index);
@@ -28,8 +28,8 @@ export default function Web({ org }) {
                     <div className="fn__tabs">
                         <div className="container">
                             <div className="tab_in">
+                            <a className={activeIndex === 2 ? "active" : ""} onClick={() => handleOnClick(2)}>Domain</a>
                                 <a className={activeIndex === 1 ? "active" : ""} onClick={() => handleOnClick(1)}>Templates</a>
-                                <a className={activeIndex === 2 ? "active" : ""} onClick={() => handleOnClick(2)}>Domain</a>
                                 {/* <a className={activeIndex === 2 ? "active" : ""} onClick={() => handleOnClick(2)}>Media</a>
                                 <a className={activeIndex === 3 ? "active" : ""} onClick={() => handleOnClick(3)}>Site Settings</a> */}
                             </div>

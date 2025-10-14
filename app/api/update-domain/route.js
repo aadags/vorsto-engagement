@@ -14,18 +14,18 @@ export async function POST(req) {
       req.cookies.get("organizationId")?.value ?? 0
     );
 
-    const org = await prisma.organization.findFirstOrThrow({
+    let org = await prisma.organization.findFirstOrThrow({
       where: { id: organizationId },
     });
 
     const { domain } = await req.json();
       
-    await prisma.organization.update({
+    org = await prisma.organization.update({
         where:{
           id: org.id
         }, 
         data: {
-          domain
+          subdomain: domain
         }
     })
 
@@ -45,7 +45,8 @@ export async function POST(req) {
     }
     
     return NextResponse.json({
-      status: true
+      status: true,
+      domain: org.subdomain
     });
   } catch (error) {
     console.error(error);
