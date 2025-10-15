@@ -7,8 +7,8 @@ import PhoneInput from 'react-phone-number-input'
 import axios from "axios";
 import Script from "next/script";
 import 'react-phone-number-input/style.css'
-import TagMultiSelect from './TagMultiSelect';
-
+import TagMultiSelect from './TagMultiSelect'
+import Cropper from 'react-easy-crop'
 
 export default function SetupBusiness() {
   const [name, setName] = useState('');
@@ -19,9 +19,9 @@ export default function SetupBusiness() {
   const [type, setType] = useState('');
   const [number, setNumber] = useState('');
   const [country, setCountry] = useState('CA');
-  const [address, setAddress] = useState('')
-  const [lat, setLat] = useState(null)
-  const [lng, setLng] = useState(null)
+  const [address, setAddress] = useState('');
+  const [lat, setLat] = useState(null);
+  const [lng, setLng] = useState(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
@@ -33,73 +33,103 @@ export default function SetupBusiness() {
   const [uploaded2, setUploaded2] = useState();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitting2, setIsSubmitting2] = useState(false);
+  const [showCropper, setShowCropper] = useState(false);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [preview, setPreview] = useState(null);
+
   const fileInputRef = useRef(null);
   const fileInputRef2 = useRef(null);
-  const inputRef = useRef(null)
+  const inputRef = useRef(null);
 
   const router = useRouter();
 
+  const createImage = (url) =>
+    new Promise((resolve, reject) => {
+      const image = new Image();
+      image.addEventListener("load", () => resolve(image));
+      image.addEventListener("error", (error) => reject(error));
+      image.setAttribute("crossOrigin", "anonymous");
+      image.src = url;
+    });
+
+  const getCroppedImg = async (imageSrc, crop) => {
+    const image = await createImage(imageSrc);
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    const size = Math.min(crop.width, crop.height);
+    canvas.width = size;
+    canvas.height = size;
+
+    ctx.drawImage(image, crop.x, crop.y, size, size, 0, 0, size, size);
+
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => {
+        resolve(blob);
+      }, "image/png");
+    });
+  };
+
   const handleSubmit = async (e) => {
-    setLoading(true);
     e.preventDefault();
+    setLoading(true);
     const data = { name, tagline, phone, email, tags, address, lat, lng, number, country };
 
     try {
       const response = await fetch('/api/update-business', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
 
-      if (response.ok) {
-
-        setLoading(false);
-        setSuccess("Information updated");
-        
-      } else {
-        // Handle error
-        setLoading(false);
-        setError("An error occurred");
-      }
+      if (response.ok) setSuccess("Information updated");
+      else setError("An error occurred");
     } catch (error) {
-      setLoading(false);
       setError("An error occurred: " + error);
-      console.error('Error creating agent:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleImageSubmit = async (e) => {
-    e.preventDefault();
-    if (!file) {
-      setMessage("Please select a file.");
-      return;
+  // Logo cropper
+  const handleLogoSelect = (e) => {
+    const selected = e.target.files?.[0];
+    if (selected) {
+      setFile(selected);
+      setPreview(URL.createObjectURL(selected));
+      setShowCropper(true);
     }
+  };
 
-    setIsSubmitting(true);
+  const onCropComplete = (_, croppedAreaPixels) => setCroppedAreaPixels(croppedAreaPixels);
 
-    const formData = new FormData();
-    formData.append("file", file);
+  const handleCropConfirm = async () => {
+    try {
+      const croppedBlob = await getCroppedImg(preview, croppedAreaPixels);
+      const formData = new FormData();
+      formData.append("file", croppedBlob, "business_logo_square.png");
 
-    const res = await fetch("/api/upload-business-logo", {
-      method: "POST",
-      body: formData,
-    });
+      setIsSubmitting(true);
+      const res = await fetch("/api/upload-business-logo", { method: "POST", body: formData });
+      const result = await res.json();
 
-    const result = await res.json();
-    if (res.ok) {
-      setMessage(`Uploaded successfully`);
-      setUploaded(result.file);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = null;
+      if (res.ok) {
+        setMessage("Logo uploaded successfully");
+        setUploaded(result.file);
+      } else {
+        setMessage(result.error || "Upload failed");
       }
-    } else {
-      setMessage(result.error || "Upload failed");
+    } catch (err) {
+      console.error(err);
+      setMessage("Cropping failed");
+    } finally {
+      setIsSubmitting(false);
+      setShowCropper(false);
     }
-    setIsSubmitting(false);
   };
 
+  // Promo upload
   const handlePromoImageSubmit = async (e) => {
     e.preventDefault();
     if (!file2) {
@@ -108,7 +138,6 @@ export default function SetupBusiness() {
     }
 
     setIsSubmitting2(true);
-
     const formData = new FormData();
     formData.append("file", file2);
 
@@ -121,92 +150,52 @@ export default function SetupBusiness() {
     if (res.ok) {
       setMessage2(`Uploaded successfully`);
       setUploaded2(result.file);
-      if (fileInputRef2.current) {
-        fileInputRef2.current.value = null;
-      }
+      if (fileInputRef2.current) fileInputRef2.current.value = null;
     } else {
       setMessage2(result.error || "Upload failed");
     }
     setIsSubmitting2(false);
   };
 
-
   const fetchOrg = async () => {
-      
     const response = await axios.get(`/api/get-org-details`);
     const org = response.data;
     setName(org.name);
     setTags(org.tags);
     setTagline(org.tagline);
     setAddress(org.address);
-    setLat(org.address_lat)
-    setLng(org.address_long)
+    setLat(org.address_lat);
+    setLng(org.address_long);
     setPhone(org.contact_number);
     setNumber(org.number);
     setType(org.type);
     setEmail(org.contact_email);
     setCountry(org.country);
-    setUploaded({ url: org.logo});
-    setUploaded2({ url: org.promo_image});
+    setUploaded({ url: org.logo });
+    setUploaded2({ url: org.promo_image || "/Samplepromo.png" });
   };
 
-  useEffect(() => {
-   
-    fetchOrg();
-
-  }, []);
+  useEffect(() => { fetchOrg(); }, []);
 
   const POPULAR_FOOD_TAGS = [
-    // Core dishes
-    "Burgers","Pizza","Pasta","Steak","BBQ","Fried Chicken","Wings","Seafood",
-    "Tacos","Burritos","Nachos","Sandwiches","Subs","Wraps","Hot Dogs",
-    "Sushi","Sashimi","Ramen","Udon","Soba","Tempura","Katsu","Teriyaki",
-    "Pho","Banh Mi","Pad Thai","Curry","Biryani","Kebab","Shawarma","Falafel",
-    "Dumplings","Gyoza","Bao","Noodles","Fried Rice","Poke","Bibimbap",
-    "Pierogi","Kebab","Mezze","Tapas","Small Plates","Salad","Soup",
-    "Breakfast","Brunch","Pancakes","Waffles","Omelettes","Bowl","Grain Bowl",
-  
-    // Sides & snacks
-    "Fries","Poutine","Onion Rings","Garlic Bread","Mozzarella Sticks","Hummus","Chips","Salsa","Guacamole",
-  
-    // Desserts & sweets
-    "Desserts","Ice Cream","Gelato","Frozen Yogurt","Cake","Cheesecake","Brownies","Cookies","Donuts",
-    "Pastries","Bakery","Crepes","Churros","Tiramisu","Baklava",
-  
-    // Drinks
-    "Coffee","Espresso","Latte","Cold Brew","Tea","Chai","Bubble Tea","Boba","Smoothies","Juice","Milkshakes",
-  
-    // Cuisines by country/region
-    "Canadian","American","Latin American","Mexican","Caribbean","Jamaican","Cuban","Brazilian","Argentinian","Peruvian",
-    "Italian","French","Spanish","Portuguese","Greek","Turkish","Mediterranean",
-    "British","Irish","German","Polish","Hungarian","Czech","Swiss","Belgian","Dutch",
-    "Nordic","Swedish","Norwegian","Danish","Finnish",
-    "Middle Eastern","Lebanese","Israeli","Persian","Moroccan","Egyptian","Tunisian",
-    "Asian","Chinese","Japanese","Korean","Thai","Vietnamese","Filipino","Indonesian","Malaysian","Singaporean",
-    "South Asian","Indian","Pakistani","Bangladeshi","Sri Lankan",
-    "African","Ethiopian","Nigerian","Ghanaian","South African",
-  
-    // Dietary / lifestyle
-    "Vegan","Vegetarian","Pescatarian","Halal","Kosher","Gluten-Free","Dairy-Free","Nut-Free","Keto","Paleo","Low-Carb","Organic","Healthy",
-  
-    // Service / experience
-    "Family Style","Comfort Food","Street Food","Fast Food","Casual Dining","Fine Dining","Food Truck","Late Night","Kid Friendly",
-    "Pickup","Delivery","Catering","Meal Prep"
+    "Burgers", "Pizza", "Pasta", "BBQ", "Seafood", "Sushi", "Curry",
+    "Coffee", "Vegan", "Desserts", "Pickup", "Delivery", "Catering"
   ];
 
   return (
     <>
       <div className="techwave_fn_image_generation_page">
         <div className="generation__page">
-          {/* Generation Header */}
           <div className="generation_header">
             <div className="header_top">
               <h1 className="title">Update Business Information</h1>
             </div>
+
             <div className="header_bottom">
               <form onSubmit={handleSubmit} style={{ width: "70%" }}>
-              <div className="form_group">
-                <label>Business Name</label>
+                {/* ---- Fields ---- */}
+                <div className="form_group">
+                  <label>Business Name</label>
                   <input
                     type="text"
                     id="name"
@@ -217,23 +206,26 @@ export default function SetupBusiness() {
                     required
                   />
                 </div>
-                <br/>
+                <br />
+
                 <div className="form_group">
-                <label>Phone Number</label>
-                <PhoneInput
-                  id="phone"
-                  placeholder="Enter phone number"
-                  defaultCountry="US"
-                  value={phone}
-                  onChange={setPhone}
-                  international
-                />
+                  <label>Phone Number</label>
+                  <PhoneInput
+                    id="phone"
+                    className="full_width"
+                    placeholder="Enter phone number"
+                    defaultCountry="CA"
+                    value={phone}
+                    onChange={setPhone}
+                    international
+                  />
                 </div>
-                <br/>
+                <br />
+
                 <div className="form_group">
                   <label>Business Email</label>
                   <input
-                    type="text"
+                    type="email"
                     id="email"
                     className="full_width"
                     placeholder="Business Email"
@@ -242,7 +234,8 @@ export default function SetupBusiness() {
                     required
                   />
                 </div>
-                <br/>
+                <br />
+
                 <div className="form_group">
                   <label>Tagline</label>
                   <input
@@ -255,22 +248,24 @@ export default function SetupBusiness() {
                     required
                   />
                 </div>
-                <br/>
-                <div className="form_group"  >
+                <br />
+
+                <div className="form_group">
                   <label>Business Number</label>
-                    <input
-                      type="text"
-                      id="b_name"
-                      className="full_width"
-                      placeholder="Business Number"
-                      value={number}
-                      onChange={(e) => setNumber(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <br />
-                  <div className="form_group" >
-                  <label>Business Address (Orders & Pickups will be routed to this location)</label>
+                  <input
+                    type="text"
+                    id="number"
+                    className="full_width"
+                    placeholder="Business Number"
+                    value={number}
+                    onChange={(e) => setNumber(e.target.value)}
+                    required
+                  />
+                </div>
+                <br />
+
+                <div className="form_group">
+                  <label>Business Address</label>
                   <input
                     type="text"
                     id="address"
@@ -282,140 +277,133 @@ export default function SetupBusiness() {
                     required
                   />
                 </div>
-                <br/>
+                <br />
 
-                <div className="form_group" >
-                  <label>Tagline</label>
-                  <input
-                    type="text"
-                    id="tagline"
-                    className="full_width"
-                    placeholder="Tagline"
-                    value={tagline}
-                    onChange={(e) => setTagline(e.target.value)}
-                    required
-                  />
-                </div>
-                <br/>
+                {type === "Food" && (
+                  <>
+                    <div className="form_group">
+                      <label>Tags</label>
+                      <TagMultiSelect
+                        value={tags}
+                        onChange={setTags}
+                        suggestions={POPULAR_FOOD_TAGS}
+                        placeholder="Add tags (Enter, comma or Tab)"
+                      />
+                    </div>
+                    <br />
+                  </>
+                )}
 
-                {type === "Food" && <><div className="form_group">
-                  <label>Tags</label>
-                  <TagMultiSelect
-                    value={tags}
-                    onChange={setTags}
-                    suggestions={POPULAR_FOOD_TAGS}  
-                    placeholder="Add tags (Enter, comma or Tab)"
-                    // max={10}
-                  />
-                </div>
-                <br/></>}
-          
-                <span style={{ color: "green" }}>800kb max per image</span>
-                <form
+                {/* ---- Logo Upload ---- */}
+                <hr style={{ margin: "2rem 0", border: "none", borderTop: "1px solid #ddd" }} />
+                <h3 style={{ marginBottom: "0.5rem" }}>Business Logo</h3>
+                <span style={{ color: "green", display: "block", marginBottom: "0.5rem" }}>800kb max per image</span>
+
+                <div
                   style={{
                     display: "flex",
-                    flexWrap: "wrap",
-                    alignItems: "center",
-                    gap: "0.5rem",
-                    paddingBottom: "0.5em",
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                    gap: "0.8rem",
+                    paddingBottom: "1rem",
                   }}
                 >
-                  <div className="form_group">
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => setFile(e.target.files?.[0] || null)}
+                    onChange={handleLogoSelect}
                     ref={fileInputRef}
-                    className="block mb-4"
+                    className="full_width"
                   />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleImageSubmit}
-                    disabled={isSubmitting}
-                    className="techwave_fn_button"
-                  >
-                    {isSubmitting ? "Uploading" : "Upload Business Logo"}
-                  </button>
-                </form>
+                  {isSubmitting && <p>Uploading...</p>}
+                  {message && <p style={{ color: "red" }}>{message}</p>}
+                  {uploaded && (
+                    <img
+                      src={uploaded.url}
+                      alt="Business Logo"
+                      width="150"
+                      style={{ marginTop: "0.5rem", borderRadius: "8px" }}
+                    />
+                  )}
+                </div>
 
-                {message && <p style={{ color: "red" }}>{message}</p>}
-                <br />
-                {uploaded && (
-                  <div
-                    style={{
-                      display: "flex",
-                      flexWrap: "wrap",
-                      alignItems: "center",
-                      gap: "0.5rem",
-                      paddingBottom: "0.5em",
-                    }}
-                  >
-                    <div>
-                        <img
-                          src={uploaded.url}
-                          alt={`Uploaded logo`}
-                          className="w-full"
-                          width="200px"
-                        />
-                        <br />
-                    
-                      </div>
-                  </div>
-                )}
+                {/* ---- Promo Image Upload ---- */}
+                <hr style={{ margin: "2rem 0", border: "none", borderTop: "1px solid #ddd" }} />
+                <h3 style={{ marginBottom: "0.5rem" }}>Promo Image</h3>
 
-                <br />
-
-                <form
+                <div
                   style={{
                     display: "flex",
-                    flexWrap: "wrap",
-                    alignItems: "center",
-                    gap: "0.5rem",
-                    paddingBottom: "0.5em",
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                    gap: "0.8rem",
+                    paddingBottom: "1rem",
                   }}
                 >
-                  <div className="form_group">
                   <input
                     type="file"
                     accept="image/*"
                     onChange={(e) => setFile2(e.target.files?.[0] || null)}
                     ref={fileInputRef2}
-                    className="block mb-4"
+                    className="full_width"
                   />
-                  </div>
                   <button
                     type="button"
                     onClick={handlePromoImageSubmit}
                     disabled={isSubmitting2}
                     className="techwave_fn_button"
                   >
-                    {isSubmitting2 ? "Uploading" : "Upload Business Promo Image"}
+                    {isSubmitting2 ? "Uploading..." : "Upload Promo Image"}
                   </button>
-                </form>
 
-                {message2 && <p style={{ color: "red" }}>{message2}</p>}
-                <br />
-                {uploaded2 && (
+                  {message2 && <p style={{ color: "red" }}>{message2}</p>}
+                  {uploaded2 && (
+                    <img
+                      src={uploaded2.url}
+                      alt="Promo"
+                      width="200"
+                      style={{ marginTop: "0.5rem", borderRadius: "8px" }}
+                    />
+                  )}
+                </div>
+
+                {/* ---- Cropper Overlay ---- */}
+                {showCropper && (
                   <div
                     style={{
+                      position: "fixed",
+                      top: 0, left: 0,
+                      width: "100%", height: "100%",
+                      background: "rgba(0,0,0,0.8)",
+                      zIndex: 9999,
                       display: "flex",
-                      flexWrap: "wrap",
+                      flexDirection: "column",
+                      justifyContent: "center",
                       alignItems: "center",
-                      gap: "0.5rem",
-                      paddingBottom: "0.5em",
                     }}
                   >
-                    <div>
-                        <img
-                          src={uploaded2.url}
-                          alt={`Uploaded logo`}
-                          className="w-full"
-                          width="200px"
-                        />
-                        <br />
-                    
-                      </div>
+                    <div style={{ position: "relative", width: 300, height: 300, background: "#333" }}>
+                      <Cropper
+                        image={preview}
+                        crop={crop}
+                        zoom={zoom}
+                        aspect={1}
+                        onCropChange={setCrop}
+                        onZoomChange={setZoom}
+                        onCropComplete={onCropComplete}
+                      />
+                    </div>
+                    <div style={{ marginTop: "1rem" }}>
+                      <button onClick={handleCropConfirm} className="techwave_fn_button" disabled={isSubmitting}>
+                        {isSubmitting ? "Uploading..." : "Confirm Crop & Upload"}
+                      </button>
+                      <button
+                        onClick={() => setShowCropper(false)}
+                        style={{ marginLeft: "10px", color: "#fff" }}
+                      >
+                        Cancel
+                      </button>
+                    </div>
                   </div>
                 )}
 
@@ -424,29 +412,29 @@ export default function SetupBusiness() {
 
                 <br />
                 <div className="generate_section">
-                  <button type="submit" className="techwave_fn_button" aria-readonly={loading}><span>Update Information {loading && <FontAwesomeIcon icon={faSpinner} spin={true} />}</span></button>
+                  <button type="submit" className="techwave_fn_button" aria-readonly={loading}>
+                    <span>
+                      Update Information {loading && <FontAwesomeIcon icon={faSpinner} spin={true} />}
+                    </span>
+                  </button>
                 </div>
               </form>
             </div>
           </div>
-          {/* !Generation Header */}
         </div>
       </div>
+
       <Script
         src={`https://maps.googleapis.com/maps/api/js?key=AIzaSyCzZUtpoLjBKa5hFrvqCAP_9zBQFPVcXy8&libraries=places`}
         strategy="afterInteractive"
         onLoad={() => {
-          const autocomplete = new window.google.maps.places.Autocomplete(
-            inputRef.current,
-            { types: ["address"] },
-          );
-
+          const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current, { types: ["address"] });
           autocomplete.addListener("place_changed", () => {
             const place = autocomplete.getPlace();
             const location = place.geometry?.location;
-            setAddress(place.formatted_address)
-            setLat(location?.lat())
-            setLng(location?.lng())
+            setAddress(place.formatted_address);
+            setLat(location?.lat());
+            setLng(location?.lng());
           });
         }}
       />
