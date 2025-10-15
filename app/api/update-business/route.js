@@ -55,8 +55,7 @@ export async function POST(req) {
           country,
           currency,
           tags,
-          onboarding: true,
-          subdomain: `${subdomain}.vorsto.shop`
+          onboarding: true
         }
       })
 

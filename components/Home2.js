@@ -307,7 +307,7 @@ export default function Home2() {
                   <br/>
                   </>}
 
-                <div className="currency-wrapper" style={{ width: "100%" }}>
+                {/* <div className="currency-wrapper" style={{ width: "100%" }}>
                   <input
                     type="text"
                     className="full_width"
@@ -318,7 +318,7 @@ export default function Home2() {
                   />
                   <span className="currency-suffix">.vorsto.shop</span>
                 </div>
-                <br/>
+                <br/> */}
                 
                 <span style={{ color: "green" }}>Business Verification may take a few moments. We may ask to share additional information, otherwise you are ready to go!</span>
 
