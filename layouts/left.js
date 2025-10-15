@@ -11,7 +11,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
     const [chats, setChats] = useState([]);
     const [perms, setPerms] = useState([]);
     const [notify, setNotify] = useState(null);
-    const [isZuppr, setIsZuppr] = useState(window.location.hostname.includes(process.env.NEXT_PUBLIC_ZUPPR_API));
+    const [isZuppr, setIsZuppr] = useState(user.organizations.ship_org_info.merchant_commission_rate < 30);
 
     const getChats = async () => {
     
@@ -51,7 +51,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
 	};
 
     useEffect(() => {
-        setIsZuppr(window.location.hostname.includes(process.env.NEXT_PUBLIC_ZUPPR_API));
+        setIsZuppr(user.organizations.ship_org_info.merchant_commission_rate < 30);
 
         const prms = JSON.parse(user.role?.permissions||"[]");
         const result = Object.entries(prms)
@@ -418,15 +418,11 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
                 {/* logo (left panel) */}
                 <div className="leftpanel_logo">
                     <Link href="/" className="fn_logo">
-                        {isZuppr?
                         <span className="full_logo">
                             <img src="/zuppr-merchant.png" alt="" className="desktop_logo" width={100} />
                             <img src="/zuppr-merchant.png" alt="" className="retina_logo" width={100} />
                         </span>
-                        :<span className="full_logo">
-                            <img src="/vorsto-dark.png" alt="" className="desktop_logo" />
-                            <img src="/vorsto-dark.png" alt="" className="retina_logo" />
-                        </span>}
+
                         <span className="short_logo">
                             <img src="/zuppr-merchant.png" alt="" className="desktop_logo" width={50} />
                             <img src="/zuppr-merchant.png" alt="" className="retina_logo" width={50} />
@@ -600,7 +596,7 @@ export default function Left({ activeTrueFalse, activeMobileMenu, user, hide=fal
                     </div>
                     {/* !#3 navigation group */}
 
-                    {isZuppr && user?.organizations.onboarding && !user?.organizations.zuppr_active &&<button type="button" onClick={activateStore} className="techwave_fn_button" style={{ marginLeft: "10px"}}><span>Activate Store</span></button>}
+                    {user?.organizations.onboarding && !user?.organizations.zuppr_active &&<button type="button" onClick={activateStore} className="techwave_fn_button" style={{ marginLeft: "10px"}}><span>Activate Store</span></button>}
                     
         
                 </div>}
